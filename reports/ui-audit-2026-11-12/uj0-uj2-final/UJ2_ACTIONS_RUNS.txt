@@ -1,0 +1,19 @@
+UJ2_ACTIONS_RUNS_FINAL
+run_id	workflow	event	created_at	status	conclusion	source_sha	job	job_status	job_exit
+43109652913	Naruto Story Mode adaptive player monitor	schedule	2026-11-11T22:11:36Z	completed	success	d2c57a796215696dc91be91fb18f36907fa5203c	monitor	completed	0
+43144169223	UJ0-UJ2 audit	push	2026-11-12T02:50:41Z	completed	failure	9e5de8479aef45d7403402c47f1555a3aa3e6eaf	uj0-uj2-preflight	completed	1
+43144169223	UJ0-UJ2 audit	push	2026-11-12T02:50:41Z	completed	failure	9e5de8479aef45d7403402c47f1555a3aa3e6eaf	uj0-uj2-audit	completed	skipped:N/A
+43144307299	UJ0-UJ2 audit	push	2026-11-12T02:51:57Z	completed	success	e0ad8bf89ca43dda6b84272382ab468f0bdb28ef	uj0-uj2-preflight	completed	0
+43144307299	UJ0-UJ2 audit	push	2026-11-12T02:51:57Z	completed	success	e0ad8bf89ca43dda6b84272382ab468f0bdb28ef	uj0-uj2-audit	completed	0
+43144355162	UJ0-UJ2 audit	push	2026-11-12T02:52:23Z	completed	cancelled	cf34b96719275cc709cfc9330385c189fe620374	uj0-uj2-preflight	completed	0
+43144355162	UJ0-UJ2 audit	push	2026-11-12T02:52:23Z	completed	cancelled	cf34b96719275cc709cfc9330385c189fe620374	uj0-uj2-audit	completed	CANCELLED
+43144586564	UJ0-UJ2 audit	push	2026-11-12T02:54:29Z	completed	success	2e9993948923d0a4cd1a3504ca83010d87d6fb08	uj0-uj2-preflight	completed	0
+43144586564	UJ0-UJ2 audit	push	2026-11-12T02:54:29Z	completed	success	2e9993948923d0a4cd1a3504ca83010d87d6fb08	uj0-uj2-audit	completed	SKIPPED_GUARD
+
+ACTIONS_RUN_SUMMARIES
+RUN_ID=43109652913 STATUS=SUCCESS JOB=monitor SOURCE_SHA=d2c57a796215696dc91be91fb18f36907fa5203c EXIT_CODE=0
+RUN_ID=43144169223 STATUS=FAILURE JOB=uj0-uj2-preflight=FAILURE; audit=SKIPPED SOURCE_SHA=9e5de8479aef45f5a311fda2ba67efc7e088a914 EXIT_CODE=1
+RUN_ID=43144307299 STATUS=SUCCESS JOB=preflight=SUCCESS; audit=SUCCESS SOURCE_SHA=e0ad8bf89ca43dda6b84272382ab468f0bdb28ef EXIT_CODE=0
+RUN_ID=43144355162 STATUS=CANCELLED JOB=preflight=SUCCESS; audit=CANCELLED before checkpoint load/source of emulator launch SOURCE_SHA=cf34b96719275cc709cfc9330385c189fe620374 EXIT_CODE=N/A
+RUN_ID=43144586564 STATUS=SUCCESS JOB=preflight=SUCCESS; audit=SKIPPED_BY_EXACT_SHA_GUARD SOURCE_SHA=2e9993948923d0a4cd1a3504ca83010d87d6fb08 EXIT_CODE=0
+NOTE=Actionlint download/check attempted; committed summary lacks pass marker; ACTIONLINT_RESULT=TIDAK TAHU.
