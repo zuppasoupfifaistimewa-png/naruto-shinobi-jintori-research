@@ -31,3 +31,10 @@ BATASAN
 Tidak ada run emulator baru, tidak ada unduhan disc/ROM/BIOS, dan tidak ada berkas biner yang dikomit.
 Tidak ada file lama, STATUS.md, Release, atau workflow yang diubah.
 Commit laporan ini sendiri berada setelah cakupan ledger dan dikecualikan dari hitungan UK2.
+VERIFIKASI TAMBAHAN JALUR EKSEKUSI (2026-11-12)
+Workflow lama diperiksa langsung pada blob b6560f1661bc52972c6c0669640bb7ec7765fe91.
+Selain hanya trigger push pada lima path dan tanpa workflow_dispatch, job uj0-uj2-audit memiliki guard:
+  if: needs.preflight.result == 'success' && github.sha == 'e0ad8bf89ca43dda6b84272382ab468f0bdb28ef'
+HEAD saat audit adalah 6e7263cadfa250b470544b44f22a39855e8eb08d, sehingga guard tersebut false. Push yang hanya menyentuh path laporan tidak akan memulai workflow; memicu preflight melalui perubahan salah satu dari lima path tidak akan menjalankan job audit pada HEAD ini.
+Workflow itu juga bukan implementasi UK: UJ0 memakai audit lama yang memerlukan audit TSV UH1, sedangkan UJ1 menjalankan dua peluncuran NO_INPUT masing-masing 900 frame, bukan dua peluncuran hanya frame 1 seperti spesifikasi UK1. Menjalankannya akan melanggar spesifikasi UK1 dan berpotensi menghabiskan Actions tanpa menyelesaikan UK.
+Kesimpulan blocker: dengan batas saat ini (hanya file baru di folder laporan; workflow lama dan file lama tidak boleh diubah; tepat satu run emulator UK1), tidak ada jalur Actions yang sah untuk menuntaskan UK0/UK1. Tidak dilakukan bypass trigger, perubahan file lama, atau emulator run.
