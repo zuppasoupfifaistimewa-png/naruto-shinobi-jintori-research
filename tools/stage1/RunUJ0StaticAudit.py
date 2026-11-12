@@ -22,22 +22,22 @@ def decode(b):
     rd=(w>>11)&31; sh=(w>>6)&31; fn=w&63; imm=w&0xffff
     simm=imm if imm<0x8000 else imm-0x10000
     if op in OPS:
-        m=OPS[op]; return f"{m} $\{REGS[rt]}, 0x{imm:04X}($\{REGS[rs]})"
+        m=OPS[op]; return f"{m} ${REGS[rt]}, 0x{imm:04X}(${REGS[rs]})"
     if op==0:
         names={0x00:"sll",0x02:"srl",0x03:"sra",0x08:"jr",0x09:"jalr",0x21:"addu",0x23:"subu",0x24:"and",0x25:"or",0x26:"xor",0x27:"nor",0x2A:"slt",0x2B:"sltu"}
         m=names.get(fn)
         if not m: return f".word 0x{w:08X}"
-        if fn in (0,2,3): return f"{m} $\{REGS[rd]}, $\{REGS[rt]}, 0x{sh:X}"
-        if fn==8: return f"{m} $\{REGS[rs]}"
-        if fn==9: return f"{m} $\{REGS[rd]}, $\{REGS[rs]}"
-        return f"{m} $\{REGS[rd]}, $\{REGS[rs]}, $\{REGS[rt]}"
+        if fn in (0,2,3): return f"{m} ${REGS[rd]}, ${REGS[rt]}, 0x{sh:X}"
+        if fn==8: return f"{m} ${REGS[rs]}"
+        if fn==9: return f"{m} ${REGS[rd]}, ${REGS[rs]}"
+        return f"{m} ${REGS[rd]}, ${REGS[rs]}, ${REGS[rt]}"
     if op in (8,9,10,11,12,13,14):
         m={8:"addi",9:"addiu",10:"slti",11:"sltiu",12:"andi",13:"ori",14:"xori"}[op]
         v=imm if op in (12,13,14) else simm
-        return f"{m} $\{REGS[rt]}, $\{REGS[rs]}, 0x{v & 0xFFFFFFFF:X}"
-    if op==0x0F: return f"lui $\{REGS[rt]}, 0x{imm:04X}"
+        return f"{m} ${REGS[rt]}, ${REGS[rs]}, 0x{v & 0xFFFFFFFF:X}"
+    if op==0x0F: return f"lui ${REGS[rt]}, 0x{imm:04X}"
     if op in (2,3): return f"{'jal' if op==3 else 'j'} 0x{((w&0x03FFFFFF)<<2):08X}"
-    if op in (4,5): return f"{'beq' if op==4 else 'bne'} $\{REGS[rs]}, $\{REGS[rt]}, 0x{simm & 0xFFFFFFFF:X}"
+    if op in (4,5): return f"{'beq' if op==4 else 'bne'} ${REGS[rs]}, ${REGS[rt]}, 0x{simm & 0xFFFFFFFF:X}"
     return f".word 0x{w:08X}"
 def norm(s):
     s=s.lower().replace(" ","")
