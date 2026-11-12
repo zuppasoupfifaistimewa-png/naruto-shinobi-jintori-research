@@ -278,9 +278,9 @@ def parse_log(log: str, launch: str) -> tuple[list[dict], list[dict], list[dict]
         elif line.startswith("UM1_INPUT\t"):
             p = line.split("\t")
             if len(p) == 7:
-                um0_rows.append({"launch":p[1],"frame":p[2],"event":"INPUT_"+p[4],"button":p[3],"readback":p[5],"status":p[6]})
+                um0_rows.append({"launch":p[1].strip(),"frame":p[2].strip(),"event":"INPUT_"+p[4].strip(),"button":p[3].strip(),"readback":p[5].strip(),"status":p[6].strip()})
         elif line.startswith("UM0_WRITER_EXEC_BP_ARMED=YES"):
-            launch_name = line.rsplit("launch=",1)[1] if "launch=" in line else launch
+            launch_name = line.rsplit("launch=",1)[1].split()[0] if "launch=" in line else launch
             um0_rows.append({"launch":launch_name,"frame":"0","event":"BP_ARMED","pc":"0x800D5A1C"})
         elif line.startswith("UM0_WRITER_MONITOR_END"):
             p = line.split("\t")
