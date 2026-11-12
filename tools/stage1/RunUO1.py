@@ -31,7 +31,7 @@ LAUNCH_FIELDS=["launch","status","exit_code","frames_requested","frames_observed
                "wall_seconds"]
 AGG_FIELDS=["launch","mode","pc","field_offset","event_type","hit_count","records_seen","frames_seen"]
 COMPARE_FIELDS=["metric","probe","measure_1","measure_2","same","interpretation"]
-ZERO_FIELDS=["record_index","prior_snapshot_classification","runtime_watch_status"]
+ZERO_FIELDS=["record_index","prior_snapshot_classification","runtime_watch_status","exec_hits_measure_1","exec_hits_measure_2","reader_pc_set"]
 
 def sha(path: Path) -> str:
     h=hashlib.sha256()
@@ -136,6 +136,7 @@ local RAM_END=0x80200000
 local MOD=4294967296
 local mem=PCSX.getMemPtr()
 local loaded,started,post,finished=false,false,0,false
+local runtimeP=nil
 local readEnabled=false
 local totalHits=0
 local registered,registerError=0,0
@@ -196,8 +197,13 @@ local function record_exec(s,address,width,cause)
  local calc=base and ((base+s.d)%MOD) or nil
  local v,err
  if calc then v,err=readv(calc,2) else err="BASE_REGISTER_UNKNOWN" end
+ local record="-"
+ if runtimeP and base and base>=runtimeP then
+  local delta=base-runtimeP
+  if delta%STRIDE==0 and delta/STRIDE<=43 then record=tostring(math.floor(delta/STRIDE)) end
+ end
  log(table.concat({"UO1_EXEC_HIT",LAUNCH,tostring(post),hx(r.pc),hx(calc),
-   string.format("0x%02X",s.d),"-",s.n,hx(base),err or hx(v,2),hx(calc),"EXEC"}, "\t"))
+   string.format("0x%02X",s.d),record,s.n,hx(base),err or hx(v,2),hx(calc),"EXEC"}, "\t"))
  return true
 end
 local function arm_exec()
@@ -238,6 +244,9 @@ local function arm_read()
 end
 _G.uoLoaded=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
  loaded=true; post=0
+ local p,pe=readv(0x8013EA84,4)
+ runtimeP=p
+ log("UO1_RUNTIME_P="..hx(p).." status="..(pe or "READ_OK"))
  log("UO1_SAVE_STATE_LOADED=YES launch="..LAUNCH)
  arm_read()
 end)
@@ -294,7 +303,7 @@ def parse_events(text: str, launch: str):
         events.append({"launch":p[1],"mode":"READ" if p[0]=="UO1_READ_HIT" else "EXEC_FALLBACK",
           "frame":p[2],"pc":p[3],"address":p[4],"field_offset":p[5],"record_index":p[6],
           "base_register":p[7],"base_value":p[8],"value_read":p[9],
-          "calculated_address":p[10],"event_type":p[11]})
+          "calculated_address":p[10],"event_type":p[11].strip()})
     return events
 
 def launch_stage(name: str, frames: int, indexes: tuple[int,...], supported: bool,
@@ -360,6 +369,11 @@ end'''
        ("UO1_STAGE_FRAME_LIMIT=YES" in textlog)) else "FAIL"
     bp_registered="YES" if "UO1_READ_BP_REGISTERED=YES" in textlog else "NO"
     bp_mode="READ" if bp_registered=="YES" else "EXEC_FALLBACK"
+    runtime_p="TIDAK TAHU"
+    for line in textlog.splitlines():
+        if line.startswith("UO1_RUNTIME_P="):
+            runtime_p=line.split("UO1_RUNTIME_P=",1)[1].split()[0]
+            break
     observed=0
     for line in textlog.splitlines():
         if line.startswith("UO1_STAGE_FRAME_LIMIT=YES"):
@@ -367,7 +381,7 @@ end'''
             except (ValueError,IndexError): pass
     row={"launch":name,"status":status,"exit_code":rc,"frames_requested":frames,
       "frames_observed":observed,"read_bp_registered":bp_registered,"breakpoint_mode":bp_mode,
-      "event_hits":len(events),"checkpoint_before":before_state,"checkpoint_after":after_state,
+      "event_hits":len(events),"runtime_P":runtime_p,"checkpoint_before":before_state,"checkpoint_after":after_state,
       "card_before":before_card,"card_after":after_card,"card_mode_0444":"YES" if card_mode else "NO",
       "last_marker":"FRAME_LIMIT" if observed>=frames else "SEE_TAIL","wall_seconds":f"{wall:.3f}"}
     state.unlink(missing_ok=True); card.unlink(missing_ok=True)
@@ -379,13 +393,13 @@ def self_test():
     assert 17*len(FIELD_OFFSETS)==153
     e=parse_events("UO1_READ_HIT\tMEASURE_1\t12\t0x800C9990\t0x8013EA9A\t0x10\t1\t$v0\t0x8013EA8A\t0x0023\t0x8013EA9A\tREAD","MEASURE_1")
     assert len(e)==1 and e[0]["frame"]=="12"
-    print("UO1_SELF_TEST=PASS indexes=17 halfword_offsets=9 watches=153 probe_frames=60 measure_frames=122")
+    print("UO1_SELF_TEST=PASS indexes=17 halfword_offsets=9 watches=153 probe_frames=60 measure_frames=88")
 
 def main() -> int:
     ap=argparse.ArgumentParser()
     for name in ("work","out","pcsx-bin","appdir","bios","cue","source","static-readers"):
         ap.add_argument("--"+name,type=Path)
-    ap.add_argument("--frames",type=int,default=122)
+    ap.add_argument("--frames",type=int,default=88)
     ap.add_argument("--timeout-seconds",type=int,default=150)
     ap.add_argument("--self-test",action="store_true")
     a=ap.parse_args()
@@ -393,8 +407,8 @@ def main() -> int:
         self_test(); return 0
     if not all((a.work,a.out,a.pcsx_bin,a.appdir,a.bios,a.cue,a.source,a.static_readers)):
         ap.error("runtime paths required")
-    if a.frames!=122 or a.timeout_seconds!=150:
-        ap.error("bounded UO1 policy is fixed to 122 measured frames and 150 seconds per process")
+    if a.frames!=88 or a.timeout_seconds!=150:
+        ap.error("bounded UO1 policy is fixed to 88 measured frames and 150 seconds per process")
     work,out=a.work,a.out; work.mkdir(parents=True,exist_ok=True); out.mkdir(parents=True,exist_ok=True)
     source=a.source
     if not source.is_file() or source.stat().st_size!=CHECKPOINT_BYTES or sha(source)!=CHECKPOINT_SHA:
@@ -481,15 +495,23 @@ def main() -> int:
       "measure_2":len(m2),"same":"YES" if identical else "NO",
       "interpretation":"K5 hanya untuk dua launch runtime identik yang selesai"})
     write_tsv(out/"UO1_COMPARE.tsv",COMPARE_FIELDS,compare)
-    zero_rows=[{"record_index":i,"prior_snapshot_classification":"ZERO/EMPTY in UN1 frame-1 snapshot",
-                "runtime_watch_status":"NOT_WATCHED; separated from nontrivial 17"} for i in ZERO_RECORDS]
+    zero_rows=[]
+    for i in ZERO_RECORDS:
+        zero_rows.append({"record_index":i,
+          "prior_snapshot_classification":"ZERO/EMPTY in UN1 frame-1 snapshot",
+          "runtime_watch_status":"NOT_WATCHED; separated from nontrivial 17",
+          "exec_hits_measure_1":sum(1 for e in m1 if e["event_type"]=="EXEC" and e["record_index"]==str(i)),
+          "exec_hits_measure_2":sum(1 for e in m2 if e["event_type"]=="EXEC" and e["record_index"]==str(i)),
+          "reader_pc_set":";".join(sorted({e["pc"] for e in m1+m2 if e["event_type"]=="EXEC" and e["record_index"]==str(i)}))})
     write_tsv(out/"UO1_ZERO_RECORDS.tsv",ZERO_FIELDS,zero_rows)
     write_tsv(out/"UO1_LAUNCHES.tsv",LAUNCH_FIELDS,[probe_row]+launch_rows)
     summary=[
       "UO1_CHECKPOINT_READ_BREAKPOINT_OBSERVATION",
       "STATUS="+("TUNTAS" if complete and identical else "SEBAGIAN" if any(r["status"]=="PASS" for r in launch_rows) else "BELUM"),
       "EVIDENCE="+k5,
-      "K5_SCOPE=runtime repeatability for exact checkpoint, no-input condition only",
+      "K5_SCOPE=runtime repeatability of EXEC breakpoint visitation/base-register samples for exact checkpoint and no-input 88-frame window",
+      "READ_SEMANTICS=NOT_PROVEN; READ breakpoint API accepted registration but probe had zero read hits; EXEC_FALLBACK only proves PC visitation and base/effective-address samples",
+      "RUNTIME_P=logged per launch as UO1_RUNTIME_P and copied into UO1_LAUNCHES.tsv",
       f"CHECKPOINT_SHA256_EXPECTED={CHECKPOINT_SHA}",
       f"CHECKPOINT_SOURCE_SHA256_BEFORE={source_before}",
       f"CHECKPOINT_SOURCE_SHA256_AFTER={sha(source) if source.exists() else 'TIDAK TAHU'}",

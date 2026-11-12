@@ -303,7 +303,7 @@ jobs:
             python tools/stage1/RunUO1.py --work "$WORK/emulator" --out "$OUT/UO1" \
               --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
               --cue "$WORK/source/game-run.cue" --source "$SOURCE" --static-readers "$STATIC" \
-              --frames 122 --timeout-seconds 150 > "$OUT/UO1_EXECUTION_LOG.txt" 2>&1
+              --frames 88 --timeout-seconds 150 > "$OUT/UO1_EXECUTION_LOG.txt" 2>&1
             rc=$?
           else
             rc=2
