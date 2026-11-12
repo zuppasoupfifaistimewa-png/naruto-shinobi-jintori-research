@@ -11,3 +11,5 @@ ac78fe828a4063f9531a733f78e56873516bd495	a41d8c616d496db7435dff03b96c7b677a0d18c
 336ee66f1ee6ccde01aa4cfcb440aa380fbf80c9	ac78fe828a4063f9531a733f78e56873516bd495	zuppasoupfifaistimewa-png	2026-11-12T18:02:58+07:00	Remove remaining indirect status test in UM CUE extraction
 1562adfc7300a9f5ebf0b2aa28e00ad743860969	336ee66f1ee6ccde01aa4cfcb440aa380fbf80c9	zuppasoupfifaistimewa-png	2026-11-12T18:03:58+07:00	Replace broken CUE heredoc with checked awk rewrite
 cf9ebe704aa9ba89c2db96e653bfe41bfb80f390	1562adfc7300a9f5ebf0b2aa28e00ad743860969	zuppasoupfifaistimewa-png	2026-11-12T18:05:06+07:00	Remove invalid duplicated tail from UM workflow
+240ff059e84b7a2e62001745cdd37f79db3c7cdc	cf9ebe704aa9ba89c2db96e653bfe41bfb80f390	github-actions[bot]	2026-11-12T11:06:13Z	Record UM0-UM2 audit results for run 43206037936 [skip ci]
+18e6724666bd9b5571cca228caaada387a86a152	240ff059e84b7a2e62001745cdd37f79db3c7cdc	zuppasoupfifaistimewa-png	2026-11-12T11:11:39Z	Correct UM1 checkpoint hash and record UM closeout diagnostics [skip ci]
