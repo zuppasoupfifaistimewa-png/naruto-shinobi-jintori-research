@@ -1,0 +1,5 @@
+metric	probe	measure_1	measure_2	same	interpretation
+READ_BREAKPOINT_API_PROBE_REGISTERED	YES	NO	NO	YES	YES = API menerima registrasi; bukan jaminan ada read hit
+MEASURED_TOTAL_HITS	0	88	90	NO	Banding hit per dua launch
+MEASURED_READER_PC_SET		0x800B7794	0x800B7794	YES	Set PC pembaca yang benar-benar memicu breakpoint
+EVENT_TRACE_IDENTICAL	N/A	88	90	NO	K5 hanya untuk dua launch runtime identik yang selesai
