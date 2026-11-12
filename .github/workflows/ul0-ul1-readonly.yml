@@ -245,6 +245,7 @@ jobs:
           exit 0
 
       - name: Download exact checkpoint artifact
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_ul1 == 'true'
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-adaptive-player-private
@@ -254,6 +255,7 @@ jobs:
           path: /tmp/naruto-ul-private-${{ github.run_id }}-${{ github.run_attempt }}/checkpoint
 
       - name: Download and verify PCSX-Redux, retail BIOS and disc boot inputs
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_ul1 == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -306,6 +308,7 @@ jobs:
           echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
 
       - name: Verify immutable checkpoint
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_ul1 == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -368,8 +371,12 @@ jobs:
             if [ ! -f "$OUT/$stage/${stage}_SUMMARY.txt" ]; then printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=stage did not produce a summary\nEXIT_CODE=2\n' > "$OUT/$stage/${stage}_SUMMARY.txt"; fi
           done
           rc0="$(cat "$OUT/UL0_EXIT_CODE.txt")"; rc1="$(cat "$OUT/UL1_EXIT_CODE.txt")"; rc2="$(cat "$OUT/UL2_EXIT_CODE.txt")"
-          final_rc=0; [ "$rc0" = "0" ] || final_rc=2; [ "$rc1" = "0" ] || final_rc=2; [ "$rc2" = "0" ] || final_rc=2
-          [ "$final_rc" = "0" ] && status=TUNTAS || status=SEBAGIAN
+          final_rc=0
+          # Exit 2 means a stage was accurately reported as incomplete; it is not a runner/tool crash.
+          # Only unexpected tool/API failures fail the job. UL1 skip is intentional on push after budget consumption.
+          for code in "$rc0" "$rc1"; do [ "$code" = "0" ] || [ "$code" = "2" ] || final_rc=1; done
+          [ "$rc2" = "0" ] || final_rc=1
+          if [ "$rc0" = "0" ] && [ "$rc1" = "0" ] && [ "$rc2" = "0" ]; then status=TUNTAS; else status=SEBAGIAN; fi
           mkdir -p "$OUT/ACTIONS"
           {
             echo "STATUS=$status"

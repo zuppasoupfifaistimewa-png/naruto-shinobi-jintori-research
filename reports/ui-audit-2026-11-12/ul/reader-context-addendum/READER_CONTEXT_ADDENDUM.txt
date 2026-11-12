@@ -1,0 +1,5 @@
+UL0 UL1 UL2 CONTINUATION
+
+- UL0: output includes a 24-instruction reader context starting at 0x800D5B3C and a separate direct target instruction; load sites are listed without assigning field semantics.
+- UL1: the two permitted emulator launches already occurred in run 43187690502 and both timed out before snapshot; push-triggered audits skip checkpoint/PCSX downloads and UL1.
+- Workflow exit status distinguishes execution/reporting success from research completeness: exit 0 can accompany STATUS=SEBAGIAN; unexpected tool/API errors remain non-zero.

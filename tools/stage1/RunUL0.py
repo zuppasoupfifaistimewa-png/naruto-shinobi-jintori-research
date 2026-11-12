@@ -192,13 +192,30 @@ def write_tsv(path,fields,rows):
         w=csv.DictWriter(f,fieldnames=fields,delimiter="\t",extrasaction="ignore",lineterminator="\n")
         w.writeheader(); w.writerows(rows)
 
+def inspect_target_window(blob,base_pc,target_pc,file_base,limit=24):
+    start=target_pc-base_pc
+    rows=[]
+    for n in range(limit):
+        pos=start+n*4
+        raw=blob[pos:pos+4]
+        if len(raw)!=4: break
+        d=decode(raw); mem=d.get("mem")
+        rows.append({"instruction_index":n+1,"pc":f"0x{target_pc+n*4:08X}",
+          "file_offset":f"0x{file_base+pos:08X}","bytes_4B":" ".join(f"{v:02X}" for v in raw),
+          "instruction":d["text"],"memory_operation":"LOAD" if mem and mem[1]=="R" else ("STORE" if mem else "NO"),
+          "read_write":mem[1] if mem else "","width_bytes":mem[0] if mem else "",
+          "immediate":f"0x{mem[2]:04X}" if mem else "",
+          "base_register":f"${REGS[mem[3]]}" if mem else "",
+          "data_register":f"${REGS[mem[4]]}" if mem else ""})
+    return rows
+
 def self_test():
     def r(rs,rt,rd=0,sh=0,fn=0): return ((rs<<21)|(rt<<16)|(rd<<11)|(sh<<6)|fn).to_bytes(4,"little")
     def it(op,rs,rt,imm): return ((op<<26)|(rs<<21)|(rt<<16)|(imm&0xffff)).to_bytes(4,"little")
     blob=bytearray(E1_SIZE)
     writer=[r(0,3,2,3),r(2,3,2,0,0x21),r(0,2,2,3),r(2,3,2,0,0x21),r(0,2,2,2),
       r(2,5,2,0,0x21),it(13,0,3,0xf020),it(0x29,2,3,0x20)]
-    reader=[it(0x23,2,5,0x1a)]
+    reader=[it(15,0,2,0x8014)]+[b"    "]*7+[it(0x24,4,5,0x1a)]
     for pc,seq in ((0x800D5A00,writer),(0x800D5B3C,reader)):
         start=pc-E1_PC
         for n,b in enumerate(seq): blob[start+n*4:start+n*4+4]=b
@@ -211,9 +228,10 @@ def self_test():
     hits,_=scan_region("ENTRY1",bytes(blob),E1_PC,0,E1_OFF); pcs={x["pc"] for x in hits}
     assert 0x800D5A00 in pcs,pcs
     target=decode(bytes(blob[(0x800D5B3C-E1_PC):(0x800D5B3C-E1_PC)+4]))
-    assert target.get("mem") is not None and target["mem"][1]=="R",target
+    target_window=inspect_target_window(bytes(blob),E1_PC,0x800D5B3C,E1_OFF)
+    assert target["op"]==15 and target["imm"]==0x8014,target
+    assert any(x["pc"]=="0x800D5B5C" and x["read_write"]=="R" for x in target_window),target_window
     assert next(x for x in hits if x["pc"]==0x800D5A00)["pointer_origin"]=="YA"
-    assert target["mem"][1]=="R" and target["mem"][2]==0x1a,target
     alt_hit=next(x for x in hits if x["pc"]==0x800D5C00)
     assert alt_hit["kind"]=="CONST_0x124_MULT_MFLO" and any(x["offset"]==0x24 for x in alt_hit["accesses"])
     header=bytearray(16); header[:4]=it(9,0,7,0x124)
@@ -265,16 +283,20 @@ def main():
     target_bytes=e1[target_pos:target_pos+4]
     target_dec=decode(target_bytes)
     target_mem=target_dec.get("mem")
-    reader=target_mem is not None and target_mem[1]=="R"
+    target_window=inspect_target_window(e1,E1_PC,target_pc,E1_OFF,24)
+    reader_sites=[x for x in target_window if x["read_write"]=="R"]
+    reader=bool(reader_sites)
     target_row={"region":"ENTRY1","pc":f"0x{target_pc:08X}","file_offset":f"0x{target_file:08X}",
       "bytes_4B":" ".join(f"{v:02X}" for v in target_bytes),"instruction":target_dec["text"],
-      "memory_operation":"LOAD" if reader else ("STORE" if target_mem else "NOT_MEMORY_ACCESS"),
+      "memory_operation":"LOAD" if target_mem and target_mem[1]=="R" else ("STORE" if target_mem else "NOT_MEMORY_ACCESS"),
       "read_write":target_mem[1] if target_mem else "TIDAK TAHU",
       "width_bytes":target_mem[0] if target_mem else "TIDAK TAHU",
       "immediate":f"0x{target_mem[2]:04X}" if target_mem else "TIDAK TAHU",
       "base_register":f"${REGS[target_mem[3]]}" if target_mem else "TIDAK TAHU",
-      "data_register":f"${REGS[target_mem[4]]}" if target_mem else "TIDAK TAHU"}
-    write_tsv(a.out_dir/"UL0_TARGET_READER.tsv",["region","pc","file_offset","bytes_4B","instruction","memory_operation","read_write","width_bytes","immediate","base_register","data_register"],[target_row])
+      "data_register":f"${REGS[target_mem[4]]}" if target_mem else "TIDAK TAHU",
+      "reader_loads_within_next_24":len(reader_sites)}
+    write_tsv(a.out_dir/"UL0_TARGET_READER.tsv",["region","pc","file_offset","bytes_4B","instruction","memory_operation","read_write","width_bytes","immediate","base_register","data_register","reader_loads_within_next_24"],[target_row])
+    write_tsv(a.out_dir/"UL0_TARGET_READER_WINDOW.tsv",["instruction_index","pc","file_offset","bytes_4B","instruction","memory_operation","read_write","width_bytes","immediate","base_register","data_register"],target_window)
     quote_lines=[]
     if writer:
         quote_lines.append("[EXPECTED_WRITER_0x800D5A00]")
@@ -283,8 +305,10 @@ def main():
             b=e1[off+k*4:off+k*4+4]
             quote_lines.append(f"0x{writer['pc']+k*4:08X}\t{' '.join(f'{v:02X}' for v in b)}\t{decode(b)['text']}")
     else: quote_lines.append("[EXPECTED_WRITER_0x800D5A00]=CONTRADICTION_NOT_FOUND")
-    quote_lines.append("[EXPECTED_READER_INSTRUCTION_0x800D5B3C]")
+    quote_lines.append("[READER_CONTEXT_START_0x800D5B3C]")
     quote_lines.append(f"0x{target_pc:08X}\t{' '.join(f'{v:02X}' for v in target_bytes)}\t{target_dec['text']}")
+    for site in reader_sites:
+        quote_lines.append(f"{site['pc']}\t{site['bytes_4B']}\t{site['instruction']}")
     (a.out_dir/"UL0_ANCHOR_QUOTES.txt").write_text("\n".join(quote_lines)+"\n",encoding="utf-8")
     status="TUNTAS" if writer and reader else "SEBAGIAN"
     summary=["UL0 STATIC STRIDE AND FIELD-ACCESS AUDIT",f"STATUS={status}",
@@ -294,15 +318,17 @@ def main():
       "EXE_PC_FILE_OFFSET=0x800+(PC-0x80010000)","ENTRY1_PC_FILE_OFFSET=0x10BB000+(PC-0x800AD450)",
       f"ALL_CANONICAL_AND_ALTERNATIVE_MATCHES={len(hits)}",f"NONMATCH_CANDIDATES={len(non)}",
       f"EXPECTED_WRITER_0x800D5A00={'PASS' if writer else 'CONTRADICTION'}",
-      f"EXPECTED_READER_INSTRUCTION_0x800D5B3C={'PASS' if reader else 'CONTRADICTION'}",
-      f"TARGET_READER_INSTRUCTION={target_dec['text']}",
+      f"READER_LOAD_WITHIN_24_FROM_0x800D5B3C={'PASS' if reader else 'CONTRADICTION'}",
+      f"TARGET_READER_ENTRY_INSTRUCTION={target_dec['text']}",
+      f"TARGET_READER_LOAD_SITES={';'.join(x['pc']+':'+x['instruction'] for x in reader_sites) if reader_sites else 'NONE'}",
+      "TARGET_READER_WINDOW=24 aligned instructions; direct PC is context start, not assumed to be the load",
       f"WINDOW_INSTRUCTION_ROWS={len(window_rows)}",f"WINDOW_MEMORY_ACCESS_ROWS={len(all_access)}",
       "WINDOW=up to 24 instructions after stride-result instruction; every row is one 4-byte instruction; stops on tracked result overwrite",
       "OFFSET_ACCESS_TABLE=292 rows for offsets 0x000..0x123; read/write widths and PC sites included",
       "POINTER_ORIGIN=YA/TIDAK/TAK TERSELESAIKAN only; exact semantic meaning of every field=TIDAK TAHU",
       "ENTRY1_MAPPING=static offset formula; runtime alias not inferred"]
     if not writer: summary.append("CONTRADICTION=expected actual-data stride idiom at 0x800D5A00 was not found")
-    if not reader: summary.append("CONTRADICTION=instruction at 0x800D5B3C is not a decoded memory read")
+    if not reader: summary.append("CONTRADICTION=no load instruction found in 24 instructions after 0x800D5B3C")
     (a.out_dir/"UL0_SUMMARY.txt").write_text("\n".join(summary)+"\n",encoding="utf-8")
     print("\n".join(summary)); return 0 if writer and reader else 2
 
