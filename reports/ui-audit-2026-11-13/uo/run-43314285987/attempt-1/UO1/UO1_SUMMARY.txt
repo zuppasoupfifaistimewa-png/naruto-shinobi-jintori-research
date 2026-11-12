@@ -1,0 +1,4 @@
+STATUS=BELUM
+EVIDENCE=K0
+REASON=preflight, checkpoint, emulator or static reader prerequisites not passed
+EXIT_CODE=2
