@@ -1,0 +1,30 @@
+LOCAL PRE-PUSH CHECKS — UL0-UL2
+DATE=2026-11-12
+BASELINE_INCLUSIVE=abd084c4157f75f356a3867bbd68e49dbc3850d8
+
+PY_COMPILE=PASS
+DETAIL=python -m py_compile tools/stage1/RunUL0.py tools/stage1/RunUL1.py tools/stage1/RunUL2.py on the exact source files in this bundle.
+PYFLAKES_PIP=NOT_RUN
+DETAIL=pip install --target /tmp/ul-pycheck pyflakes PyYAML was attempted; package-index DNS resolution failed. No apt install used and no PASS claim.
+YAML_PARSE=PASS
+DETAIL=PyYAML safe compose parsed .github/workflows/ul0-ul1-readonly.yml after final workflow edits.
+ACTIONLINT_RELEASE_BINARY=NOT_RUN
+DETAIL=download of rhysd/actionlint v1.7.12 Linux release binary was attempted; DNS lookup for github.com failed. No PASS claim.
+
+UL0_SELF_TEST=PASS
+DETAIL=synthetic canonical anchors 0x800D5A00 and 0x800D5B3C, slot provenance, MULT/MFLO alternative, bounded memory window, header-PC unknown guard.
+UL1_SELF_TEST=PASS
+DETAIL=24 records x 292 bytes, frame-1-only output shape, +0x1A X derivation, all u16 offset scanning, scalar widths, RAM bounds, A:43 end-exclusive calculation.
+UL2_SELF_TEST=PASS
+DETAIL=baseline-inclusive A/M/D/R no-renames ledger over a synthetic Git history including a root and a baseline commit; first-parent diff policy for merge commits.
+
+LOCAL_EMULATOR_LAUNCHES=0
+MAX_ALLOWED_UL1_EMULATOR_LAUNCHES=2
+UL1_CARD_INITIALIZATION=FIRST_PROCESS_CREATES_128K_PCXS_CARD_DURING_12_NO_INPUT_BOOT_FRAMES; script hashes it and chmods 0444 before checkpoint load / frame-1 measurement.
+UL1_CARD_PREPROCESS_LIMITATION=NO_CARD_FILE_EXISTS_BEFORE_FIRST_PROCESS; records NOT_CREATED_BEFORE_FIRST_PROCESS and separately records hash immediately before checkpoint-load measurement plus hash after process. This is not misreported as a pre-process hash.
+UL1_SECOND_CARD=CLONE_OF_FIRST_LAUNCH_TEMPLATE; SHA checked before second process; chmod 0444.
+CHECKPOINT=SOURCE_AND_PER-LAUNCH_COPY_HASHED_BEFORE_AND_AFTER_EACH_PROCESS; expected SHA 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35.
+
+NO_ROM_EXE_DATA_BIN_BIOS_SAVESTATE_MEMORY_CARD_RAM_DUMP_OR_OTHER_BINARY_COMMITTED=YES
+NO_EXISTING_WORKFLOW_SCRIPT_STATUS_MD_RELEASE_OR_TAG_MODIFIED=YES
+SCOPE=only six new text source/report files in SOURCE_CHANGESET.txt; workflow file created last to trigger preflight/audit against final source SHA.
