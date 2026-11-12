@@ -1,0 +1,31 @@
+The memory card /tmp/naruto-um-private-43216712846-1/emulator/cards/memory-card-template.mcd doesn't exist - creating it
+The memory card /tmp/naruto-um-private-43216712846-1/emulator/card-warmup-home/.config/pcsx-redux/memcard2.mcd doesn't exist - creating it
+Audio: driver dummy, 44100 Hz, 441 frames per period
+Loaded CD Image: /tmp/naruto-um-private-43216712846-1/input/game-run.cueError parsing Cue File: cuesheet references a file that can't be found[+toc].
+Track 01 (CDDA) - Start 00:00:00, Length 00:00:00
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+CPU type: Interpreted
+Loaded BIOS: /tmp/naruto-um-private-43216712846-1/input/scph7502.bin
+Known BIOS detected: SCPH-7502 (EU) (318178bf)
+BIOS Trace1: 0x0f
+BIOS Trace1: 0x0e
+BIOS Trace1: 0x01
+BIOS Trace1: 0x02
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x01
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x05
+BIOS Trace1: 0x06
+BIOS Trace1: 0x02
+BIOS Trace1: 0x05
+
+PS-X Realtime Kernel Ver.2.5
+Copyright 1993,1994 (C) Sony Computer Entertainment Inc. 
+BIOS Trace1: 0x06
+KERNEL SETUP!
+
+Configuration : EvCB	0x10		TCB	0x04
+BIOS Trace1: 0x07
