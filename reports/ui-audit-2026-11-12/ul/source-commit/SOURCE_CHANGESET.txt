@@ -1,0 +1,36 @@
+UL0-UL2 SOURCE CHANGESET
+REPOSITORY=zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+BRANCH=main
+PARENT_BASELINE_INCLUSIVE=abd084c4157f75f356a3867bbd68e49dbc3850d8
+SCOPE=additive new files only; do not modify or delete existing tracked files.
+
+FILES TO ADD:
+.github/workflows/ul0-ul1-readonly.yml
+tools/stage1/RunUL0.py
+tools/stage1/RunUL1.py
+tools/stage1/RunUL2.py
+reports/ui-audit-2026-11-12/ul/local-prepush/LOCAL_PREPUSH_CHECKS.txt
+reports/ui-audit-2026-11-12/ul/source-commit/SOURCE_CHANGESET.txt
+
+WORKFLOW
+- triggers: push on its own path and the three new RunUL*.py files; workflow_dispatch also enabled.
+- preflight runs first and records each checker separately.
+- audit checks that its checkout/source SHA equals the exact triggering github.sha.
+- audit runs UL0 static scan; UL1 runs no more than two NO_INPUT frame-1-only processes; UL2 records baseline-inclusive Git and all paginated Actions runs/jobs with IDs > 43145985922, including scheduled monitors.
+- Actions output commit is text-only.
+
+LOCAL CHECKS
+PY_COMPILE=PASS
+PYFLAKES_PIP=NOT_RUN (pip package index DNS failure; no apt use)
+YAML_PARSE=PASS
+ACTIONLINT_RELEASE_BINARY=NOT_RUN (GitHub release download DNS failure)
+UL0_SELF_TEST=PASS
+UL1_SELF_TEST=PASS
+UL2_SELF_TEST=PASS
+LOCAL_EMULATOR_LAUNCHES=0
+
+UL1 CARD LIMITATION
+The specified 128 KiB Memory Card is created by PCSX on the first process's initial no-input boot frames. That process hashes the file and sets mode 0444 before checkpoint load and the frame-1 snapshot. Since the file does not exist before that first process, the log distinguishes NOT_CREATED_BEFORE_FIRST_PROCESS from the hash before measurement; it does not fabricate an initial file hash. The second process uses a copy hashed before process start and chmod 0444.
+
+SAFETY
+ROM/EXE/DATA.BIN/BIOS/savestate/Memory Card/RAM dumps and other binary files are not committed. STATUS.md, existing workflows/scripts, releases and tags are not changed.
