@@ -223,17 +223,21 @@ def provenance(ins: list[dict], start: int, end: int, base_reg: int) -> tuple[st
                     val=const(n)
                 elif a and a[0]=="idx" and d["mn"] in ("addiu","addi") and d["simm"]==0:
                     val=a
-        elif d["mn"] == "lw":
-            _,_,disp,rs,_=d["mem"]
+                elif a and a[0] in ("memval","derived"):
+                    val=("derived",a,d["mn"],d["simm"] if d["mn"] in ("addiu","addi") else d["imm"])
+        elif d["mem"] and d["mem"][1]=="R":
+            width,_,disp,rs,_=d["mem"]
             a=resolve(rs,di,depth+1)
-            if a and a[0]=="const" and ((a[1]+disp)&0xFFFFFFFF)==RAM_POINTER:
+            if a and a[0]=="const" and ((a[1]+disp)&0xFFFFFFFF)==RAM_POINTER and d["mn"]=="lw":
                 val=("pointer",RAM_POINTER,"P_FROM_8013EA84")
-            elif d["mn"]=="lw":
-                val=idx(f"LOAD_RESULT_REG_{REGS[r]}",1)
+            elif a and a[0] in ("pointer","record","record_offset","lvbase"):
+                val=("memval",a,disp,width)
         elif d["mn"] in ("sll","srl","sra"):
             a=resolve(d["rt"],di,depth+1)
             if d["mn"]=="sll" and a and a[0]=="idx":
                 val=idx(a[2],a[1]*(1<<d["sh"]))
+            elif a and a[0] in ("memval","derived"):
+                val=("derived",a,d["mn"],d["sh"])
         elif d["mn"] in ("addu","add","or"):
             a=resolve(d["rs"],di,depth+1)
             b=resolve(d["rt"],di,depth+1)
@@ -245,6 +249,14 @@ def provenance(ins: list[dict], start: int, end: int, base_reg: int) -> tuple[st
                 val=("record" if b[1]==STRIDE else "lvbase" if b[1]==2 else "pointer_offset",b[1],b[2])
             elif b and b[0]=="pointer" and a and a[0]=="idx":
                 val=("record" if a[1]==STRIDE else "lvbase" if a[1]==2 else "pointer_offset",a[1],a[2])
+            elif a and a[0]=="record" and b and b[0]=="derived":
+                val=("record_offset",a[1],a[2],"MEMORY_DERIVED_OFFSET")
+            elif b and b[0]=="record" and a and a[0]=="derived":
+                val=("record_offset",b[1],b[2],"MEMORY_DERIVED_OFFSET")
+            elif a and a[0]=="record_offset" and b and b[0]=="derived":
+                val=("record_offset",a[1],a[2],"MULTIPLE_DERIVED_OFFSETS")
+            elif b and b[0]=="record_offset" and a and a[0]=="derived":
+                val=("record_offset",b[1],b[2],"MULTIPLE_DERIVED_OFFSETS")
             elif a and a[0]=="const" and b and b[0]=="idx": val=b
             elif b and b[0]=="const" and a and a[0]=="idx": val=a
         elif d["mn"] == "mflo":
@@ -271,6 +283,8 @@ def provenance(ins: list[dict], start: int, end: int, base_reg: int) -> tuple[st
         return "TERBUKTI","EA84_POINTER","basis berasal dari lw pada alamat 0x8013EA84; tanpa skala record",chain
     if value and value[0]=="record":
         return "TERBUKTI","RECORD_BASE_INDEX_X_0x124",f"EA84 pointer + index*0x124; sumber indeks={value[2]}",chain
+    if value and value[0]=="record_offset":
+        return "TERBUKTI","RECORD_BASE_INDEX_X_0x124_PLUS_MEMORY_OFFSET",f"EA84 pointer + index*0x124 + derived value from record memory; offset meaning TIDAK TAHU; sumber indeks={value[2]}",chain
     if value and value[0]=="lvbase":
         return "TERBUKTI","LV_BASE_INDEX_X_2",f"EA84 pointer + index*2; sumber indeks={value[2]}",chain
     return "TAK TERSELESAIKAN","TIDAK TAHU","def-chain mundur 128 instruksi/awal fungsi tidak membuktikan basis EA84 dan skala indeks",chain
@@ -305,7 +319,6 @@ def scan_region(blob: bytes, region: str, base_pc: int, base_off: int):
         if base==29: reason.append("BASIS_SP")
         if disp & 1: reason.append("DISPLACEMENT_GANJIL")
         if func is None: reason.append("AWAL_FUNGSI_TIDAK_TERBUKTI")
-        elif i-func>128: reason.append("LEBIH_DARI_128_INSTRUKSI_DARI_AWAL_FUNGSI")
         chain=[]
         status="TAK TERSELESAIKAN"; basis="TIDAK TAHU"; expr=""; chain_text=""
         func_start_pc=f"0x{base_pc+4*func:08X}" if func is not None else ""
@@ -349,7 +362,7 @@ def forward_sites(ins: list[dict], starts: list[int], blob: bytes, region: str,
             summaries.append({"site_id":site_id,"pc":f"0x{pc:08X}","status":"TAK TERSELESAIKAN","reason":"byte/instruksi bukan pembaca +0x10 yang diharapkan"})
             continue
         taint={d0["mem"][4]}; start=nearest_func(starts,i)
-        stop=min(len(ins),i+64)
+        stop=min(len(ins),i+65)
         end_reason="BATAS_64_INSTRUKSI"
         if start is not None:
             ret_end=next((x+1 for x in range(i,len(ins)) if ins[x]["mn"]=="jr" and ins[x]["rs"]==31),len(ins))
@@ -358,7 +371,8 @@ def forward_sites(ins: list[dict], starts: list[int], blob: bytes, region: str,
             stop=min(stop,func_end)
             if stop==func_end: end_reason="AKHIR_FUNGSI_JR_RA"
         used=[]
-        for j in range(i,stop):
+        trace_start=len(rows)
+        for j in range(i+1,stop):
             d=ins[j]; raw=blob[j*4:j*4+4]
             before=set(taint); used_regs=set(d["reads"]) & before
             cls="TIDAK_MENGGUNAKAN_NILAI"; detail=""
@@ -396,7 +410,7 @@ def forward_sites(ins: list[dict], starts: list[int], blob: bytes, region: str,
             if d["mn"]=="jr" and d["rs"]==31:
                 end_reason="AKHIR_FUNGSI_JR_RA"; break
         summaries.append({"site_id":site_id,"pc":f"0x{pc:08X}",
-            "status":"TERTELUSURI" if rows else "TAK TERSELESAIKAN",
+            "status":"TERTELUSURI" if len(rows)>trace_start else "TAK TERSELESAIKAN",
             "decoded_instructions":len(used),"terminal_reason":end_reason,
             "destinations":";".join(sorted(set(x for x in used if x!="TIDAK_MENGGUNAKAN_NILAI"))) or "TIDAK TERLIHAT"})
     return rows,summaries
@@ -412,7 +426,30 @@ def self_test():
     d=decode(word.to_bytes(4,"little"),pc)
     assert d["mn"]=="beq" and d["target"]==(pc-4)
     assert decode(bytes.fromhex("10 00 42 84"),0x80010000)["text"]=="lh $v0,16($v0)"
-    print("UO0_SELF_TEST=PASS branch targets, little-endian MIPS and lh/lhu")
+    def rword(rs,rt,rd,sh,fn):
+        return (rs<<21)|(rt<<16)|(rd<<11)|(sh<<6)|fn
+    def iword(op,rs,rt,imm):
+        return (op<<26)|(rs<<21)|(rt<<16)|(imm & 0xFFFF)
+    words=[
+      iword(0x0F,0,2,0x8014),                 # lui v0,0x8014
+      iword(0x23,2,3,-5500),                 # lw v1,-5500(v0) -> *(0x8013EA84)
+      rword(0,4,2,3,0),                      # sll v0,a0,3
+      rword(2,4,2,0,33),                     # addu v0,v0,a0
+      rword(0,2,2,3,0),                      # sll v0,v0,3
+      rword(2,4,2,0,33),                     # addu v0,v0,a0
+      rword(0,2,2,2,0),                      # sll v0,v0,2 => index*0x124
+      rword(2,3,2,0,33),                     # addu v0,v0,v1 => record base
+      iword(0x25,2,3,32),                    # lhu v1,32(v0)
+      rword(0,3,3,7,2),                      # srl v1,v1,7
+      iword(0x0C,3,3,0x1E),                  # andi v1,v1,0x1e
+      rword(2,3,2,0,33),                     # addu v0,v0,v1
+      iword(0x25,2,2,16),                    # lhu v0,16(v0)
+    ]
+    synthetic=[decode((w & 0xFFFFFFFF).to_bytes(4,"little"),0x800B7700+4*i)
+               for i,w in enumerate(words)]
+    st,basis,detail,_=provenance(synthetic,0,len(synthetic)-1,2)
+    assert st=="TERBUKTI" and basis=="RECORD_BASE_INDEX_X_0x124_PLUS_MEMORY_OFFSET", (st,basis,detail)
+    print("UO0_SELF_TEST=PASS branch targets, byte decode and EA84/index*0x124 derived-memory def-chain")
 
 def main() -> int:
     ap=argparse.ArgumentParser()

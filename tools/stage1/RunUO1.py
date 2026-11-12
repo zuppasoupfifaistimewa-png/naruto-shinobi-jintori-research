@@ -276,8 +276,10 @@ def read_static_readers(path: Path):
         for r in csv.DictReader(f,delimiter="\t"):
             if r.get("region")!="ENTRY1": continue
             disp=int(r["displacement"],16) if r["displacement"].lower().startswith("0x") else int(r["displacement"],10)
-            pc=int(r["pc"],16)
             name=r["base_register"]
+            if name=="$sp" or (disp & 1) or r.get("status")=="DIKECUALIKAN":
+                continue
+            pc=int(r["pc"],16)
             ri=REGS.index(name[1:]) if name.startswith("$") and name[1:] in REGS else -1
             readers[pc]=(ri,disp,name)
     return readers
@@ -330,12 +332,14 @@ end'''
     lua=lua.replace(old,new)
     lua=lua.replace('local function arm_read()\n local failed=false',
       'local function arm_read()\n if MODE=="EXEC_FALLBACK" then log("UO1_READ_BP_REGISTERED=NO launch="..LAUNCH.." reason=probe_read_breakpoint_unavailable"); arm_exec(); return end\n local okw=build_watches()\n if not okw then log("UO1_POINTER_OR_WATCH_RANGE_INVALID=YES launch="..LAUNCH); log("UO1_READ_BP_REGISTERED=NO launch="..LAUNCH.." reason=invalid_runtime_P_or_watch_range"); arm_exec(); MODE="EXEC_FALLBACK"; return end\n local failed=false')
+    lua_path=d/"uo1-breakpoints.lua"
+    lua_path.write_text(lua,encoding="utf-8")
     stdout=d/"emulator.stdout.txt"; home=d/"home"
     before_state=sha(state); before_source=sha(source); before_card=sha(card)
     start="STAGE_START\t"+name+"\tframes="+str(frames)+"\tindices="+",".join(str(x) for x in indexes)+"\n"
     with (out/"UO1_STAGE_MARKERS.txt").open("a",encoding="utf-8") as f: f.write(start); f.flush()
     (out/f"UO1_STAGE_START_{name}.txt").write_text(start,encoding="utf-8")
-    rc,wall=run_emulator(pcsx,appdir,bios,cue,card,state,lua,home,stdout,timeout_s)
+    rc,wall=run_emulator(pcsx,appdir,bios,cue,card,state,lua_path,home,stdout,timeout_s)
     textlog=stdout.read_text(encoding="utf-8",errors="replace") if stdout.exists() else ""
     pcx=stdout.with_suffix(".pcsx.log")
     if pcx.exists(): textlog += "\n"+pcx.read_text(encoding="utf-8",errors="replace")
@@ -429,7 +433,8 @@ def main() -> int:
     # Probe first: one populated record, nine halfword read breakpoints, 60 post-load frames.
     probe_row,probe_events,_probe_log=launch_stage("PROBE_READ_BP",60,(1,),False,source,template,
       work,out,a.pcsx_bin,a.appdir,a.bios,a.cue,readers,exec_sites,a.timeout_seconds)
-    read_supported=probe_row["read_bp_registered"]=="YES"
+    read_supported=(probe_row["read_bp_registered"]=="YES" and
+                    any(e["event_type"]=="READ" for e in probe_events))
     # Exactly two separately marked no-input measured launches follow the probe.
     launch_rows=[]; all_events=list(probe_events)
     for name in ("MEASURE_1","MEASURE_2"):
@@ -456,7 +461,7 @@ def main() -> int:
     sig=lambda es: sorted((e["mode"],e["frame"],e["pc"],e["address"],e["field_offset"],
                            e["record_index"],e["base_register"],e["base_value"],e["value_read"]) for e in es)
     complete=all(r["status"]=="PASS" for r in launch_rows)
-    identical=complete and sig(m1)==sig(m2)
+    identical=complete and bool(m1) and bool(m2) and sig(m1)==sig(m2)
     k5="K5" if identical else ("K2" if m1 or m2 else "K0")
     compare=[]
     compare.append({"metric":"READ_BREAKPOINT_API_PROBE_REGISTERED","probe":probe_row["read_bp_registered"],
@@ -491,6 +496,8 @@ def main() -> int:
       f"CARD_WARMUP_EXIT_CODE={warm_rc}",
       f"CARD_WARMUP_WALL_SECONDS={warm_wall:.3f}",
       f"PROBE_READ_BP_REGISTERED={probe_row['read_bp_registered']}",
+      "PROBE_READ_BP_CONFIRMATION="+("CONFIRMED_BY_HIT" if any(e["event_type"]=="READ" for e in probe_events) else "INCONCLUSIVE_NO_HITS_OR_REGISTRATION_FAILED"),
+      "PROBE_NO_HITS_POLICY=use EXEC_FALLBACK; API registration alone does not confirm READ breakpoint support",
       "PROBE_FRAMES=60",f"PROBE_EVENT_HITS={len(probe_events)}",
       f"MEASURE_FRAMES={a.frames}",
       "NONTRIVIAL_RECORD_INDICES="+",".join(str(i) for i in NONTRIVIAL),
