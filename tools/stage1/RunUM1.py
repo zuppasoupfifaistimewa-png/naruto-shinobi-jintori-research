@@ -245,7 +245,7 @@ _G.um1Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
   PCSX.nextTick(function() PCSX.quit(snapshot_done and 0 or 54) end)
  end
 end)
-log("UM1_SCRIPT_READY launch="..LAUNCH.." frame1_snapshot=YES runtime_window_frames=900 UM0_breakpoint_monitor=YES input=NO")
+log("UM1_SCRIPT_READY launch="..LAUNCH.." frame1_snapshot=YES runtime_window_frames=900 UM0_breakpoint_monitor=YES input_condition=CIRCLE")
 '''.lstrip()
 
 
