@@ -1,0 +1,182 @@
+UK0 / UK1 — HASIL REUSE ARTEFAK, HITUNGAN ULANG, DAN BATAS FINAL
+Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Baseline kerja UK: b54ff5d5e52d5196459ea190a5322d8746b96eb1
+HEAD sumber pemeriksaan: c2985937ded60afeee72fd1bf77a694433dff49f
+Tanggal: 2026-11-12 (WIB)
+
+STATUS YANG JUJUR
+UK0: SEBAGIAN. Bukti statis kuat terbatas untuk sejumlah akses +0x00, +0x1A, +0x20. Full scan dan census yang diminta UK0 belum selesai.
+UK1: SEBAGIAN. Snapshot frame-1 lama pada dua launch NO_INPUT dapat dipakai ulang untuk tujuh scalar dan lima field terpilih pada 24 record A; seluruh 127 pasangan terpilih identik. Tidak ada pengambilan seluruh 292 byte per record sesuai spesifikasi UK1. Jadi UK1 belum tuntas.
+Tidak ada emulator dijalankan pada sesi ini. Tidak ada Actions run baru.
+
+UK0 — PEMERIKSAAN ULANG STATIC CENSUS YANG ADA
+
+A. Linear MIPS field-candidate census lama
+File: reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UI1_MIPS_FIELD_CENSUS.tsv
+Blob SHA: 062936173a28d02742a8f3b00183f39a44c6b33d
+Total baris data: 2.829
+- EXE: 1.060
+- Entry 0: 429
+- Entry 1: 1.340
+
+Census ini hanya mengambil instruksi MIPS aligned yang immediate load/store literalnya termasuk daftar sempit berikut:
+- load LB/LBU/LH/LHU/LW dengan displacement +0x1A, +0x1C, +0x1E;
+- store SB/SH/SW dengan displacement +0x1A, +0x1C, +0x1E, +0x20.
+Ia bukan pencarian semua offset +0x00..+0x123, tidak melacak seluruh asal base register, dan tidak membuktikan membership fungsi/branch reachability. Maka STATUS=TUNTAS milik census lama hanya untuk filter kandidat opcode tersebut, bukan UK0.
+
+Jumlah kandidat pada ketiga region:
+field  | jumlah | rincian operasi
++0x1A | 234 | sh=153, lhu=34, lh=16, lbu=21, sb=10
++0x1C | 1.521 | sh=162, lhu=25, lw=585, sw=665, sb=46, lbu=12, lh=26
++0x1E | 255 | sh=86, lhu=17, lbu=20, sb=113, lh=19
++0x20 | 819 | sw=617, sh=174, sb=28
+
+Angka di atas adalah kandidat immediate mentah dari EXE + Entry 0 + Entry 1, bukan akses yang sudah dipastikan menunjuk record tile.
+
+B. Writer audit yang telah ditelusuri asal pointer
+File: reports/stage1_economy/uh-audit-2026-11-11/UH1_TILE_WRITER_AUDIT.tsv
+Blob SHA: 757f24b9062cfb122e7f598228c1c2215f4b075b
+Total: 307 writer candidates (EXE=94, Entry 1=213).
+
+field | jumlah kandidat | base alias EA84 | stride 0x124 proven | catatan
++0x1A | 133 | 2 | 2 | kedua writer stride-YES adalah table-loader di FUN_800F7ADC, bukan upgrade
++0x1C | 42 | 0 | 0 | 18 unresolved non-stack; 24 stack local
++0x1E | 90 | 0 | 0 | 18 unresolved non-stack; 72 stack local
++0x20 | 42 | 42 | 1 | 41 alias EA84 tanpa per-PC stride trace; 1 exact stride proof di 0x800D5A1C
+
+Untuk +0x1C, semua 42 baris ditandai base_alias_proven=NO dan stride_0x124_proven=NO. Untuk +0x1E, semua 90 baris juga NO/NO. Ini bukan bukti tidak ada writer lain atau tidak ada jalur pointer alternatif; hanya klasifikasi baris dalam tabel audit tersebut.
+
+C. Bukti stride 0x124 yang tetap tervalidasi
+Arithmetic:
+8i+i=9i
+9i<<3=72i
+72i+i=73i
+73i<<2=292i=0x124i
+
+Contoh exact writer +0x20, PC 0x800D5A1C, fungsi FUN_800D15A8:
+0x800D5A00 C0 10 03 00  sll $v0,$v1,3
+0x800D5A04 21 10 43 00  addu $v0,$v0,$v1
+0x800D5A08 C0 10 02 00  sll $v0,$v0,3
+0x800D5A0C 21 10 43 00  addu $v0,$v0,$v1
+0x800D5A10 80 10 02 00  sll $v0,$v0,2
+0x800D5A14 21 10 44 00  addu $v0,$v0,$a0
+0x800D5A18 20 F0 03 34  ori $v1,$zero,0xF020
+0x800D5A1C 20 00 43 A4  sh $v1,0x20($v0)
+
++0x00: DW3 existing evidence has 237 reader candidates; 224/237 stored traces contain the full ordered chain and EA84 slot load. The other 13 traces do not expose complete order; they are not counted as misses. Twelve writer candidates all show the chain. This is a bounded def-chain report, not a global all-binary census.
++0x1A: DX1 existing evidence has 13 EA84-origin candidates (11 reads, 2 writes). The two stores at 0x800F7D9C and 0x800F7DB0 are table-loader stores and are not upgrade proof.
++0x20: DX3 reports three EA84-origin reads at 0x800EB534, 0x800EBB2C, and 0x800EC200, plus the writer above.
++0x1C/+0x1E: no EA84 + 292*i writer is established by the currently inspected UH1 table. Reader census and alternative pointer chains are not exhaustive.
+
+D. UK0 remaining work (not silently waived)
+Still missing:
+1. Full sequential scan of all EXE text and Entry 1 bytes for the exact pointer-slot/stride idiom, plus explicit list of hits and non-hits.
+2. For each candidate, backward pointer provenance and forward instruction walk (maximum 24 instructions or until base overwrite).
+3. A complete all-offset 0x00..0x123 load/store table, not just immediate-field filters.
+4. Contiguous instruction windows for confirmed readers and writers at +0x00, +0x1A, +0x1C, +0x1E, +0x20.
+5. Separate proven hits vs unresolved/non-matching candidates, without treating absence of an exact idiom as proof of no access.
+The old census script does not implement those requirements. In this task scope, only report files may be added; old workflow/code may not be altered. The available GitHub tool integration has no workflow_dispatch, and there is no local ROM/EXE/DATA.BIN file available for a complete local re-scan. Therefore UK0 remains SEBAGIAN, not TUNTAS.
+
+UK1 — REUSE OF THE HISTORICAL FRAME-1 ROWS
+
+A. Original run identity (not a new UK1 run)
+Historical Actions run: 43144307299
+Job: uj0-uj2-audit
+Job ID: 130938585082
+Source SHA: e0ad8bf89ca43dda6b84272382ab468f0bdb28ef
+Run/job status: SUCCESS
+Exit code: 0
+Checkpoint artifact run: 39907655833
+Checkpoint SHA-256 before=after:
+705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
+Memory Card SHA-256 before=after:
+78b6d4ac9ab4d23caf7e5f04f83539bf5d994cccfb0a709d14ac53d05c8e21ef
+Memory Card bytes: 131072; mode 0444 in both measured launches.
+Two NO_INPUT launches completed, each 900 post-load frames, emulator exit 0. There was one 12-frame Memory Card bootstrap before measured launches. No game-memory write, write-watchpoint, or input override was used.
+The measured run captured frame 1 AND frame 900, both bases A and B, and only five fields (+00 u8, +1A u16, +1C u16, +1E u16, +20 u16), not all 292 bytes. It is therefore reuse evidence for a subset, not a conforming UK1 run.
+
+B. Frame-1 selected subset coverage
+Source: reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_VALUES.tsv
+Blob SHA: ba5bfcf160b975e1d72f725ac50f6876b0055070
+Original raw file has 1.788 value rows across two launches and two frames.
+At frame 1, selected A records are A:0..A:21 plus A:22 and A:43 (24 records).
+For each launch there are 127 selected key-values:
+- 7 scalars;
+- 24 records x 5 selected fields = 120.
+Across the two launches, all 127 same-frame pairs have identical address and value. This is a repeatability result for this subset only.
+
+Frame-1 scalar values (same in both launches):
+P / 0x8013EA84 = 0x8013B818
+index_8013EB20 = 0x00000000
+value_8013EAB0 = 0x801F0510
+value_8013EA8A = 0x0000
+value_8013EA74 = 0x801EFBB8
+state_80139F03 = 0x00
+counter_80139EC2 = 0x0000
+
+C. Per-offset variation over A:0..A:21 (frame 1, one launch; the paired second launch was identical)
+offset | distinct values | frequencies
++0x00 | 5 | 00:1, 04:15, 05:2, 02:2, 01:2
++0x1A | 6 | 0000:5, 0032:4, 0064:7, 0078:1, 0096:4, 00C8:1
++0x1C | 6 | 0000:5, 0023:4, 0046:7, 0054:1, 0069:4, 008C:1
++0x1E | 9 | 0000:5, 002A:1, 0046:3, 0054:4, 0070:1, 0062:3, 008C:2, 009A:2, 00B6:1
++0x20 | 3 | F020:20, 1020:1, 0020:1
+These are observed raw field values at selected addresses. The 16-bit values at +0x1A/+0x1C/+0x1E/+0x20 are not a per-byte dump of record memory.
+
+D. X and LV lookup using the exact existing table only
+Source table:
+reports/stage1_economy/DN1_DK1_X_LV_TABLE_2026-11-05.tsv
+Blob SHA: 699ec8fff39def5fd18ae8f5bb76f1e438439659
+Rule requested: X=2*(+0x1A). No interpolation; report not in table when X absent.
+
+record | +00 | +1A | X | +1C | +1E | +20 | LV1 | LV2 | LV3 | LV4 | LV5
+A:0  | 00 | 0000 | 0   | 0000 | 0000 | F020 | 0 | 0 | 0 | 0 | 0
+A:1  | 04 | 0032 | 100 | 0023 | 002A | F020 | 50 | 110 | 220 | 440 | 880
+A:2  | 04 | 0032 | 100 | 0023 | 0046 | F020 | 50 | 110 | 220 | 440 | 880
+A:3  | 04 | 0032 | 100 | 0023 | 0046 | F020 | 50 | 110 | 220 | 440 | 880
+A:4  | 05 | 0064 | 200 | 0046 | 0054 | 1020 | 100 | 220 | 440 | 880 | 1760
+A:5  | 02 | 0000 | 0   | 0000 | 0000 | F020 | 0 | 0 | 0 | 0 | 0
+A:6  | 04 | 0064 | 200 | 0046 | 0054 | F020 | 100 | 220 | 440 | 880 | 1760
+A:7  | 04 | 0078 | 240 | 0054 | 0070 | F020 | 120 | 270 | 530 | 1050 | 2120
+A:8  | 04 | 0064 | 200 | 0046 | 0062 | F020 | 100 | 220 | 440 | 880 | 1760
+A:9  | 04 | 0064 | 200 | 0046 | 0062 | F020 | 100 | 220 | 440 | 880 | 1760
+A:10 | 04 | 0064 | 200 | 0046 | 0054 | F020 | 100 | 220 | 440 | 880 | 1760
+A:11 | 01 | 0000 | 0   | 0000 | 0000 | F020 | 0 | 0 | 0 | 0 | 0
+A:12 | 04 | 0096 | 300 | 0069 | 008C | F020 | 150 | 330 | 660 | 1320 | 2640
+A:13 | 04 | 0096 | 300 | 0069 | 009A | F020 | 150 | 330 | 660 | 1320 | 2640
+A:14 | 04 | 00C8 | 400 | 008C | 00B6 | F020 | TIDAK ADA | TIDAK ADA | TIDAK ADA | TIDAK ADA | TIDAK ADA
+A:15 | 04 | 0096 | 300 | 0069 | 009A | F020 | 150 | 330 | 660 | 1320 | 2640
+A:16 | 04 | 0096 | 300 | 0069 | 008C | F020 | 150 | 330 | 660 | 1320 | 2640
+A:17 | 01 | 0000 | 0   | 0000 | 0000 | F020 | 0 | 0 | 0 | 0 | 0
+A:18 | 02 | 0000 | 0   | 0000 | 0000 | F020 | 0 | 0 | 0 | 0 | 0
+A:19 | 04 | 0064 | 200 | 0046 | 0062 | F020 | 100 | 220 | 440 | 880 | 1760
+A:20 | 05 | 0064 | 200 | 0046 | 0054 | 0020 | 100 | 220 | 440 | 880 | 1760
+A:21 | 04 | 0032 | 100 | 0023 | 0046 | F020 | 50 | 110 | 220 | 440 | 880
+A:22 | 00 | 0000 | 0   | 0000 | 0000 | 0000 | 0 | 0 | 0 | 0 | 0
+A:43 | 00 | 0000 | 0   | 0000 | 0000 | 0000 | 0 | 0 | 0 | 0 | 0
+
+Unique X values across these 24 records: 0, 100, 200, 240, 300, 400.
+X=0,100,200,240,300 exist in the table. X=400 does not. LV values above are table lookups, not newly observed in-game values.
+
+E. UK1 remaining work (not silently waived)
+The required UK1 output is every byte from offset +0x00 through +0x123 for each A record A:0..A:21, A:22, A:43 plus scalars, at frame 1 only, two NO_INPUT launches, with before/after checkpoint and Card hashes, and required preflight results.
+The historical run is not a compliant substitute because it:
+- sampled both frame 1 and 900, not frame 1 only;
+- sampled A and B, not only the specified A records;
+- sampled five fields only, not all 292 bytes per record;
+- performed the 12-frame setup bootstrap.
+The existing old workflows are not dispatchable and trigger only on code/workflow paths, not this report-only path. Available GitHub integration has no workflow_dispatch action. Starting an incompatible old workflow would waste Actions minutes and would not produce conforming UK1. Thus UK1 is SEBAGIAN from reused historical frame-1 rows, not TUNTAS.
+
+SOURCE PATHS AND BLOB IDENTITIES
+- reports/stage1_economy/uh-audit-2026-11-11/UH1_TILE_WRITER_AUDIT.tsv — 757f24b9062cfb122e7f598228c1c2215f4b075b
+- reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UI1_MIPS_FIELD_CENSUS.tsv — 062936173a28d02742a8f3b00183f39a44c6b33d
+- reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_VALUES.tsv — ba5bfcf160b975e1d72f725ac50f6876b0055070
+- reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_LAUNCHES.tsv — 0ee65d6758ade571161a79a71961d08be4316a48
+- reports/stage1_economy/DN1_DK1_X_LV_TABLE_2026-11-05.tsv — 699ec8fff39def5fd18ae8f5bb76f1e438439659
+- reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_EXISTING_EVIDENCE_ADDENDUM.txt — 6f2abf7577a280e836e1a64a64fe353c5ddcf4c0
+
+BERKAS YANG DITAMBAHKAN OLEH PUBLIKASI INI
+- reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_REUSE_RESULTS_2026-11-12.txt
+
+KESIMPULAN
+Temuan yang dapat dipulihkan telah dihitung dan dicatat. UK0 masih SEBAGIAN karena full instruction/access census belum pernah dijalankan. UK1 masih SEBAGIAN karena run lama tidak merekam seluruh bytes yang diwajibkan. Mengklaim UK0 atau UK1 TUNTAS saat dua keluaran utama itu belum ada akan salah secara evidensial.
