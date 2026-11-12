@@ -1,0 +1,3 @@
+tools/stage1/RunUP0.py:235:38: undefined name 'width'
+tools/stage1/RunUP0.py:904:15: undefined name 'out'
+tools/stage1/RunUP0.py:905:15: undefined name 'out'

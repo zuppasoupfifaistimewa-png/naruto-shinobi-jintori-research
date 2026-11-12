@@ -1,0 +1,1 @@
+UP1_SELF_TEST=PASS 88/300/600 markers, 24 fields, checkpoint hash and event parser
