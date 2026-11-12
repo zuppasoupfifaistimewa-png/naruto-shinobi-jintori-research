@@ -96,7 +96,7 @@ def classify_source(ins: list[dict], store_i: int, store: dict, store_off: int) 
             def_i = j
             break
     if def_i is None:
-        return "TAK_TERSELESAIKAN", f"no reaching definition for $\{REGS[src]} within {store_i-lo} prior instructions", None
+        return "TAK_TERSELESAIKAN", f"no reaching definition for ${REGS[src]} within {store_i-lo} prior instructions", None
     d = ins[def_i]
     is_imm, imm_ev = immediate_source(ins, def_i, src)
     if is_imm:
@@ -114,7 +114,7 @@ def classify_source(ins: list[dict], store_i: int, store: dict, store_off: int) 
                     if qrs == srs and read_simm == write_simm and read_simm == store_off:
                         sign = f"+0x{const:X}" if const >= 0 else f"-0x{-const:X}"
                         return "RMW_OFFSET_SAMA_PLUS_KONSTANTA", f"load/store same base+0x{store_off:X}; ADDIU {sign}", j
-                    return "BACA_OFFSET_LAIN", f"load base=$\{REGS[qrs]} offset=0x{read_simm & 0xFFFFFFFF:X}; store offset=0x{store_off:X}", j
+                    return "BACA_OFFSET_LAIN", f"load base=${REGS[qrs]} offset=0x{read_simm & 0xFFFFFFFF:X}; store offset=0x{store_off:X}", j
                 break
     if is_read(d):
         _, _, imm, rs, rt = d["mem"]
@@ -122,7 +122,7 @@ def classify_source(ins: list[dict], store_i: int, store: dict, store_off: int) 
         _, _, store_imm, store_rs, _ = store["mem"]
         store_simm = store_imm if store_imm < 0x8000 else store_imm - 0x10000
         if rs != store_rs or read_off != store_simm:
-            return "BACA_OFFSET_LAIN", f"direct load from base=$\{REGS[rs]} offset=0x{read_off & 0xFFFFFFFF:X}", def_i
+            return "BACA_OFFSET_LAIN", f"direct load from base=${REGS[rs]} offset=0x{read_off & 0xFFFFFFFF:X}", def_i
         return "TAK_TERSELESAIKAN", "same-offset load found but no proven constant update", def_i
     return "TAK_TERSELESAIKAN", f"reaching definition {d['text']} not safely classifiable", def_i
 
