@@ -1,0 +1,56 @@
+UJ0 / UJ1 / UJ2 FINAL REPORT
+Repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Baseline inclusive: d2c57a796215696dc91be91fb18f36907fa5203c
+Ledger HEAD before this publication: d7838e0332d61a76335381dfe0ca7687fd10e33a
+
+STATUS
+UJ0 header + 307-row raw reconciliation: TUNTAS (K4).
+UJ0c record-address semantics: SEBAGIAN (K4 direct bytes/arithmetic; K0/TIDAK TAHU for unresolved EB20-index semantics and +0x48).
+UJ1 read-only dual-basis snapshot: TUNTAS (K5 repeatability).
+UJ2 ledger: TUNTAS through d7838e0332d61a76335381dfe0ca7687fd10e33a inclusive (K4). Publication commit is separate to avoid self-reference.
+
+UJ0 — PS-X EXE
+EXE size=385024; SHA256=a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569.
+pc0=0x80011448 (header +0x10); t_addr=0x80010000 (+0x18); t_size=0x0005D800 (+0x1C).
+Text file range=0x800..0x5DFFF.
+PC -> file offset: 0x800+(PC-0x80010000).
+File offset -> PC: 0x80010000+(file_offset-0x800).
+This is the 0x800-byte PS-X EXE header plus loaded text base; direct header/raw-byte evidence K4.
+
+UJ0 — UH1 307 rows
+MATCH=265; SHIFTED(-0x800)=42; SHIFTED(+0x800)=0; NONE=0. Every row includes bytes 4B, decode and status in UJ0_UH1_RECONCILE.tsv.
+42 EXE +0x1A PCs shifted by -0x800:
+0x80011E48, 0x80018328, 0x8001AFA4, 0x8001AFF4, 0x8001B418, 0x8001BC44, 0x8001C188, 0x8001C484, 0x8001E994, 0x8001E998, 0x8001EA68, 0x80023654, 0x80023788, 0x800239BC, 0x80023EE8, 0x80023FD0, 0x80024284, 0x80024630, 0x80024F38, 0x80025078, 0x80025178, 0x8002520C, 0x80025228, 0x8002579C, 0x80025CD8, 0x8002C8D8, 0x80031E8C, 0x80032FFC, 0x80033148, 0x80033420, 0x8003EED4, 0x800438C8, 0x80045F64, 0x80046374, 0x8004BD34, 0x8004C338, 0x8004C4EC, 0x8004D378, 0x8004DC1C, 0x8004EFE4, 0x80050B78, 0x80051C48.
+DX1 PC-relative code offset is PC-t_addr; raw EXE file offset includes +0x800. UI1 reconstructs PC by subtracting 0x800 from raw byte position. Thus 42 matches at PC-0x800 are coordinate conversion, not a second code copy. K4.
+
+UJ0c — pointer/index/stride
+See UJ0_FUNCTION_CONTEXT.txt for exact contiguous bytes/decode.
+- Slot 0x8013EA84 is read via lw after lui 0x8014 and displacement -0x157c; UJ1 runtime P value=0x8013B818.
+- Stride 0x124 is explicitly computed by shifts/adds: 8i+i; then *8; +i; then *4 = 292i. FUN_800D15A8's 0x800D5A00 window uses v1 as index input and a0 as already-established base; it stores 0xF020 at +0x20.
+- FUN_800D15A8 stores helper return v0 into global 0x8013EB20 at 0x800D4958. That does not prove EB20 is the record index. Runtime EB20=0.
+- FUN_800F7ADC's 0x800F7D80..0x800F7DB0 excerpt reads bytes from s1 and writes +0x18/+0x1A relative to a0; no pointer load, stride multiplication, or +0x48 appears there.
+- +0x48 provenance: TIDAK TAHU. experiments/ui0_readonly_snapshot.py hardcodes RECORD_OFF=0x48; cited code does not derive it. UJ1 sampled B anyway as requested, but this does not validate +0x48.
+
+UJ1 — two NO_INPUT launches
+Successful measured run=43144307299; source SHA=e0ad8bf89ca43dda6b84272382ab468f0bdb28ef; job exit=0.
+Two separate NO_INPUT launches, each checkpoint-loaded and 900 post-load frames, emulator exit 0. Snapshot only frame 1 and 900.
+A=P+i*0x124; B=P+i*0x124+0x48; i=0..43; fields +00:u8,+1A:u16,+1C:u16,+1E:u16,+20:u16.
+Each frame snapshot=447 values (7 scalars + 44*2*5); 4 snapshots=1,788 rows. Full raw value table UJ1_VALUES.tsv; comparisons UJ1_COMPARISON.tsv.
+Frame1 scalars (identical in both launches and frame900):
+P/0x8013EA84=0x8013B818; 0x8013EB20=0x00000000; 0x8013EAB0=0x801F0510; 0x8013EA8A=0x0000; 0x8013EA74=0x801EFBB8; 0x80139F03=0x00; 0x80139EC2=0x0000.
+Same-frame launch values identical; frame1 vs 900 changed rows=0. All 1,788 values retained in TSV. K5 repeatability, not proof of field semantics or active record count.
+Memory Card SHA before/after each measured launch=78b6d4ac9ab4d23caf7e5f04f83539bf5d994cccfb0a709d14ac53d05c8e21ef, mode 0444, unchanged. Checkpoint artifact run 39907655833 SHA before/after=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35, unchanged. A 12-frame setup-only Memory Card bootstrap is disclosed; it is not one of the measured 900-frame launches. No input override/write-watchpoint/raw dump.
+
+UJ2 — commit and Actions ledger
+Inclusive baseline d2c57a796215696dc91be91fb18f36907fa5203c.
+Through ledger HEAD d7838e0332d61a76335381dfe0ca7687fd10e33a: 21 commit rows including baseline; 59 file events (--no-renames). Five run IDs total: monitor 43109652913 plus four UJ workflow runs; 9 job rows. Monitor is explicitly included even though it predates baseline timestamp.
+43144169223: preflight failure exit 1; audit skipped, no emulator.
+43144307299: preflight and audit success; the only run with the two measured launches.
+43144355162: preflight success; audit cancelled during checkpoint download; UJ0/UI1 completed but emulator step skipped.
+43144586564: preflight success; audit skipped by exact-SHA guard.
+43109652913: monitor success exit 0.
+py_compile, pyflakes, YAML parse and all four self-tests passed on successful preflight attempts. Actionlint download/check was attempted; no committed pass marker, therefore ACTIONLINT_RESULT=TIDAK TAHU.
+Final ledger files: UJ2_COMMITS.tsv, UJ2_FILE_EVENTS.tsv, UJ2_ACTIONS_RUNS.txt.
+No STATUS.md, Release, old workflow or old experiment file modified. No ROM/BIOS/Memory Card/savestate/dump/EXE/DATA.BIN or other binary committed.
+
+Publication ledger note: the commit that adds this final report folder is listed separately in the chat; ledger tables cover all earlier commits/events through d7838e0332d61a76335381dfe0ca7687fd10e33a inclusive.
