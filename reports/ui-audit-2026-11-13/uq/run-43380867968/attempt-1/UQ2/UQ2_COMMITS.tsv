@@ -1,0 +1,13 @@
+commit_sha	parent_shas	author	date	subject
+f38c005fc7964c37b1e141846e961afb3f62758c	0cc429193a2d2592d0d3cb34fa4adeac27e7dd65	zuppasoupfifaistimewa-png	2026-11-13T13:45:00+07:00	Add replicated safe CROSS cancel runtime probe to UQ1
+0cc429193a2d2592d0d3cb34fa4adeac27e7dd65	f022a8c2c0f9b9da1a980713a7ff1e96e92c2a40	github-actions[bot]	2026-11-13T06:38:08Z	Record UQ0-UQ2 audit results for run 43379889593 [skip ci]
+f022a8c2c0f9b9da1a980713a7ff1e96e92c2a40	ed9854f51103b99fbb340ca7e56f642440cb2c27	zuppasoupfifaistimewa-png	2026-11-13T13:36:30+07:00	Add delay-slot-aware UQ0 caller provenance supplement
+ed9854f51103b99fbb340ca7e56f642440cb2c27	4005352b7f6c0bfbba1aacad6f910375e45bab30	github-actions[bot]	2026-11-13T05:58:22Z	Record UQ0-UQ2 audit results for run 43375258438 [skip ci]
+4005352b7f6c0bfbba1aacad6f910375e45bab30	ee232f8163e5a20c0e1e239fc02f5dd3ed4056a6	zuppasoupfifaistimewa-png	2026-11-13T12:56:13+07:00	Treat two identical empty UQ1 write traces as equal
+ee232f8163e5a20c0e1e239fc02f5dd3ed4056a6	9fe4595ae1bfc7c9043e501708d4a9d3021aceb7	github-actions[bot]	2026-11-13T05:53:48Z	Record UQ0-UQ2 audit results for run 43374818133 [skip ci]
+9fe4595ae1bfc7c9043e501708d4a9d3021aceb7	898bcfed3f781e797592f47e83634ced851f28ef	zuppasoupfifaistimewa-png	2026-11-13T12:52:06+07:00	Create UQ1 warmup working directory before PCSX launch
+898bcfed3f781e797592f47e83634ced851f28ef	b811c670757292bfff63ae083224ef1177104ec4	github-actions[bot]	2026-11-13T05:50:10Z	Record UQ0-UQ2 audit results for run 43374440898 [skip ci]
+b811c670757292bfff63ae083224ef1177104ec4	732ed2a40edf6e9c4e05493b468bb6f886df7261	zuppasoupfifaistimewa-png	2026-11-13T12:48:37+07:00	Fix UQ1 pyflakes preflight warnings
+732ed2a40edf6e9c4e05493b468bb6f886df7261	dd3fe677edf7df73022b8608c761a78b84897259	github-actions[bot]	2026-11-13T05:47:35Z	Record UQ0-UQ2 audit results for run 43374235804 [skip ci]
+dd3fe677edf7df73022b8608c761a78b84897259	e7fd95da69fe8519439fc720ee079409c59e6363	zuppasoupfifaistimewa-png	2026-11-13T12:46:42+07:00	Add UQ0-UQ2 caller, selector and runtime audit
+e7fd95da69fe8519439fc720ee079409c59e6363	aff342ae63a83186bd027ac93213892f43645404	github-actions[bot]	2026-11-13T04:44:22Z	Record UP0-UP2 audit results for run 43367280636 [skip ci]

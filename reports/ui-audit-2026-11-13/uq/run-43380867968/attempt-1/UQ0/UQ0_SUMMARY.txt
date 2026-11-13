@@ -1,0 +1,4 @@
+STATUS=BELUM
+EVIDENCE=K0
+REASON=preflight or private EXE/DATA.BIN/prior UP RMW TSV unavailable
+EXIT_CODE=2
