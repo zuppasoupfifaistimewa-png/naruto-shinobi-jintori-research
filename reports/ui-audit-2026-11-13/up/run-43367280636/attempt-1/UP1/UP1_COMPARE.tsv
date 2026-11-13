@@ -1,0 +1,7 @@
+metric	launch_1	launch_2	same	interpretation
+EVENT_HIT_COUNT	4800	4800	YES	jumlah hit
+EVENT_TRACE_ROW_BY_ROW	4800	4800	YES	seluruh kolom dan urutan hit identik
+PAD_ACTION_TRACE_ROW_BY_ROW	0	0	YES	press/release identik
+STAGE_88	YES	YES	SAME_CHECKPOINT	milestone
+STAGE_300	YES	YES	SAME_CHECKPOINT	milestone
+STAGE_600	YES	YES	SAME_CHECKPOINT	milestone

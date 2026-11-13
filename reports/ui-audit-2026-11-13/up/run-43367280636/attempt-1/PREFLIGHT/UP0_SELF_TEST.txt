@@ -1,0 +1,1 @@
+UP0_SELF_TEST=PASS independent decoder, j/jal delay slots and targets, HI/LO, jr-ra return v0, jal clobber and post-return caller use
