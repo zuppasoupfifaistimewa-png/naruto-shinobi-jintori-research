@@ -1,0 +1,451 @@
+name: UQ0-UQ2 — caller/selector audit, checkpoint write probe and history ledger
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/uq0-uq2-audit.yml"
+      - "tools/stage1/RunUQ0.py"
+      - "tools/stage1/RunUQ1.py"
+      - "tools/stage1/RunUQ2.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-uq0-uq2-audit
+  cancel-in-progress: false
+
+jobs:
+  uq-audit:
+    name: uq-audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      WORK: /tmp/naruto-uq-private-${{ github.run_id }}-${{ github.run_attempt }}
+      OUT: /tmp/naruto-uq-output-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Checkout exact triggering source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify source and prepare output directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p "$WORK/source" "$WORK/disc" "$WORK/input" "$WORK/checkpoint" "$WORK/emulator" "$OUT/PREFLIGHT" "$OUT/UQ0" "$OUT/UQ1" "$OUT/UQ2" "$OUT/ACTIONS"
+          {
+            echo "WORKFLOW_SOURCE_SHA=$GITHUB_SHA"
+            echo "SOURCE_CHECKOUT=PASS"
+            echo "REPOSITORY=$GITHUB_REPOSITORY"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preflight — compile, pyflakes, YAML and self-tests before emulator
+        id: preflight
+        shell: bash
+        run: |
+          set +e
+          mkdir -p "$OUT/PREFLIGHT"
+          report="$OUT/PREFLIGHT/UQ_PREFLIGHT_RESULT.txt"
+          python -m py_compile tools/stage1/RunUQ0.py tools/stage1/RunUQ1.py tools/stage1/RunUQ2.py
+          compile_rc=$?
+          python -m pip install --disable-pip-version-check --no-input pyflakes PyYAML > "$OUT/PREFLIGHT/PIP_INSTALL_LOG.txt" 2>&1
+          pip_rc=$?
+          if [ "$pip_rc" -eq 0 ]; then
+            python -m pyflakes tools/stage1/RunUQ0.py tools/stage1/RunUQ1.py tools/stage1/RunUQ2.py > "$OUT/PREFLIGHT/PYFLAKES_LOG.txt" 2>&1
+            pyflakes_rc=$?
+            python - <<'PY'
+          from pathlib import Path
+          import yaml
+          p = Path(".github/workflows/uq0-uq2-audit.yml")
+          yaml.compose(p.read_text(encoding="utf-8"), Loader=yaml.SafeLoader)
+          print("UQ_WORKFLOW_YAML_PARSE=PASS")
+          PY
+            yaml_rc=$?
+          else
+            pyflakes_rc=2
+            yaml_rc=2
+            echo "PYFLAKES_NOT_RUN_PIP_INSTALL_FAILED" > "$OUT/PREFLIGHT/PYFLAKES_LOG.txt"
+          fi
+          python tools/stage1/RunUQ0.py --self-test > "$OUT/PREFLIGHT/UQ0_SELF_TEST.txt" 2>&1
+          uq0_rc=$?
+          python tools/stage1/RunUQ1.py --self-test > "$OUT/PREFLIGHT/UQ1_SELF_TEST.txt" 2>&1
+          uq1_rc=$?
+          python tools/stage1/RunUQ2.py --self-test > "$OUT/PREFLIGHT/UQ2_SELF_TEST.txt" 2>&1
+          uq2_rc=$?
+          rc=0
+          for code in "$compile_rc" "$pip_rc" "$pyflakes_rc" "$yaml_rc" "$uq0_rc" "$uq1_rc" "$uq2_rc"; do
+            [ "$code" -eq 0 ] || rc=1
+          done
+          if [ "$rc" -eq 0 ]; then status=TUNTAS; else status=BELUM; fi
+          {
+            echo "STATUS=$status"
+            echo "JOB=uq-audit-preflight"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "PY_COMPILE_EXIT_CODE=$compile_rc"
+            echo "PIP_INSTALL_EXIT_CODE=$pip_rc"
+            echo "PYFLAKES_EXIT_CODE=$pyflakes_rc"
+            echo "YAML_PARSE_EXIT_CODE=$yaml_rc"
+            echo "UQ0_SELF_TEST_EXIT_CODE=$uq0_rc"
+            echo "UQ1_SELF_TEST_EXIT_CODE=$uq1_rc"
+            echo "UQ2_SELF_TEST_EXIT_CODE=$uq2_rc"
+            echo "EXIT_CODE=$rc"
+          } > "$report"
+          cat "$report" >> "$GITHUB_STEP_SUMMARY"
+          test -s "$report" || rc=1
+          exit "$rc"
+
+      - name: Install private disc extraction utilities
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bchunk xorriso jq unzip
+          echo "DISC_EXTRACTION_UTILITIES=PASS" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Download and privately extract EXE and DATA.BIN
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://api.github.com/repos/$GITHUB_REPOSITORY"
+          bin="$WORK/source/naruto-disc.bin"
+          cue_raw="$WORK/source/original.cue"
+          cue="$WORK/source/naruto-disc.cue"
+          curl --fail --location --silent --show-error --retry 2 --max-time 600 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/647346873" -o "$bin"
+          test "$(stat -c '%s' "$bin")" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $bin" | sha256sum --check --status
+          curl --fail --location --silent --show-error --retry 2 --max-time 60 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/647354760" -o "$cue_raw"
+          test "$(stat -c '%s' "$cue_raw")" = "116"
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check --status
+          awk '
+            BEGIN { n=0 }
+            /^[[:space:]]*FILE[[:space:]]/ { print "FILE \"naruto-disc.bin\" BINARY"; n++; next }
+            { print }
+            END { if (n != 1) exit 1 }
+          ' "$cue_raw" > "$cue"
+          bchunk "$bin" "$cue" "$WORK/source/track" > "$WORK/source/bchunk.log" 2>&1
+          iso="$(find "$WORK/source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          test -n "$iso"
+          xorriso -osirrox on -indev "$iso" -extract / "$WORK/disc" > "$WORK/disc/xorriso.log" 2>&1
+          exe="$(find "$WORK/disc" -type f -iname 'SLPS_035.53' -print -quit)"
+          data="$(find "$WORK/disc" -type f -iname 'DATA.BIN' -print -quit)"
+          test -n "$exe" && test -n "$data"
+          test "$(stat -c '%s' "$exe")" = "385024"
+          echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $exe" | sha256sum --check --status
+          test "$(stat -c '%s' "$data")" = "66015232"
+          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $data" | sha256sum --check --status
+          cp "$exe" "$WORK/input/SLPS_035.53"
+          cp "$data" "$WORK/input/DATA.BIN"
+          echo "DISC_EXTRACT=PASS; EXE_AND_DATA_BIN_PRIVATE_ONLY=YES" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: UQ0 — static callers, v0 consumers, byte accesses and nibble masks
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          prior="reports/ui-audit-2026-11-13/up/run-43367280636/attempt-1/UP0/UP0_RMW_U16_20.tsv"
+          rc=2
+          if [ -s "$WORK/input/SLPS_035.53" ] && [ -s "$WORK/input/DATA.BIN" ] && [ -s "$prior" ] && grep -q '^STATUS=TUNTAS$' "$OUT/PREFLIGHT/UQ_PREFLIGHT_RESULT.txt" 2>/dev/null; then
+            python tools/stage1/RunUQ0.py --exe "$WORK/input/SLPS_035.53" --data-bin "$WORK/input/DATA.BIN" --prior-rmw-tsv "$prior" --out-dir "$OUT/UQ0" > "$OUT/UQ0_EXECUTION_LOG.txt" 2>&1
+            rc=$?
+          else
+            mkdir -p "$OUT/UQ0"
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=preflight or private EXE/DATA.BIN/prior UP RMW TSV unavailable\nEXIT_CODE=2\n' > "$OUT/UQ0/UQ0_SUMMARY.txt"
+            printf 'UQ0_INPUTS_MISSING_OR_PREFLIGHT_FAILED\n' > "$OUT/UQ0_EXECUTION_LOG.txt"
+          fi
+          echo "$rc" > "$OUT/UQ0_EXIT_CODE.txt"
+          if [ "$rc" -ne 0 ] && [ ! -s "$OUT/UQ0/UQ0_SUMMARY.txt" ]; then
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=UQ0 static analysis failed\nEXIT_CODE=%s\n' "$rc" > "$OUT/UQ0/UQ0_SUMMARY.txt"
+          fi
+          echo "UQ0_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Download exact immutable checkpoint artifact
+        if: success()
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: "39907655833"
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/checkpoint
+
+      - name: Download PCSX-Redux, BIOS and prepare existing private game cue
+        if: success()
+        shell: bash
+        run: |
+          set +e
+          cd "$WORK/source"
+          API="https://api.github.com/repos/$GITHUB_REPOSITORY"
+          curl --fail --silent --show-error --location --max-time 60 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          rc=$?
+          fetch_asset() {
+            name="$1"; dest="$2"; size="$3"; digest="$4"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            test -n "$id" && test "$id" != null || return 1
+            curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$dest" || return 1
+            test "$(stat -c %s "$dest")" = "$size" || return 1
+            echo "$digest  $dest" | sha256sum --check --status || return 1
+          }
+          if [ "$rc" -eq 0 ]; then
+            fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c || rc=2
+          fi
+          if [ "$rc" -eq 0 ]; then
+            fetch_asset scph7502.zip scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a || rc=3
+          fi
+          if [ "$rc" -eq 0 ]; then
+            python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import stat
+          import zipfile
+          with zipfile.ZipFile("scph7502.zip") as archive:
+              members=[]; total=0
+              for item in archive.infolist():
+                  name=Path(item.filename)
+                  mode=(item.external_attr >> 16) & 0xffff
+                  total += item.file_size
+                  if name.is_absolute() or ".." in name.parts or (mode and stat.S_ISLNK(mode)):
+                      raise SystemExit("BIOS_ARCHIVE_UNSAFE_MEMBER")
+                  if item.file_size > 2*1024*1024 or total > 4*1024*1024:
+                      raise SystemExit("BIOS_ARCHIVE_EXPANSION_BOUND")
+                  if not item.is_dir() and item.file_size == 524288:
+                      members.append(item)
+              if len(members) != 1:
+                  raise SystemExit("BIOS_EXPECTED_ONE_512K_MEMBER")
+              bios=archive.read(members[0])
+              if hashlib.sha256(bios).hexdigest() != "5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1":
+                  raise SystemExit("BIOS_SHA256_MISMATCH")
+              Path("scph7502.bin").write_bytes(bios)
+          PY
+            [ "$?" -eq 0 ] || rc=4
+          fi
+          if [ "$rc" -eq 0 ]; then
+            chmod +x pcsx-redux.AppImage
+            ./pcsx-redux.AppImage --appimage-extract > /tmp/uq-appimage-extract.log 2>&1 || rc=5
+          fi
+          if [ "$rc" -eq 0 ]; then
+            APPDIR="$WORK/source/squashfs-root"
+            test -x "$APPDIR/AppRun" || rc=6
+            PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
+            test -n "$PCSX_BIN" && test -x "$PCSX_BIN" || rc=7
+            cp scph7502.bin "$WORK/input/scph7502.bin"
+            awk '
+              BEGIN { n=0 }
+              /^[[:space:]]*FILE[[:space:]]/ { print "FILE \"naruto-disc.bin\" BINARY"; n++; next }
+              { print }
+              END { if (n != 1) exit 1 }
+            ' "$WORK/source/naruto-disc.cue" > "$WORK/source/game-run.cue" || rc=8
+            echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
+            echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
+          fi
+          echo "$rc" > "$OUT/EMULATOR_SETUP_EXIT_CODE.txt"
+          if [ "$rc" -eq 0 ]; then echo "PCSX_AND_BIOS_SETUP=PASS" >> "$GITHUB_STEP_SUMMARY"; else echo "PCSX_AND_BIOS_SETUP=FAIL code=$rc" >> "$GITHUB_STEP_SUMMARY"; fi
+          exit 0
+
+      - name: Verify immutable checkpoint identity
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          SOURCE="$WORK/checkpoint/adaptive-cycle-02-f180.sstate"
+          rc=0
+          test -s "$SOURCE" && test "$(stat -c '%s' "$SOURCE")" = "21162799" || rc=1
+          if [ "$rc" -eq 0 ]; then
+            echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35  $SOURCE" | sha256sum --check --status || rc=2
+          fi
+          if [ "$rc" -eq 0 ]; then chmod 0444 "$SOURCE"; fi
+          echo "$rc" > "$OUT/CHECKPOINT_VERIFY_EXIT_CODE.txt"
+          {
+            echo "CHECKPOINT_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35"
+            echo "CHECKPOINT_BYTES=21162799"
+            echo "CHECKPOINT_VERIFY_EXIT_CODE=$rc"
+          } > "$OUT/CHECKPOINT_VERIFY.txt"
+          if [ "$rc" -eq 0 ]; then echo "CHECKPOINT_VERIFY=PASS" >> "$GITHUB_STEP_SUMMARY"; else echo "CHECKPOINT_VERIFY=FAIL code=$rc" >> "$GITHUB_STEP_SUMMARY"; fi
+          exit 0
+
+      - name: UQ1 — two no-input 600-frame checkpoint replays with write watchpoints
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          SOURCE="$WORK/checkpoint/adaptive-cycle-02-f180.sstate"
+          prerequisites=0
+          grep -q '^STATUS=TUNTAS$' "$OUT/PREFLIGHT/UQ_PREFLIGHT_RESULT.txt" 2>/dev/null || prerequisites=1
+          grep -q '^STATUS=TUNTAS$' "$OUT/UQ0/UQ0_SUMMARY.txt" 2>/dev/null || prerequisites=1
+          [ "$(cat "$OUT/CHECKPOINT_VERIFY_EXIT_CODE.txt" 2>/dev/null)" = "0" ] || prerequisites=1
+          [ "$(cat "$OUT/EMULATOR_SETUP_EXIT_CODE.txt" 2>/dev/null)" = "0" ] || prerequisites=1
+          [ -x "$PCSX_BIN" ] && [ -s "$WORK/input/scph7502.bin" ] && [ -s "$WORK/source/game-run.cue" ] || prerequisites=1
+          [ -s "$SOURCE" ] && [ -s "$OUT/UQ0/UQ0_V0_CONSUMERS.tsv" ] || prerequisites=1
+          rc=2
+          if [ "$prerequisites" -eq 0 ]; then
+            python tools/stage1/RunUQ1.py --work "$WORK/emulator/replays" --out "$OUT/UQ1" \
+              --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
+              --cue "$WORK/source/game-run.cue" --source "$SOURCE" \
+              --checkpoint-sha256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35 \
+              --checkpoint-bytes 21162799 --static-consumers "$OUT/UQ0/UQ0_V0_CONSUMERS.tsv" \
+              --timeout-seconds 900 > "$OUT/UQ1_EXECUTION_LOG.txt" 2>&1
+            rc=$?
+          else
+            mkdir -p "$OUT/UQ1"
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=preflight/UQ0/checkpoint/emulator prerequisites failed\nEXIT_CODE=2\n' > "$OUT/UQ1/UQ1_SUMMARY.txt"
+            printf 'UQ1_PRE_LAUNCH_PREREQUISITE_FAILED\n' > "$OUT/UQ1_EXECUTION_LOG.txt"
+            printf 'UQ1_STAGED_WRITE_WATCH_RUN\nWINDOWS=88,300,600\nINPUT=NONE\nRAM_WRITE_INJECTION=NONE\nPREREQUISITE=FAIL\n' > "$OUT/UQ1/UQ1_STAGE_MARKERS.txt"
+            for launch in LAUNCH_1 LAUNCH_2; do
+              for stage in 88 300 600; do
+                printf 'STAGE_%s\t%s\tNOT_RUN\n' "$stage" "$launch" > "$OUT/UQ1/UQ1_${launch}_STAGE_${stage}.txt"
+                printf 'STAGE=%s;STATUS=NOT_RUN;LAUNCH=%s\nPREREQUISITE=FAIL\n' "$stage" "$launch" > "$OUT/UQ1/UQ1_${launch}_FRAME_${stage}_TAIL.txt"
+              done
+            done
+          fi
+          echo "$rc" > "$OUT/UQ1_EXIT_CODE.txt"
+          if [ "$rc" -ne 0 ] && [ ! -s "$OUT/UQ1/UQ1_SUMMARY.txt" ]; then
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=UQ1 runtime failed before summary\nEXIT_CODE=%s\n' "$rc" > "$OUT/UQ1/UQ1_SUMMARY.txt"
+          fi
+          for stage in 88 300 600; do
+            for launch in LAUNCH_1 LAUNCH_2; do
+              [ -s "$OUT/UQ1/UQ1_${launch}_STAGE_${stage}.txt" ] || printf 'STAGE_%s\t%s\tNOT_RECORDED\n' "$stage" "$launch" > "$OUT/UQ1/UQ1_${launch}_STAGE_${stage}.txt"
+            done
+          done
+          echo "UQ1_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: UQ2 — inclusive Git commit and Actions run/job ledger
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          python tools/stage1/RunUQ2.py --repo "$GITHUB_REPOSITORY" --token "$GH_TOKEN" \
+            --source-sha "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
+            --preflight-marker "$OUT/PREFLIGHT/UQ_PREFLIGHT_RESULT.txt" --out-dir "$OUT/UQ2" \
+            > "$OUT/UQ2_EXECUTION_LOG.txt" 2>&1
+          rc=$?
+          echo "$rc" > "$OUT/UQ2_EXIT_CODE.txt"
+          if [ "$rc" -ne 0 ] && [ ! -s "$OUT/UQ2/UQ2_SUMMARY.txt" ]; then
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=UQ2 Git or Actions API ledger failed\nEXIT_CODE=%s\n' "$rc" > "$OUT/UQ2/UQ2_SUMMARY.txt"
+          fi
+          echo "UQ2_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Remove private ROM, BIOS, checkpoint, emulator and intermediate files
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          rm -rf "$WORK"
+          find "$OUT" -type f \( -name '*.bin' -o -name '*.sstate' -o -name '*.mcd' \) -delete
+          echo "PRIVATE_GAME_ASSETS_REMOVED_FROM_WORKSPACE=YES" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish text-only UQ results and raw Actions summary
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          rc0="$(cat "$OUT/UQ0_EXIT_CODE.txt" 2>/dev/null || echo 2)"
+          rc1="$(cat "$OUT/UQ1_EXIT_CODE.txt" 2>/dev/null || echo 2)"
+          rc2="$(cat "$OUT/UQ2_EXIT_CODE.txt" 2>/dev/null || echo 2)"
+          preflight_rc=2
+          grep -q '^STATUS=TUNTAS$' "$OUT/PREFLIGHT/UQ_PREFLIGHT_RESULT.txt" 2>/dev/null && preflight_rc=0
+          status=SEBAGIAN
+          if [ "$rc0" -eq 0 ] && [ "$rc1" -eq 0 ] && [ "$rc2" -eq 0 ] && [ "$preflight_rc" -eq 0 ]; then status=TUNTAS; fi
+          final_rc=0
+          if [ "$status" != "TUNTAS" ]; then final_rc=2; fi
+          {
+            echo "STATUS=$status"
+            echo "JOB=uq-audit"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "UQ0_EXIT_CODE=$rc0"
+            echo "UQ1_EXIT_CODE=$rc1"
+            echo "UQ2_EXIT_CODE=$rc2"
+            echo "PREFLIGHT_EXIT_CODE=$preflight_rc"
+            echo "EXIT_CODE=$final_rc"
+          } > "$OUT/ACTIONS/ACTIONS_RUN_SUMMARY.txt"
+          cat > "$OUT/UQ_FINAL_CLOSEOUT.txt" <<EOF
+          UQ0-UQ2 FINAL CLOSEOUT
+          REPOSITORY=$GITHUB_REPOSITORY
+          BRANCH=main
+          LEDGER_BASELINE_INCLUSIVE=e7fd95da69fe8519439fc720ee079409c59e6363
+          ACTIONS_RUN_THRESHOLD_STRICTLY_GREATER_THAN=43367280636
+          WORKFLOW_SOURCE_SHA=$GITHUB_SHA
+          WORKFLOW_RUN_ID=$GITHUB_RUN_ID
+          OVERALL_STATUS=$status
+          UQ0_EXIT_CODE=$rc0
+          UQ1_EXIT_CODE=$rc1
+          UQ2_EXIT_CODE=$rc2
+          PREFLIGHT_EXIT_CODE=$preflight_rc
+          CHECKPOINT_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
+          UQ1_LAUNCHES=2
+          UQ1_INPUT=NONE
+          UQ1_STAGE_WINDOWS=88,300,600
+          UQ1_RAM_WRITE_INJECTION=NONE
+          CLOSEOUT_COMMIT_INCLUDED_IN_UQ2_LEDGER=NO (ledger captured at workflow source SHA before this text-only result commit)
+          OLD_FILES_MODIFIED=NO
+          STATUS_MD_RELEASE_TAG_MODIFIED=NO
+          ROM_EXE_DATA_BIN_BIOS_CHECKPOINT_CARD_RAM_DUMP_COMMITTED=NO
+          CODE_FILES_CHANGED_BY_CODE_COMMIT:
+          .github/workflows/uq0-uq2-audit.yml
+          tools/stage1/RunUQ0.py
+          tools/stage1/RunUQ1.py
+          tools/stage1/RunUQ2.py
+          EOF
+          git fetch origin main
+          git switch -C uq-report-publish origin/main
+          dest="reports/ui-audit-2026-11-13/uq/run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$dest"
+          cp -R "$OUT/UQ0" "$OUT/UQ1" "$OUT/UQ2" "$OUT/PREFLIGHT" "$OUT/ACTIONS" "$dest/"
+          cp "$OUT/UQ0_EXECUTION_LOG.txt" "$OUT/UQ1_EXECUTION_LOG.txt" "$OUT/UQ2_EXECUTION_LOG.txt" "$dest/" 2>/dev/null || true
+          cp "$OUT/UQ0_EXIT_CODE.txt" "$OUT/UQ1_EXIT_CODE.txt" "$OUT/UQ2_EXIT_CODE.txt" "$dest/" 2>/dev/null || true
+          cp "$OUT/CHECKPOINT_VERIFY.txt" "$OUT/EMULATOR_SETUP_EXIT_CODE.txt" "$dest/" 2>/dev/null || true
+          cp "$OUT/UQ_FINAL_CLOSEOUT.txt" "$dest/UQ_FINAL_CLOSEOUT.txt"
+          {
+            echo "FILES_CHANGED_BY_RESULT_COMMIT:"
+            find "$dest" -type f -print | sort
+          } >> "$dest/UQ_FINAL_CLOSEOUT.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          if ! git diff --cached --quiet; then
+            git commit -m "Record UQ0-UQ2 audit results for run $GITHUB_RUN_ID [skip ci]"
+            pushed=0
+            for n in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+              if git push origin HEAD:main; then pushed=1; break; fi
+              sleep "$n"
+            done
+            test "$pushed" -eq 1
+          fi
+          report_sha="$(git rev-parse HEAD)"
+          raw_url="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/$report_sha/$dest/ACTIONS/ACTIONS_RUN_SUMMARY.txt"
+          {
+            echo "UQ_REPORT_COMMIT=$report_sha"
+            echo "UQ_ACTIONS_SUMMARY_RAW_URL=$raw_url"
+            echo "OVERALL_STATUS=$status"
+            echo "OVERALL_EXIT_CODE=$final_rc"
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$final_rc"
