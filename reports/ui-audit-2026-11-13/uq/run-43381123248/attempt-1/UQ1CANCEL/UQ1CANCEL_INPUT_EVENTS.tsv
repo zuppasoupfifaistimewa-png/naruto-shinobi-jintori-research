@@ -1,0 +1,5 @@
+launch	frame	action	phase	readback	status
+LAUNCH_1	30	CROSS	PRESS	true	PASS 
+LAUNCH_1	39	CROSS	RELEASE	false	PASS 
+LAUNCH_2	30	CROSS	PRESS	true	PASS 
+LAUNCH_2	39	CROSS	RELEASE	false	PASS 
