@@ -1,0 +1,14 @@
+selector_value	table_entry_pc	file_offset	bytes_4B	jump_target_pc	reader_site_pc	input_register	expression_candidate	formula_status	operation_sequence
+		0x010C52D8	80 10 02 00						
+		0x010C52DC	21 10 43 00						
+		0x010C52E0	0B 00 43 90						
+		0x010C52E4	00 00 00 00						
+		0x010C52E8	05 00 62 2C						
+		0x010C52EC	16 00 40 10						
+		0x010C52F0	80 18 03 00						
+		0x010C52F4	0B 80 02 3C						
+		0x010C52F8	F4 D5 42 24						
+		0x010C52FC	21 18 62 00						
+		0x010C5300	00 00 62 8C						
+		0x010C5304	00 00 00 00						
+		0x010C5308	08 00 40 00						

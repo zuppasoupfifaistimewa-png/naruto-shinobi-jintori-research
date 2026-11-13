@@ -1,0 +1,1 @@
+UP1_SELF_TEST=PASS staged frames, 26-field selector trace, checkpoint hash and event parser

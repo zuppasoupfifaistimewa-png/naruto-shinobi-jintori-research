@@ -1,0 +1,3 @@
+entry_pc	nearest_function_start	function_end	is_prologue	direct_caller_count	selector_registers
+0x800B76BC	0x800B76BC	0x800B770C	TRUE	1	TIDAK TAHU
+0x800B770C	0x800B76BC	0x800B77A0	FALSE	44	TIDAK TAHU
