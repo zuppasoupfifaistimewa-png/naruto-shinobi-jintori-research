@@ -122,7 +122,9 @@ def main() -> int:
     log_rc,commits,files=git_ledger(a.source_sha)
     runs,pages=all_runs(a.repo,a.token)
     selected=sorted([r for r in runs if int(r.get("id",0))>AFTER_RUN_ID],key=lambda r:int(r["id"]))
-    current_run_seen=any(int(r.get("id",0))==int(a.run_id or 0) for r in selected)
+    current_run=next((r for r in selected if int(r.get("id",0))==int(a.run_id or 0)),None)
+    current_run_seen=current_run is not None
+    current_run_sha_match=bool(current_run and current_run.get("head_sha")==a.source_sha)
     jobs=[]
     for r in selected:
         try:
@@ -136,7 +138,12 @@ def main() -> int:
         name=r.get("name","")
         is_up="up0-up2" in (r.get("path","").lower()) or "up0-up2" in name.lower()
         if is_up:
-            pstatus="PASS" if marker_ok and marker_sha==a.source_sha else "FAIL_OR_MISSING"
+            if r.get("head_sha")==a.source_sha and marker_ok and marker_sha==a.source_sha:
+                pstatus="PASS_CURRENT_SOURCE_PREFLIGHT"
+            elif r.get("head_sha")!=a.source_sha:
+                pstatus="NOT_VERIFIED_DIFFERENT_SOURCE_SHA"
+            else:
+                pstatus="FAIL_OR_MISSING_CURRENT_SOURCE_PREFLIGHT"
             workflow_class="UP_CODE_RUN"
         elif "monitor" in (name+" "+r.get("path","")).lower():
             pstatus="NOT_APPLICABLE_MONITOR"
@@ -184,7 +191,7 @@ def main() -> int:
     up_runs=[r for r in selected if "up0-up2" in r.get("path","").lower()]
     summary=[
       "UP2_INCLUSIVE_GIT_AND_ACTIONS_LEDGER",
-      "STATUS=TUNTAS" if log_rc==0 and git_sha==a.source_sha and marker_ok and marker_sha==a.source_sha and current_run_seen and job_errors==0 else "STATUS=SEBAGIAN",
+      "STATUS=TUNTAS" if log_rc==0 and git_sha==a.source_sha and marker_ok and marker_sha==a.source_sha and current_run_seen and current_run_sha_match and job_errors==0 else "STATUS=SEBAGIAN",
       "EVIDENCE=K4 for repository and Actions metadata; no gameplay semantics",
       f"BASELINE_INCLUSIVE={BASELINE}",
       f"SOURCE_SHA={a.source_sha}",
@@ -201,6 +208,8 @@ def main() -> int:
       f"ACTIONS_RUNS_AFTER_{AFTER_RUN_ID}={len(selected)}",
       f"CURRENT_RUN_ID={a.run_id}",
       f"CURRENT_RUN_PRESENT_IN_API={'YES' if current_run_seen else 'NO'}",
+      f"CURRENT_RUN_HEAD_SHA={current_run.get('head_sha') if current_run else 'TIDAK TAHU'}",
+      f"CURRENT_RUN_HEAD_SHA_MATCHES_FINAL_CODE_SHA={'YES' if current_run_sha_match else 'NO'}",
       f"ACTIONS_JOBS_AFTER_THRESHOLD={len(jobs)}",
       f"ACTIONS_JOB_FETCH_ERRORS={job_errors}",
       f"UP_CODE_RUNS_IN_API={len(up_runs)}",

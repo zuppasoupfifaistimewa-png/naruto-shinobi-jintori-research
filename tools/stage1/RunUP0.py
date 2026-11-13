@@ -667,13 +667,16 @@ def setup_arg(ins,ix,r,base_pc):
         if ins[q]["control"]:break
     return "TIDAK TAHU"
 
-def next_v0_use(ins,ix,base_pc):
+def next_v0_use(ins,ix,base_pc,call_kind="JAL"):
+    if call_kind=="J":
+        return "TIDAK_ADA_RETURN_UNTUK_J"
     found=[]
-    for q in range(ix+1,min(len(ins),ix+18)):
+    # jal/jalr return address is PC+8: skip the delay slot at ix+1.
+    for q in range(ix+2,min(len(ins),ix+18)):
         d=ins[q]
         if d["control"] or d["mn"] in ("jr","j","jal","jalr"):break
         if 2 in d["reads"]:found.append(f"0x{base_pc+4*q:08X}:{d['text']}")
-    return ";".join(found) if found else "TIDAK TERLIHAT_DALAM_16_INSTRUKSI"
+    return ";".join(found) if found else "TIDAK TERLIHAT_DALAM_16_INSTRUKSI_SETELAH_KEMBALI"
 
 def main_up0(a):
     exe=a.exe.read_bytes();data=a.data_bin.read_bytes()
@@ -711,14 +714,14 @@ def main_up0(a):
                   "target_pc":f"0x{target:08X}","caller_function_start":f"0x{pcbase+4*st:08X}",
                   "setup_a0":args[0],"setup_a1":args[1],"setup_a2":args[2],"setup_a3":args[3],
                   "setup_status":"BUKTI" if all(v!="TIDAK TAHU" for v in args) else "TIDAK TAHU",
-                  "v0_after_return":next_v0_use(ins,q,pcbase)})
+                  "v0_after_return":next_v0_use(ins,q,pcbase,kind)})
             elif d["mn"]=="jalr":
                 callers.append({"region":name,"pc":f"0x{pcbase+4*q:08X}","file_offset":f"0x{offbase+4*q:08X}",
                   "bytes_4B":" ".join(f"{v:02X}" for v in raw),"instruction":d["text"],"call_kind":"JALR_TARGET_TIDAK_TAHU",
                   "target_pc":"TIDAK TAHU","caller_function_start":"","setup_a0":setup_arg(ins,q,4,pcbase),
                   "setup_a1":setup_arg(ins,q,5,pcbase),"setup_a2":setup_arg(ins,q,6,pcbase),
                   "setup_a3":setup_arg(ins,q,7,pcbase),"setup_status":"TIDAK TAHU",
-                  "v0_after_return":next_v0_use(ins,q,pcbase)})
+                  "v0_after_return":next_v0_use(ins,q,pcbase,"JALR_TARGET_TIDAK_TAHU")})
         for off in range(len(blob)-3):
             value=int.from_bytes(blob[off:off+4],"little")
             if value in targets:
@@ -766,7 +769,7 @@ def main_up0(a):
                       "setup_a0":"TIDAK TAHU","setup_a1":"TIDAK TAHU","setup_a2":"TIDAK TAHU","setup_a3":"TIDAK TAHU",
                       "reason":"PC DI LUAR ENTRY 1"})
                     continue
-                if not ins[si]["mem"] or ins[si]["mem"][2]!=0x10:
+                if ins[si]["mn"] not in ("lh","lhu") or not ins[si]["mem"] or ins[si]["mem"][2]!=0x10:
                     sitebases.append({"site_pc":f"0x{site:08X}","function_start":"TIDAK TAHU",
                       "caller_pc":"TIDAK TAHU","caller_function_start":"TIDAK TAHU","base_register":"TIDAK TAHU",
                       "basis_status":"TIDAK TAHU","basis_class":"TIDAK TAHU","def_chain":"",
@@ -1039,7 +1042,25 @@ def self_test_up0():
     call=((3<<26)|(((pc+0x40)>>2)&0x3ffffff)).to_bytes(4,"little")
     s=trace([iw(0x25,4,2,0x10),call,bytes(4),rw(31,0,0,8),bytes(4)])
     assert s["return_v0"]=="RETURN_V0_UNTAINTED",s
-    print("UP0_SELF_TEST=PASS independent decoder, delay slot, HI/LO, jr-ra and jal clobber")
+    # j must execute its delay slot and follow its encoded target.
+    target_pc=pc+20
+    jword=((2<<26)|((target_pc>>2)&0x03FFFFFF)).to_bytes(4,"little")
+    jump_words=[iw(0x25,4,2,0x10),jword,rw(2,0,16,33),bytes(4),bytes(4),
+                rw(16,0,2,33),rw(31,0,0,8),bytes(4)]
+    jump_blob=b"".join(jump_words)
+    jump_ins=[decode(jump_blob[z:z+4],pc+z) for z in range(0,len(jump_blob),4)]
+    jump_rows,jump_summary,_=forward_graph(1,pc,jump_ins,jump_blob,"TEST",pc,0)
+    assert jump_summary["return_v0"]=="RETURN_V0_TAINTED",jump_summary
+    assert any(row.get("trace_pc")==f"0x{target_pc:08X}" for row in jump_rows),jump_rows
+    assert any(row.get("classification")=="DELAY_SLOT" and "$s0" in row.get("tainted_after","")
+               for row in jump_rows),jump_rows
+    call_words=[((3<<26)|(((pc+0x40)>>2)&0x03FFFFFF)).to_bytes(4,"little"),
+                rw(2,0,16,33),rw(2,0,3,33),rw(31,0,0,8)]
+    call_ins=[decode(w,pc+4*i) for i,w in enumerate(call_words)]
+    after=next_v0_use(call_ins,0,pc,"JAL")
+    assert after.startswith(f"0x{pc+8:08X}:") and f"0x{pc+4:08X}:" not in after,after
+    assert next_v0_use(call_ins,0,pc,"J")=="TIDAK_ADA_RETURN_UNTUK_J"
+    print("UP0_SELF_TEST=PASS independent decoder, j/jal delay slots and targets, HI/LO, jr-ra return v0, jal clobber and post-return caller use")
 
 def main() -> int:
     ap=argparse.ArgumentParser()

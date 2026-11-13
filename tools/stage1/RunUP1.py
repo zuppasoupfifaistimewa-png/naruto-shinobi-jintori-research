@@ -351,11 +351,14 @@ def read_entries(path:Path)->list[int]:
         for row in csv.DictReader(stream,delimiter="\t"):
             try:
                 value=int(row["entry_pc"],16)
-                if value in ENTRY_CANDIDATES:
+                caller_count=int(row.get("direct_caller_count","0"))
+                if value in ENTRY_CANDIDATES and caller_count>0:
+                    # Both byte-backed entry candidates are directly referenced.
+                    # 0x800B76BC is a prologue boundary; 0x800B770C has 44 direct callers.
                     entries.append(value)
             except (KeyError,TypeError,ValueError):
                 continue
-    return sorted(set(entries)) or [0x800B770C]
+    return sorted(set(entries))
 
 def read_returns(disassembly:Path,callers:Path,forward_sites:Path)->tuple[list[int],list[int]]:
     returns=[]
@@ -477,22 +480,13 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
             stream.write(marker)
             stream.flush()
         (out/f"UP1_{name}_STAGE_{stage}.txt").write_text(marker,encoding="utf-8")
-        stage_lines=[]
-        for line in lines:
-            if line.startswith("UP1_HIT\t"):
-                try:
-                    if int(line.split("\t")[2])<=stage:
-                        stage_lines.append(line)
-                except (IndexError,ValueError):
-                    continue
-            elif line.startswith(f"UP1_STAGE_REACHED\t{name}\t"):
-                try:
-                    if int(line.split("\t")[2])<=stage:
-                        stage_lines.append(line)
-                except (IndexError,ValueError):
-                    continue
+        stage_pos=next((k for k,line in enumerate(lines)
+          if line.startswith(f"UP1_STAGE_REACHED\t{name}\t{stage}\t")),None)
+        bounded_lines=lines[:stage_pos+1] if stage_pos is not None else lines
+        stage_lines=bounded_lines[-120:]
+        stage_header=f"STAGE={stage};STATUS={'REACHED' if found else 'NOT_REACHED'};LAUNCH={name}"
         (out/f"UP1_{name}_FRAME_{stage}_TAIL.txt").write_text(
-            "\n".join(stage_lines[-120:])+"\n",encoding="utf-8")
+            stage_header+"\n"+"\n".join(stage_lines)+"\n",encoding="utf-8")
     checkpoint_after=sha(state) if state.exists() else "TIDAK TAHU"
     source_after=sha(source) if source.exists() else "TIDAK TAHU"
     card_after=sha(card) if card.exists() else "TIDAK TAHU"
@@ -589,6 +583,8 @@ def main()->int:
         raise SystemExit("UP1_CHECKPOINT_IDENTITY_MISMATCH")
     source.chmod(0o444)
     entries=read_entries(args.static_readers)
+    if not entries:
+        raise SystemExit("UP1_NO_DIRECTLY_REFERENCED_READER_ENTRY_FROM_UP0")
     case_targets=read_case_targets(args.static_selector_table)
     case_inputs=read_case_inputs(args.static_selector_table)
     selector_map=read_selector_map(args.static_selector_table)
@@ -815,6 +811,16 @@ def main()->int:
       snapshot_by_launch["LAUNCH_1"]==snapshot_by_launch["LAUNCH_2"])
     case_formula_matches=sum(1 for row in selector_rows if row["comparison_status"]=="MATCH")
     case_formula_mismatches=sum(1 for row in selector_rows if row["comparison_status"]=="MISMATCH")
+    required_selectors={str(value) for value in range(5)}
+    selectors_by_launch={name:set() for name in ("LAUNCH_1","LAUNCH_2")}
+    for row in selector_rows:
+        selectors_by_launch.setdefault(row["launch"],set()).add(row["selector_value"])
+    formula_rows_proven=bool(selector_rows) and all(row["comparison_status"]=="MATCH" for row in selector_rows)
+    formula_k5=(all(required_selectors.issubset(selectors_by_launch.get(name,set()))
+                    for name in ("LAUNCH_1","LAUNCH_2")) and
+                formula_rows_proven and observed_targets==mapped_targets)
+    (out/"UP1_CASE_FORMULA_K5.txt").write_text(
+        "TUNTAS\n" if formula_k5 else "BELUM\n",encoding="utf-8")
     if full and identical and pad_identical:
         status="TUNTAS"
         evidence="K5"
@@ -824,7 +830,7 @@ def main()->int:
     else:
         status="BELUM"
         evidence="K0-K1"
-    summary=["UP1_TWO_CHECKPOINT_LAUNCH_EXEC_BREAKPOINT_AUDIT",
+    summary=["UP1_TWO_IDENTICAL_CHECKPOINT_REPLAY_EXEC_BREAKPOINT_AUDIT",
       f"STATUS={status}",f"EVIDENCE={evidence}",f"MAXIMUM_STAGE_REACHED={max_stage}",
       "ENTRY_BREAKPOINT_PCS="+",".join(f"0x{value:08X}" for value in entries),
       f"CASE_ENTRY_BREAKPOINTS={len(case_targets)}",
@@ -845,6 +851,10 @@ def main()->int:
       f"SELECTOR_VALUES_OBSERVED={','.join(sorted({row['selector_value'] for row in selector_rows if row['selector_value']!='TIDAK TAHU'}))}",
       f"SELECTOR_RESULT_MATCH_ROWS={case_formula_matches}",
       f"SELECTOR_RESULT_MISMATCH_ROWS={case_formula_mismatches}",
+      f"CASE_FORMULA_K5={'TUNTAS' if formula_k5 else 'BELUM'}",
+      "CASE_FORMULA_K5_SCOPE=all five selector values must be observed and MATCH in both replays",
+      f"LAUNCH_1_SELECTOR_VALUES={','.join(sorted(selectors_by_launch.get('LAUNCH_1',set())))}",
+      f"LAUNCH_2_SELECTOR_VALUES={','.join(sorted(selectors_by_launch.get('LAUNCH_2',set())))}",
       f"CASE_TARGETS_EXPECTED={len(mapped_targets)}",
       f"CASE_TARGETS_OBSERVED={len(observed_targets)}",
       f"CASE_TARGET_COVERAGE={case_coverage}",

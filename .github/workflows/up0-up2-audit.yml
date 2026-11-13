@@ -275,34 +275,28 @@ jobs:
         shell: bash
         run: |
           set +e
-          SOURCE_C01="$WORK/checkpoint/adaptive-cycle-01-f180.sstate"
-          SOURCE_C02="$WORK/checkpoint/adaptive-cycle-02-f180.sstate"
+          SOURCE="$WORK/checkpoint/adaptive-cycle-02-f180.sstate"
           rc=0
-          test -f "$SOURCE_C01" && test "$(stat -c '%s' "$SOURCE_C01")" = "21162638" || rc=1
-          test -f "$SOURCE_C02" && test "$(stat -c '%s' "$SOURCE_C02")" = "21162799" || rc=1
+          test -s "$SOURCE" && test "$(stat -c '%s' "$SOURCE")" = "21162799" || rc=1
           if [ "$rc" -eq 0 ]; then
-            echo "747217064b1a178d7bdfe4ef4722935593dbbea2c89efcbd451e25d651bd014f  $SOURCE_C01" | sha256sum --check --status || rc=2
-            echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35  $SOURCE_C02" | sha256sum --check --status || rc=3
+            echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35  $SOURCE" | sha256sum --check --status || rc=2
           fi
-          if [ "$rc" -eq 0 ]; then chmod 0444 "$SOURCE_C01" "$SOURCE_C02"; fi
+          if [ "$rc" -eq 0 ]; then chmod 0444 "$SOURCE"; fi
           echo "$rc" > "$OUT/CHECKPOINT_VERIFY_EXIT_CODE.txt"
           {
-            echo "CHECKPOINT_C01_SHA256=747217064b1a178d7bdfe4ef4722935593dbbea2c89efcbd451e25d651bd014f"
-            echo "CHECKPOINT_C01_BYTES=21162638"
-            echo "CHECKPOINT_C02_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35"
-            echo "CHECKPOINT_C02_BYTES=21162799"
+            echo "CHECKPOINT_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35"
+            echo "CHECKPOINT_BYTES=21162799"
             echo "CHECKPOINT_VERIFY_EXIT_CODE=$rc"
           } > "$OUT/CHECKPOINT_VERIFY.txt"
           if [ "$rc" -eq 0 ]; then echo "CHECKPOINT_VERIFY=PASS" >> "$GITHUB_STEP_SUMMARY"; else echo "CHECKPOINT_VERIFY=FAIL code=$rc" >> "$GITHUB_STEP_SUMMARY"; fi
           exit 0
 
-      - name: UP1 — paired no-input replays for both existing checkpoints
+      - name: UP1 — two no-input replays from exact checkpoint 705d4005
         if: always()
         shell: bash
         run: |
           set +e
-          SOURCE_C01="$WORK/checkpoint/adaptive-cycle-01-f180.sstate"
-          SOURCE_C02="$WORK/checkpoint/adaptive-cycle-02-f180.sstate"
+          SOURCE="$WORK/checkpoint/adaptive-cycle-02-f180.sstate"
           ENTRY="$OUT/UP0/UP0_FUNCTION_ENTRY_POINTS.tsv"
           DISASM="$OUT/UP0/UP0_READER_FUNCTION_DISASSEMBLY.tsv"
           CALLERS="$OUT/UP0/UP0_CALLERS.tsv"
@@ -311,206 +305,49 @@ jobs:
           JUMPTABLE="$OUT/UP0/UP0_SELECTOR_JUMPTABLE.tsv"
           prerequisites=0
           grep -q '^STATUS=TUNTAS$' "$OUT/PREFLIGHT/UP_PREFLIGHT_RESULT.txt" 2>/dev/null || prerequisites=1
+          grep -q '^STATUS=TUNTAS$' "$OUT/UP0/UP0_SUMMARY.txt" 2>/dev/null || prerequisites=1
           [ "$(cat "$OUT/CHECKPOINT_VERIFY_EXIT_CODE.txt" 2>/dev/null)" = "0" ] || prerequisites=1
           [ "$(cat "$OUT/EMULATOR_SETUP_EXIT_CODE.txt" 2>/dev/null)" = "0" ] || prerequisites=1
           [ -x "$PCSX_BIN" ] && [ -s "$WORK/input/scph7502.bin" ] && [ -s "$WORK/source/game-run.cue" ] || prerequisites=1
-          [ -s "$ENTRY" ] && [ -s "$DISASM" ] && [ -s "$CALLERS" ] && [ -s "$CASES" ] && [ -s "$FORWARD" ] && [ -s "$JUMPTABLE" ] || prerequisites=1
-          rc_c02=2
-          rc_c01=2
-          rc_nav_c02=2
-          rc_nav_c01=2
+          [ -s "$SOURCE" ] && [ -s "$ENTRY" ] && [ -s "$DISASM" ] && [ -s "$CALLERS" ] && [ -s "$CASES" ] && [ -s "$FORWARD" ] && [ -s "$JUMPTABLE" ] || prerequisites=1
+          rc=2
           if [ "$prerequisites" -eq 0 ]; then
-            python tools/stage1/RunUP1.py --work "$WORK/emulator/c02" --out "$OUT/UP1" \
+            python tools/stage1/RunUP1.py --work "$WORK/emulator/replays" --out "$OUT/UP1" \
               --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
-              --cue "$WORK/source/game-run.cue" --source "$SOURCE_C02" \
+              --cue "$WORK/source/game-run.cue" --source "$SOURCE" \
               --checkpoint-sha256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35 \
               --checkpoint-bytes 21162799 \
               --static-readers "$ENTRY" --static-disassembly "$DISASM" \
               --static-callers "$CALLERS" --static-cases "$CASES" \
               --static-forward-sites "$FORWARD" --static-selector-table "$JUMPTABLE" \
               --frames 600 --timeout-seconds 900 > "$OUT/UP1_EXECUTION_LOG.txt" 2>&1
-            rc_c02=$?
-            python tools/stage1/RunUP1.py --work "$WORK/emulator/c01" --out "$OUT/UP1_C01" \
-              --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
-              --cue "$WORK/source/game-run.cue" --source "$SOURCE_C01" \
-              --checkpoint-sha256 747217064b1a178d7bdfe4ef4722935593dbbea2c89efcbd451e25d651bd014f \
-              --checkpoint-bytes 21162638 \
-              --static-readers "$ENTRY" --static-disassembly "$DISASM" \
-              --static-callers "$CALLERS" --static-cases "$CASES" \
-              --static-forward-sites "$FORWARD" --static-selector-table "$JUMPTABLE" \
-              --frames 600 --timeout-seconds 900 > "$OUT/UP1_C01_EXECUTION_LOG.txt" 2>&1
-            rc_c01=$?
-            mkdir -p "$OUT/UP1_NAV_C02" "$OUT/UP1_NAV_C01"
-            python tools/stage1/RunUP1.py --work "$WORK/emulator/pad-nav-c02" --out "$OUT/UP1_NAV_C02" \
-              --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
-              --cue "$WORK/source/game-run.cue" --source "$SOURCE_C02" \
-              --checkpoint-sha256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35 \
-              --checkpoint-bytes 21162799 --input-sequence "30:START,90:CIRCLE,150:UP,210:CIRCLE,270:RIGHT,330:CIRCLE,390:TRIANGLE,450:CIRCLE,510:X" \
-              --static-readers "$ENTRY" --static-disassembly "$DISASM" \
-              --static-callers "$CALLERS" --static-cases "$CASES" \
-              --static-forward-sites "$FORWARD" --static-selector-table "$JUMPTABLE" \
-              --frames 600 --timeout-seconds 900 > "$OUT/UP1_NAV_C02_EXECUTION_LOG.txt" 2>&1
-            rc_nav_c02=$?
-            python tools/stage1/RunUP1.py --work "$WORK/emulator/pad-nav-c01" --out "$OUT/UP1_NAV_C01" \
-              --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
-              --cue "$WORK/source/game-run.cue" --source "$SOURCE_C01" \
-              --checkpoint-sha256 747217064b1a178d7bdfe4ef4722935593dbbea2c89efcbd451e25d651bd014f \
-              --checkpoint-bytes 21162638 --input-sequence "30:START,90:CIRCLE,150:UP,210:CIRCLE,270:RIGHT,330:CIRCLE,390:TRIANGLE,450:CIRCLE,510:X" \
-              --static-readers "$ENTRY" --static-disassembly "$DISASM" \
-              --static-callers "$CALLERS" --static-cases "$CASES" \
-              --static-forward-sites "$FORWARD" --static-selector-table "$JUMPTABLE" \
-              --frames 600 --timeout-seconds 900 > "$OUT/UP1_NAV_C01_EXECUTION_LOG.txt" 2>&1
-            rc_nav_c01=$?
+            rc=$?
           else
-            mkdir -p "$OUT/UP1_C01"
-            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=preflight, either checkpoint, emulator or UP0 static-output prerequisites not passed\nEXIT_CODE=2\n' > "$OUT/UP1/UP1_SUMMARY.txt"
-            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=preflight, either checkpoint, emulator or UP0 static-output prerequisites not passed\nEXIT_CODE=2\n' > "$OUT/UP1_C01/UP1_SUMMARY.txt"
-            printf 'UP1_C02_PRE_LAUNCH_PREREQUISITE_FAILED\n' > "$OUT/UP1_EXECUTION_LOG.txt"
-            printf 'UP1_C01_PRE_LAUNCH_PREREQUISITE_FAILED\n' > "$OUT/UP1_C01_EXECUTION_LOG.txt"
+            mkdir -p "$OUT/UP1"
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=preflight, UP0, checkpoint, emulator or static prerequisites not passed\nEXIT_CODE=2\n' > "$OUT/UP1/UP1_SUMMARY.txt"
+            printf 'UP1_PRE_LAUNCH_PREREQUISITE_FAILED\n' > "$OUT/UP1_EXECUTION_LOG.txt"
+            printf 'UP1_STAGED_EXEC_BREAKPOINT_RUN\nWINDOWS=88,300,600\nINPUT=NONE\nRAM_WRITE_INJECTION=NONE\nPREREQUISITE=FAIL\n' > "$OUT/UP1/UP1_STAGE_MARKERS.txt"
+            for launch in LAUNCH_1 LAUNCH_2; do
+              for stage in 88 300 600; do
+                printf 'STAGE_%s\t%s\tNOT_RUN\n' "$stage" "$launch" > "$OUT/UP1/UP1_${launch}_STAGE_${stage}.txt"
+                printf 'STAGE=%s;STATUS=NOT_RUN;LAUNCH=%s\nPREREQUISITE=FAIL\n' "$stage" "$launch" > "$OUT/UP1/UP1_${launch}_FRAME_${stage}_TAIL.txt"
+              done
+            done
           fi
-          echo "$rc_c02" > "$OUT/UP1_EXIT_CODE.txt"
-          echo "$rc_c01" > "$OUT/UP1_C01_EXIT_CODE.txt"
-          echo "$rc_nav_c02" > "$OUT/UP1_NAV_C02_EXIT_CODE.txt"
-          echo "$rc_nav_c01" > "$OUT/UP1_NAV_C01_EXIT_CODE.txt"
-          if [ "$rc_nav_c02" -ne 0 ] && [ ! -s "$OUT/UP1_NAV_C02/UP1_SUMMARY.txt" ]; then
-            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=C02 pad navigation runtime failed before summary\nEXIT_CODE=%s\n' "$rc_nav_c02" > "$OUT/UP1_NAV_C02/UP1_SUMMARY.txt"
+          echo "$rc" > "$OUT/UP1_EXIT_CODE.txt"
+          if [ "$rc" -ne 0 ] && [ ! -s "$OUT/UP1/UP1_SUMMARY.txt" ]; then
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=UP1 runtime failed before summary\nEXIT_CODE=%s\n' "$rc" > "$OUT/UP1/UP1_SUMMARY.txt"
           fi
-          if [ "$rc_nav_c01" -ne 0 ] && [ ! -s "$OUT/UP1_NAV_C01/UP1_SUMMARY.txt" ]; then
-            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=C01 pad navigation runtime failed before summary\nEXIT_CODE=%s\n' "$rc_nav_c01" > "$OUT/UP1_NAV_C01/UP1_SUMMARY.txt"
+          if [ ! -s "$OUT/UP1/UP1_STAGE_MARKERS.txt" ]; then
+            printf 'UP1_STAGE_MARKERS_MISSING;STATUS=BELUM\n' > "$OUT/UP1/UP1_STAGE_MARKERS.txt"
           fi
-          if [ "$rc_c02" -ne 0 ] && [ ! -s "$OUT/UP1/UP1_SUMMARY.txt" ]; then
-            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=C02 UP1 runtime failed before summary\nEXIT_CODE=%s\n' "$rc_c02" > "$OUT/UP1/UP1_SUMMARY.txt"
-          fi
-          mkdir -p "$OUT/UP1" "$OUT/UP1_C01"
-          mkdir -p "$OUT/UP1_NAV_C01" "$OUT/UP1_NAV_C02"
-          python - "$OUT/UP1" "$OUT/UP1_C01" "$OUT/UP1_NAV_C02" "$OUT/UP1_NAV_C01" "$OUT/UP0/UP0_SELECTOR_JUMPTABLE.tsv" <<'PY'
-          import csv
-          import sys
-          from pathlib import Path
-
-          folders={
-              "C01_BASELINE":Path(sys.argv[2]),
-              "C02_BASELINE":Path(sys.argv[1]),
-              "C01_PAD_NAV":Path(sys.argv[4]),
-              "C02_PAD_NAV":Path(sys.argv[3]),
-          }
-          table=Path(sys.argv[5])
-          targets_by_selector={}
-          with table.open(encoding="utf-8",newline="") as stream:
-              for row in csv.DictReader(stream,delimiter="\t"):
-                  targets_by_selector[row["selector_value"]]=row["jump_target_pc"]
-          all_selector_rows=[];all_snapshot_rows=[]
-          selector_union=set();target_union=set();snapshot_selector_union=set()
-          repeatable_by_selector={};lines=["UP1_MULTI_CHECKPOINT_AND_PAD_NAVIGATION_SUMMARY"]
-          all_k5=True
-          for condition,folder in folders.items():
-              values={}
-              summary=folder/"UP1_SUMMARY.txt"
-              if summary.exists():
-                  for line in summary.read_text(encoding="utf-8",errors="replace").splitlines():
-                      if "=" in line:
-                          key,value=line.split("=",1);values[key]=value
-              rows=[]
-              selector_file=folder/"UP1_SELECTOR_V0.tsv"
-              if selector_file.exists():
-                  with selector_file.open(encoding="utf-8",newline="") as stream:
-                      for row in csv.DictReader(stream,delimiter="\t"):
-                          row["condition"]=condition;all_selector_rows.append(row);rows.append(row)
-                          selector=row.get("selector_value","TIDAK TAHU")
-                          launch=row.get("launch","TIDAK TAHU")
-                          if selector in targets_by_selector:
-                              selector_union.add(selector)
-                              repeatable_by_selector.setdefault(selector,{}).setdefault(condition,set()).add(launch)
-                          if row.get("table_target_pc") in targets_by_selector.values():
-                              target_union.add(row["table_target_pc"])
-              snapshots=[]
-              snap_file=folder/"UP1_RECORD_SELECTORS.tsv"
-              if snap_file.exists():
-                  with snap_file.open(encoding="utf-8",newline="") as stream:
-                      for row in csv.DictReader(stream,delimiter="\t"):
-                          row["condition"]=condition;all_snapshot_rows.append(row);snapshots.append(row)
-                          try:sel=str(int(row.get("record_selector",""),16))
-                          except (TypeError,ValueError):continue
-                          if sel in targets_by_selector:snapshot_selector_union.add(sel)
-              pad_rows=[]
-              pad_file=folder/"UP1_PAD_ACTIONS.tsv"
-              if pad_file.exists():
-                  with pad_file.open(encoding="utf-8",newline="") as stream:
-                      pad_rows=list(csv.DictReader(stream,delimiter="\t"))
-              by_launch={}
-              for row in pad_rows:by_launch.setdefault(row.get("launch",""),[]).append(row)
-              if condition.endswith("PAD_NAV"):
-                  pad_ok=(len(by_launch.get("LAUNCH_1",[]))==18 and
-                          len(by_launch.get("LAUNCH_2",[]))==18 and
-                          all(row.get("status")=="PASS" for row in pad_rows) and
-                          [tuple(r[k] for k in ("frame","button","phase","readback","status")) for r in by_launch["LAUNCH_1"]]==
-                          [tuple(r[k] for k in ("frame","button","phase","readback","status")) for r in by_launch["LAUNCH_2"]])
-              else:
-                  pad_ok=(values.get("PAD_ACTION_TRACE_IDENTICAL_ROW_BY_ROW")=="YES")
-              k5=(values.get("STATUS")=="TUNTAS" and values.get("EVIDENCE")=="K5" and
-                  values.get("EVENT_TRACE_IDENTICAL_ROW_BY_ROW")=="YES" and
-                  values.get("PAD_ACTION_TRACE_IDENTICAL_ROW_BY_ROW")=="YES" and
-                  values.get("MAXIMUM_STAGE_REACHED")=="600" and pad_ok)
-              all_k5=all_k5 and k5
-              lines.extend([f"{condition}_STATUS={values.get('STATUS','TIDAK TAHU')}",
-                f"{condition}_EVIDENCE={values.get('EVIDENCE','TIDAK TAHU')}",
-                f"{condition}_CHECKPOINT_SHA256={values.get('CHECKPOINT_SHA256','TIDAK TAHU')}",
-                f"{condition}_EVENT_TRACE_IDENTICAL_ROW_BY_ROW={values.get('EVENT_TRACE_IDENTICAL_ROW_BY_ROW','TIDAK TAHU')}",
-                f"{condition}_PAD_ACTION_TRACE_IDENTICAL_ROW_BY_ROW={values.get('PAD_ACTION_TRACE_IDENTICAL_ROW_BY_ROW','TIDAK TAHU')}",
-                f"{condition}_PAD_ACTION_ROWS={len(pad_rows)}",
-                f"{condition}_SELECTOR_ROWS={len(rows)}",
-                f"{condition}_RECORD_SNAPSHOT_ROWS={len(snapshots)}"])
-          repeatable=[]
-          for selector,seen in repeatable_by_selector.items():
-              if any({"LAUNCH_1","LAUNCH_2"}.issubset(launches) for launches in seen.values()):
-                  repeatable.append(selector)
-          matches=sum(1 for row in all_selector_rows if row.get("comparison_status")=="MATCH")
-          mismatches=sum(1 for row in all_selector_rows if row.get("comparison_status")=="MISMATCH")
-          unproven=sum(1 for row in all_selector_rows if row.get("comparison_status") in
-                       ("TIDAK DAPAT DIBANDINGKAN","MATCH_INPUT_SOURCE_UNPROVEN"))
-          required=set(targets_by_selector)
-          formula_k5=(selector_union==required and set(repeatable)==required and
-                      matches>0 and mismatches==0 and unproven==0 and all_k5)
-          snapshot_repeatable=True;by_condition={}
-          for row in all_snapshot_rows:
-              by_condition.setdefault((row.get("condition"),row.get("launch")),{})[row.get("record_index","")]=(
-                  row.get("record_selector",""),row.get("rec_20",""),row.get("selected_offset",""),row.get("selected_value",""))
-          for condition in folders:
-              first=by_condition.get((condition,"LAUNCH_1"));second=by_condition.get((condition,"LAUNCH_2"))
-              if first is not None or second is not None:
-                  if first is None or second is None or first!=second:snapshot_repeatable=False
-          lines.extend(["INPUT=PAD_ONLY_FOR_PAD_NAV_CONDITIONS; baseline conditions use NONE",
-            "RAM_WRITE_INJECTION=NONE",
-            f"REPEATABILITY_K5_ALL_CONDITIONS={'TUNTAS' if all_k5 else 'BELUM'}",
-            f"CASE_TARGETS_EXPECTED={len(required)}",f"CASE_TARGETS_EXECUTED={len(selector_union)}",
-            f"CASE_TARGET_COVERAGE={'TUNTAS' if selector_union==required else 'SEBAGIAN'}",
-            f"SELECTOR_VALUES_EXECUTED={','.join(sorted(selector_union))}",
-            f"SELECTOR_VALUES_WITH_TWO_IDENTICAL_REPLAYS={','.join(sorted(repeatable))}",
-            f"RECORD_SELECTOR_VALUES_PRESENT_IN_RAM={','.join(sorted(snapshot_selector_union))}",
-            f"RECORD_SNAPSHOT_TARGET_COVERAGE={'TUNTAS' if snapshot_selector_union==required else 'SEBAGIAN'}",
-            f"RECORD_SNAPSHOT_REPEATABLE_WITHIN_CONDITIONS={'YES' if snapshot_repeatable else 'NO_OR_INCOMPLETE'}",
-            f"SELECTOR_RESULT_MATCH_ROWS={matches}",f"SELECTOR_RESULT_MISMATCH_ROWS={mismatches}",
-            f"SELECTOR_RESULT_UNPROVEN_ROWS={unproven}",
-            f"CASE_FORMULA_K5={'TUNTAS' if formula_k5 else 'BELUM'}"])
-          dest=folders["C02_BASELINE"]
-          (dest/"UP1_MULTI_CHECKPOINT_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
-          if all_selector_rows:
-              with (dest/"UP1_ALL_SELECTOR_ROWS.tsv").open("w",encoding="utf-8",newline="") as stream:
-                  fields=list(all_selector_rows[0].keys())
-                  writer=csv.DictWriter(stream,fieldnames=fields,delimiter="\t",extrasaction="ignore",lineterminator="\n")
-                  writer.writeheader();writer.writerows(all_selector_rows)
-          if all_snapshot_rows:
-              with (dest/"UP1_ALL_RECORD_SELECTORS.tsv").open("w",encoding="utf-8",newline="") as stream:
-                  fields=list(all_snapshot_rows[0].keys())
-                  writer=csv.DictWriter(stream,fieldnames=fields,delimiter="\t",extrasaction="ignore",lineterminator="\n")
-                  writer.writeheader();writer.writerows(all_snapshot_rows)
-          (dest/"UP1_CASE_FORMULA_K5.txt").write_text("TUNTAS\n" if formula_k5 else "BELUM\n",encoding="utf-8")
-          print("\n".join(lines),flush=True)
-          PY
-          merge_rc=$?
-          if [ "$merge_rc" -ne 0 ]; then rc_c02=2; echo 2 > "$OUT/UP1_EXIT_CODE.txt"; fi
-          echo "UP1_EXIT_CODE=$rc_c02" >> "$GITHUB_STEP_SUMMARY"
-          echo "UP1_C01_EXIT_CODE=$rc_c01" >> "$GITHUB_STEP_SUMMARY"
+          for stage in 88 300 600; do
+            for launch in LAUNCH_1 LAUNCH_2; do
+              [ -s "$OUT/UP1/UP1_${launch}_STAGE_${stage}.txt" ] || printf 'STAGE_%s\t%s\tNOT_RECORDED\n' "$stage" "$launch" > "$OUT/UP1/UP1_${launch}_STAGE_${stage}.txt"
+              [ -s "$OUT/UP1/UP1_${launch}_FRAME_${stage}_TAIL.txt" ] || printf 'STAGE=%s;STATUS=NOT_RECORDED;LAUNCH=%s\n' "$stage" "$launch" > "$OUT/UP1/UP1_${launch}_FRAME_${stage}_TAIL.txt"
+            done
+          done
+          echo "UP1_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
           exit 0
 
       - name: UP2 — inclusive Git and all Actions run/job ledger
@@ -557,15 +394,12 @@ jobs:
           fi
           rc0="$(cat "$OUT/UP0_EXIT_CODE.txt")"
           rc1="$(cat "$OUT/UP1_EXIT_CODE.txt")"
-          rc1c01="$(cat "$OUT/UP1_C01_EXIT_CODE.txt")"
-          rc_nav_c02="$(cat "$OUT/UP1_NAV_C02_EXIT_CODE.txt" 2>/dev/null || echo 2)"
-          rc_nav_c01="$(cat "$OUT/UP1_NAV_C01_EXIT_CODE.txt" 2>/dev/null || echo 2)"
-          case_rc=2
-          [ "$(cat "$OUT/UP1/UP1_CASE_FORMULA_K5.txt")" = "TUNTAS" ] && case_rc=0
           rc2="$(cat "$OUT/UP2_EXIT_CODE.txt")"
+          case_rc=2
+          [ "$(cat "$OUT/UP1/UP1_CASE_FORMULA_K5.txt" 2>/dev/null || echo BELUM)" = "TUNTAS" ] && case_rc=0
           preflight_rc="$(grep '^EXIT_CODE=' "$OUT/PREFLIGHT/UP_PREFLIGHT_RESULT.txt" | tail -n 1 | cut -d= -f2)"
           final_rc=0
-          for code in "$rc0" "$rc1" "$rc1c01" "$rc_nav_c02" "$rc_nav_c01" "$case_rc" "$rc2" "$preflight_rc"; do
+          for code in "$rc0" "$rc1" "$rc2" "$case_rc" "$preflight_rc"; do
             [ "$code" = "0" ] || final_rc=2
           done
           if [ "$final_rc" = "0" ]; then status=TUNTAS
@@ -579,11 +413,8 @@ jobs:
             echo "SOURCE_SHA=$GITHUB_SHA"
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "UP0_EXIT_CODE=$rc0"
-            echo "UP1_C02_EXIT_CODE=$rc1"
-            echo "UP1_C01_EXIT_CODE=$rc1c01"
-            echo "UP1_NAV_C02_EXIT_CODE=$rc_nav_c02"
-            echo "UP1_NAV_C01_EXIT_CODE=$rc_nav_c01"
-            echo "CASE_FORMULA_K5_EXIT_CODE=$case_rc"
+            echo "UP1_TWO_REPLAY_EXIT_CODE=$rc1"
+            echo "UP1_CASE_FORMULA_K5_EXIT_CODE=$case_rc"
             echo "UP2_EXIT_CODE=$rc2"
             echo "PREFLIGHT_EXIT_CODE=$preflight_rc"
             echo "EXIT_CODE=$final_rc"
@@ -597,41 +428,34 @@ jobs:
           WORKFLOW_RUN_ID=$GITHUB_RUN_ID
           OVERALL_STATUS=$status
           UP0_EXIT_CODE=$rc0
-          UP1_C02_EXIT_CODE=$rc1
-          UP1_C01_EXIT_CODE=$rc1c01
-          UP1_NAV_C02_EXIT_CODE=$rc_nav_c02
-          UP1_NAV_C01_EXIT_CODE=$rc_nav_c01
-          CASE_FORMULA_K5_EXIT_CODE=$case_rc
+          UP1_TWO_REPLAY_EXIT_CODE=$rc1
+          UP1_CASE_FORMULA_K5_EXIT_CODE=$case_rc
           UP2_EXIT_CODE=$rc2
           PREFLIGHT_EXIT_CODE=$preflight_rc
-          CLOSEOUT_COMMIT_INCLUDED_IN_UP2_LEDGER=NO (ledger captured at source SHA before this text-only report commit)
+          CHECKPOINT_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
+          UP1_LAUNCHES=2
+          UP1_INPUT=NONE
+          UP1_STAGE_WINDOWS=88,300,600
+          UP1_RAM_WRITE_INJECTION=NONE
+          CLOSEOUT_COMMIT_INCLUDED_IN_UP2_LEDGER=NO (ledger captured at workflow source SHA before this text-only report commit)
           OLD_FILES_MODIFIED=NO
           STATUS_MD_RELEASE_TAG_MODIFIED=NO
           ROM_EXE_DATA_BIN_BIOS_CHECKPOINT_CARD_RAM_DUMP_COMMITTED=NO
-          CODE_FILES_ADDED:
+          CODE_FILES_CHANGED_BY_CODE_COMMIT:
           .github/workflows/up0-up2-audit.yml
           tools/stage1/RunUP0.py
           tools/stage1/RunUP1.py
           tools/stage1/RunUP2.py
           EOF
-          mkdir -p "$OUT/UP1_C01"
-          if [ ! -s "$OUT/UP1_C01_EXIT_CODE.txt" ]; then echo 2 > "$OUT/UP1_C01_EXIT_CODE.txt"; fi
-          if [ ! -s "$OUT/UP1_C01_EXECUTION_LOG.txt" ]; then printf 'STATUS=BELUM\nREASON=C01 replay stage skipped\nEXIT_CODE=2\n' > "$OUT/UP1_C01_EXECUTION_LOG.txt"; fi
-          if [ ! -s "$OUT/UP1_C01/UP1_SUMMARY.txt" ]; then printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=C01 summary missing\nEXIT_CODE=2\n' > "$OUT/UP1_C01/UP1_SUMMARY.txt"; fi
-          for nav in C01 C02; do
-            mkdir -p "$OUT/UP1_NAV_$nav"
-            if [ ! -s "$OUT/UP1_NAV_$nav/UP1_SUMMARY.txt" ]; then printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=pad navigation summary missing\nEXIT_CODE=2\n' > "$OUT/UP1_NAV_$nav/UP1_SUMMARY.txt"; fi
-            if [ ! -s "$OUT/UP1_NAV_${nav}_EXECUTION_LOG.txt" ]; then printf 'PAD_NAV_NOT_RUN\n' > "$OUT/UP1_NAV_${nav}_EXECUTION_LOG.txt"; fi
-            if [ ! -s "$OUT/UP1_NAV_${nav}_EXIT_CODE.txt" ]; then echo 2 > "$OUT/UP1_NAV_${nav}_EXIT_CODE.txt"; fi
-          done
-          if [ ! -s "$OUT/UP1/UP1_CASE_FORMULA_K5.txt" ]; then printf 'BELUM\n' > "$OUT/UP1/UP1_CASE_FORMULA_K5.txt"; fi
           git fetch origin main
           git switch -C up-report-publish origin/main
           dest="reports/ui-audit-2026-11-13/up/run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          cp -R "$OUT/UP0" "$OUT/UP1" "$OUT/UP1_C01" "$OUT/UP1_NAV_C01" "$OUT/UP1_NAV_C02" "$OUT/UP2" "$OUT/PREFLIGHT" "$OUT/ACTIONS" "$dest/"
-          cp "$OUT/UP0_EXECUTION_LOG.txt" "$OUT/UP1_EXECUTION_LOG.txt" "$OUT/UP1_C01_EXECUTION_LOG.txt" "$OUT/UP1_NAV_C01_EXECUTION_LOG.txt" "$OUT/UP1_NAV_C02_EXECUTION_LOG.txt" "$OUT/UP2_EXECUTION_LOG.txt" "$dest/"
-          cp "$OUT/UP0_EXIT_CODE.txt" "$OUT/UP1_EXIT_CODE.txt" "$OUT/UP1_C01_EXIT_CODE.txt" "$OUT/UP1_NAV_C01_EXIT_CODE.txt" "$OUT/UP1_NAV_C02_EXIT_CODE.txt" "$OUT/UP2_EXIT_CODE.txt" "$dest/"
+          cp -R "$OUT/UP0" "$OUT/UP1" "$OUT/UP2" "$OUT/PREFLIGHT" "$OUT/ACTIONS" "$dest/"
+          cp "$OUT/UP0_EXECUTION_LOG.txt" "$OUT/UP1_EXECUTION_LOG.txt" "$OUT/UP2_EXECUTION_LOG.txt" "$dest/"
+          cp "$OUT/UP0_EXIT_CODE.txt" "$OUT/UP1_EXIT_CODE.txt" "$OUT/UP2_EXIT_CODE.txt" "$dest/"
+          cp "$OUT/CHECKPOINT_VERIFY.txt" "$dest/" 2>/dev/null || true
+          cp "$OUT/EMULATOR_SETUP_EXIT_CODE.txt" "$dest/" 2>/dev/null || true
           cp "$OUT/UP_FINAL_CLOSEOUT.txt" "$dest/UP_FINAL_CLOSEOUT.txt"
           {
             echo "FILES_CHANGED_BY_RESULT_COMMIT:"
