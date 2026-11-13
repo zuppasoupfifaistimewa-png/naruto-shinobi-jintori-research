@@ -374,6 +374,10 @@ def main()->int:
     template=cards/"memory-card-template.mcd";template.unlink(missing_ok=True)
     warm=args.work/"card-warmup.lua";warm.write_text(lua_warmup(),encoding="utf-8")
     home=args.work/"card-warmup-home";stdout=args.work/"card-warmup.stdout.txt"
+    for folder in (home/".config",home/".data",home/"runtime"):
+        folder.mkdir(parents=True,exist_ok=True)
+    try:(home/"runtime").chmod(0o700)
+    except OSError:pass
     command=["timeout","--signal=INT","--kill-after=10s",f"{args.timeout_seconds}s",str(args.pcsx_bin),
       "-noupdate","-no-ui","-debugger","-interpreter","-bios",str(args.bios),"-iso",str(args.cue),
       "-memcard1",str(template),"-softgpu","-dofile",str(warm),"-logfile",
