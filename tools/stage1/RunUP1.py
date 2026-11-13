@@ -466,7 +466,7 @@ def self_test():
     sample=("UP1_HIT\tL1\t88\tENTRY\t0x800B770C\t0x4\t0x2\t0x0\t0x0\t0x800B7790\t0xC\t"
       "0x80100000\t4\t0x80100490\t0x00000007\t0x00\t0x0180\t0x10\t0x0007\t0x0007\t0x0\t0x0\t0x0\t0x0\t0x0\t0x0\t0x0")
     assert len(parse_hits(sample))==1
-    snapshot="UP1_RECORD_SNAPSHOT\tL1\t4\t0x80100000\t0x01\t0x0180\t0x10\t0x0007\t0x0007\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000"
+    snapshot="UP1_RECORD_SNAPSHOT\tL1\t4\t0x80100000\t0x01\t0x0180\t0x10\t0x0007\t0x0007\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000"
     assert len(parse_record_snapshots(snapshot))==1
     print("UP1_SELF_TEST=PASS staged frames, selector trace, 64-record snapshot parser and checkpoint hash")
 
@@ -633,10 +633,17 @@ def main()->int:
                 if formula=="signed_trunc((12*V1)/10)":
                     n=signed32((input_value*12)&0xFFFFFFFF)
                     pred=((abs(n)//10)*(1 if n>=0 else -1))&0xFFFFFFFF
+                elif formula=="signed_trunc((15*V0)/10)":
+                    n=signed32((input_value*15)&0xFFFFFFFF)
+                    pred=((abs(n)//10)*(1 if n>=0 else -1))&0xFFFFFFFF
+                elif formula=="signed_trunc((18*V1)/10)":
+                    n=signed32((input_value*18)&0xFFFFFFFF)
+                    pred=((abs(n)//10)*(1 if n>=0 else -1))&0xFFFFFFFF
                 elif formula=="2*V0":
                     pred=(input_value*2)&0xFFFFFFFF
             match_input=("YES" if status=="TERBUKTI_BYTE" and selected is not None else
-                          "YES" if selected is not None and input_value==selected else "NO_OR_UNAVAILABLE")
+                          "YES" if status=="TERBUKTI_BYTE_SEQUENCE" and case_input is not None and input_value is not None
+                          else "NO_OR_UNAVAILABLE")
             actual=u32(ret["v0"])
             if pred is None:comparison="TIDAK DAPAT DIBANDINGKAN"
             elif actual==pred:comparison="MATCH" if match_input=="YES" else "MATCH_INPUT_SOURCE_UNPROVEN"
@@ -662,6 +669,15 @@ def main()->int:
     mapped_targets={f"0x{value:08X}" for value in case_targets}
     case_coverage="TUNTAS" if observed_targets==mapped_targets else "SEBAGIAN"
     selector_values=sorted({row["selector_value"] for row in selector_rows if row["selector_value"]!="TIDAK TAHU"})
+    record_selector_values=sorted({str(int(row["record_selector"],16)) for row in record_snapshots
+      if row.get("record_selector","TIDAK_TAHU").startswith("0x")})
+    snapshot_launches=sorted({row.get("launch","") for row in record_snapshots})
+    snapshot_by_launch={}
+    for row in record_snapshots:
+        snapshot_by_launch.setdefault(row.get("launch",""),{})[row.get("record_index","")]=(
+          row.get("record_selector",""),row.get("rec_20",""),row.get("selected_offset",""),row.get("selected_value",""))
+    snapshot_repeatable=("LAUNCH_1" in snapshot_by_launch and "LAUNCH_2" in snapshot_by_launch and
+      snapshot_by_launch["LAUNCH_1"]==snapshot_by_launch["LAUNCH_2"])
     case_formula_matches=sum(1 for row in selector_rows if row["comparison_status"]=="MATCH")
     case_formula_mismatches=sum(1 for row in selector_rows if row["comparison_status"]=="MISMATCH")
     if full and identical:
@@ -694,6 +710,10 @@ def main()->int:
       f"CASE_TARGETS_OBSERVED={len(observed_targets)}",
       f"CASE_TARGET_COVERAGE={case_coverage}",
       f"SELECTOR_VALUES_OBSERVED={','.join(selector_values)}",
+      f"RECORD_SNAPSHOT_ROWS={len(record_snapshots)}",
+      f"RECORD_SNAPSHOT_LAUNCHES={','.join(snapshot_launches)}",
+      f"RECORD_SELECTOR_VALUES_PRESENT_IN_RAM={','.join(record_selector_values)}",
+      f"RECORD_SNAPSHOT_REPEATABLE_ROW_BY_ROW={'YES' if snapshot_repeatable else 'NO_OR_INCOMPLETE'}",
       "GAMEPLAY_FIELD_MEANING=TIDAK TAHU",
       "EXIT_CODE=0" if status=="TUNTAS" else "EXIT_CODE=2"]
     (out/"UP1_SUMMARY.txt").write_text("\n".join(summary)+"\n",encoding="utf-8")

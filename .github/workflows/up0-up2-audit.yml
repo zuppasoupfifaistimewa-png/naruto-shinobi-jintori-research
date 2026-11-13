@@ -398,7 +398,7 @@ jobs:
                           all_snapshot_rows.append(row)
                           snapshots.append(row)
                           selector=row.get("record_selector","TIDAK TAHU")
-                          if selector!="TIDAK TAHU":
+                          if selector.startswith("0x"):
                               snapshot_selector_union.add(selector)
               snapshot_by_condition[condition]=snapshots
               k5=(values.get("STATUS")=="TUNTAS" and values.get("EVIDENCE")=="K5" and
@@ -423,6 +423,8 @@ jobs:
           formula_case_complete=(set(selector_union)==set(targets_by_selector) and
               len(repeatable_selectors)==len(targets_by_selector) and
               matches>0 and mismatches==0 and unproven==0)
+          snapshot_selector_decimal=sorted({str(int(value,16)) for value in snapshot_selector_union})
+          snapshot_target_union={targets_by_selector[value] for value in snapshot_selector_decimal if value in targets_by_selector}
           snapshot_repeatable=True
           for condition,snapshots in snapshot_by_condition.items():
               by_launch={}
@@ -440,8 +442,10 @@ jobs:
             f"CASE_TARGET_COVERAGE={'TUNTAS' if len(target_union)==len(targets_by_selector) else 'SEBAGIAN'}",
             f"SELECTOR_VALUES_EXECUTED={','.join(sorted(selector_union))}",
             f"SELECTOR_VALUES_WITH_TWO_IDENTICAL_REPLAYS={','.join(sorted(repeatable_selectors))}",
-            f"RECORD_SELECTOR_VALUES_PRESENT_IN_RAM={','.join(sorted(snapshot_selector_union))}",
+            f"RECORD_SELECTOR_VALUES_PRESENT_IN_RAM={','.join(snapshot_selector_decimal)}",
             f"RECORD_SNAPSHOT_ROWS_TOTAL={len(all_snapshot_rows)}",
+            f"RECORD_SNAPSHOT_TARGETS_PRESENT_IN_RAM={len(snapshot_target_union)}",
+            f"RECORD_SNAPSHOT_TARGET_COVERAGE={'TUNTAS' if len(snapshot_target_union)==len(targets_by_selector) else 'SEBAGIAN'}",
             f"RECORD_SNAPSHOT_REPEATABLE_WITHIN_EACH_CHECKPOINT={'YES' if snapshot_repeatable else 'NO_OR_INCOMPLETE'}",
             f"SELECTOR_RESULT_MATCH_ROWS={matches}",
             f"SELECTOR_RESULT_MISMATCH_ROWS={mismatches}",
