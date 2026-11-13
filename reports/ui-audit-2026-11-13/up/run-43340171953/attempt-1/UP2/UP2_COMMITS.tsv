@@ -1,0 +1,9 @@
+commit_sha	parent_shas	author	date	subject
+4a08370c3a2b194eb587169360ced2e347ef5f1f	efa05b8838fbf2b2625b40cfb828f8f87f2890aa	zuppasoupfifaistimewa-png	2026-11-13T07:49:48+07:00	Fix UP selector table isolation and case-entry probes
+efa05b8838fbf2b2625b40cfb828f8f87f2890aa	b0720026b02a0a6e3fd87d60ddc830fd3c8e09a7	github-actions[bot]	2026-11-13T00:47:46Z	Record UP0-UP2 audit results for run 43339749335 [skip ci]
+b0720026b02a0a6e3fd87d60ddc830fd3c8e09a7	873d864bfa8d0d0a2eb7307ab2dc7a12d2bcc8d5	zuppasoupfifaistimewa-png	2026-11-13T07:46:33+07:00	Trace UP selector jump table and runtime case inputs
+873d864bfa8d0d0a2eb7307ab2dc7a12d2bcc8d5	906a031fb8f987f7ab0a77a10b9758d39d561e48	github-actions[bot]	2026-11-12T23:53:29Z	Record UP0-UP2 audit results for run 43332378877 [skip ci]
+906a031fb8f987f7ab0a77a10b9758d39d561e48	e4af2511558aa7a3a162548acafeba03eeebec15	zuppasoupfifaistimewa-png	2026-11-13T06:51:45+07:00	Fix UP0 static preflight lint issues
+e4af2511558aa7a3a162548acafeba03eeebec15	aa43988ade04709066911c78e7c033f945d87d27	github-actions[bot]	2026-11-12T23:50:45Z	Record UP0-UP2 audit results for run 43332124239 [skip ci]
+aa43988ade04709066911c78e7c033f945d87d27	d0c7b1a1dff85ffb439923078e78adf5b958b9a8	zuppasoupfifaistimewa-png	2026-11-13T06:49:53+07:00	Add UP0-UP2 byte, runtime and ledger audit
+d0c7b1a1dff85ffb439923078e78adf5b958b9a8	1ecb9d45ab54542896775b6b559de66028ee89d9	github-actions[bot]	2026-11-12T22:41:49Z	Record UO0-UO2 audit results for run 43321960332 [skip ci]
