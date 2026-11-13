@@ -1,0 +1,4 @@
+STATUS=BELUM
+EVIDENCE=K0
+REASON=private EXE or DATA.BIN extraction missing
+EXIT_CODE=2

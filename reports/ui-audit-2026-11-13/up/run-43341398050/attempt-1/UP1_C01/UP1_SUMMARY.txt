@@ -1,0 +1,4 @@
+STATUS=BELUM
+EVIDENCE=K0
+REASON=preflight, either checkpoint, emulator or UP0 static-output prerequisites not passed
+EXIT_CODE=2
