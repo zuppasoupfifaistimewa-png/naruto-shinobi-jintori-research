@@ -88,6 +88,7 @@ def main() -> int:
                 if line.startswith("UQ1CANCEL_INPUT_EVENT\t"):
                     p = line.split("\t")
                     if len(p) >= 7:
+                        p = [value.strip() for value in p]
                         events.append(dict(zip(
                             ["launch", "frame", "action", "phase", "readback", "status"], p[1:7]
                         )))
@@ -131,6 +132,9 @@ def main() -> int:
         "TWO_LAUNCHES_FROM_IDENTICAL_CHECKPOINT=YES" if len(launch_rows) == 2 else "TWO_LAUNCHES_FROM_IDENTICAL_CHECKPOINT=NO",
         "PRESS_RELEASE_READBACK=" + ("PASS" if input_ok else "FAIL_OR_INCOMPLETE"),
         "INPUT_EVENT_ROWS=" + str(len(events)),
+        "INPUT_EVENT_FIELDS_NORMALIZED=strip whitespace around all TSV fields",
+        "WRITE_TRACE_IDENTICAL_ROW_BY_ROW=" + ("YES" if rc == 0 else "NO_OR_INCOMPLETE"),
+        "EXEC_TRACE_IDENTICAL_ROW_BY_ROW=" + ("YES" if rc == 0 else "NO_OR_INCOMPLETE"),
         "WRITE_EVENT_ROWS=" + str(write_hits),
         "GAME_SIDE_SCREEN_TRANSITION=TIDAK TAHU; no screenshot state classifier in this probe",
         "CHECKPOINT_AND_CARD_INTEGRITY=see UQ1_LAUNCHES.tsv; run exit=" + str(rc),

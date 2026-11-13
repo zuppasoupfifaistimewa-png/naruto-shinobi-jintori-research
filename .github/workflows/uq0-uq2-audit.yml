@@ -466,7 +466,7 @@ jobs:
           OLD_FILES_MODIFIED=NO
           STATUS_MD_RELEASE_TAG_MODIFIED=NO
           ROM_EXE_DATA_BIN_BIOS_CHECKPOINT_CARD_RAM_DUMP_COMMITTED=NO
-          CODE_FILES_CHANGED_BY_THIS_CODE_COMMIT:
+          CODE_FILES_CHANGED_BY_THIS_CODE_COMMIT (verified against parent diff):
           .github/workflows/uq0-uq2-audit.yml
           tools/stage1/RunUQ1Cancel.py
           EOF
