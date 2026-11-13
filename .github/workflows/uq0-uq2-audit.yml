@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/uq0-uq2-audit.yml"
       - "tools/stage1/RunUQ0.py"
+      - "tools/stage1/RunUQ0CFG.py"
       - "tools/stage1/RunUQ1.py"
       - "tools/stage1/RunUQ2.py"
   workflow_dispatch:
@@ -60,12 +61,12 @@ jobs:
           set +e
           mkdir -p "$OUT/PREFLIGHT"
           report="$OUT/PREFLIGHT/UQ_PREFLIGHT_RESULT.txt"
-          python -m py_compile tools/stage1/RunUQ0.py tools/stage1/RunUQ1.py tools/stage1/RunUQ2.py
+          python -m py_compile tools/stage1/RunUQ0.py tools/stage1/RunUQ0CFG.py tools/stage1/RunUQ1.py tools/stage1/RunUQ2.py
           compile_rc=$?
           python -m pip install --disable-pip-version-check --no-input pyflakes PyYAML > "$OUT/PREFLIGHT/PIP_INSTALL_LOG.txt" 2>&1
           pip_rc=$?
           if [ "$pip_rc" -eq 0 ]; then
-            python -m pyflakes tools/stage1/RunUQ0.py tools/stage1/RunUQ1.py tools/stage1/RunUQ2.py > "$OUT/PREFLIGHT/PYFLAKES_LOG.txt" 2>&1
+            python -m pyflakes tools/stage1/RunUQ0.py tools/stage1/RunUQ0CFG.py tools/stage1/RunUQ1.py tools/stage1/RunUQ2.py > "$OUT/PREFLIGHT/PYFLAKES_LOG.txt" 2>&1
             pyflakes_rc=$?
             python - <<'PY'
           from pathlib import Path
@@ -82,12 +83,14 @@ jobs:
           fi
           python tools/stage1/RunUQ0.py --self-test > "$OUT/PREFLIGHT/UQ0_SELF_TEST.txt" 2>&1
           uq0_rc=$?
+          python tools/stage1/RunUQ0CFG.py --self-test > "$OUT/PREFLIGHT/UQ0CFG_SELF_TEST.txt" 2>&1
+          uq0cfg_rc=$?
           python tools/stage1/RunUQ1.py --self-test > "$OUT/PREFLIGHT/UQ1_SELF_TEST.txt" 2>&1
           uq1_rc=$?
           python tools/stage1/RunUQ2.py --self-test > "$OUT/PREFLIGHT/UQ2_SELF_TEST.txt" 2>&1
           uq2_rc=$?
           rc=0
-          for code in "$compile_rc" "$pip_rc" "$pyflakes_rc" "$yaml_rc" "$uq0_rc" "$uq1_rc" "$uq2_rc"; do
+          for code in "$compile_rc" "$pip_rc" "$pyflakes_rc" "$yaml_rc" "$uq0_rc" "$uq0cfg_rc" "$uq1_rc" "$uq2_rc"; do
             [ "$code" -eq 0 ] || rc=1
           done
           if [ "$rc" -eq 0 ]; then status=TUNTAS; else status=BELUM; fi
@@ -100,6 +103,7 @@ jobs:
             echo "PYFLAKES_EXIT_CODE=$pyflakes_rc"
             echo "YAML_PARSE_EXIT_CODE=$yaml_rc"
             echo "UQ0_SELF_TEST_EXIT_CODE=$uq0_rc"
+            echo "UQ0CFG_SELF_TEST_EXIT_CODE=$uq0cfg_rc"
             echo "UQ1_SELF_TEST_EXIT_CODE=$uq1_rc"
             echo "UQ2_SELF_TEST_EXIT_CODE=$uq2_rc"
             echo "EXIT_CODE=$rc"
@@ -177,6 +181,15 @@ jobs:
             printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=UQ0 static analysis failed\nEXIT_CODE=%s\n' "$rc" > "$OUT/UQ0/UQ0_SUMMARY.txt"
           fi
           echo "UQ0_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
+          cfg_rc=2
+          if [ -s "$WORK/input/SLPS_035.53" ] && [ -s "$WORK/input/DATA.BIN" ] && grep -q '^STATUS=TUNTAS$' "$OUT/PREFLIGHT/UQ_PREFLIGHT_RESULT.txt" 2>/dev/null; then
+            python tools/stage1/RunUQ0CFG.py --exe "$WORK/input/SLPS_035.53" --data-bin "$WORK/input/DATA.BIN" --out-dir "$OUT/UQ0" > "$OUT/UQ0_CFG_EXECUTION_LOG.txt" 2>&1
+            cfg_rc=$?
+          else
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=UQ0CFG prerequisite missing\n' > "$OUT/UQ0/UQ0_CFG_SUMMARY.txt"
+          fi
+          echo "$cfg_rc" > "$OUT/UQ0_CFG_EXIT_CODE.txt"
+          echo "UQ0_CFG_EXIT_CODE=$cfg_rc" >> "$GITHUB_STEP_SUMMARY"
           exit 0
 
       - name: Download exact immutable checkpoint artifact
@@ -368,10 +381,11 @@ jobs:
           rc0="$(cat "$OUT/UQ0_EXIT_CODE.txt" 2>/dev/null || echo 2)"
           rc1="$(cat "$OUT/UQ1_EXIT_CODE.txt" 2>/dev/null || echo 2)"
           rc2="$(cat "$OUT/UQ2_EXIT_CODE.txt" 2>/dev/null || echo 2)"
+          rccfg="$(cat "$OUT/UQ0_CFG_EXIT_CODE.txt" 2>/dev/null || echo 2)"
           preflight_rc=2
           grep -q '^STATUS=TUNTAS$' "$OUT/PREFLIGHT/UQ_PREFLIGHT_RESULT.txt" 2>/dev/null && preflight_rc=0
           status=SEBAGIAN
-          if [ "$rc0" -eq 0 ] && [ "$rc1" -eq 0 ] && [ "$rc2" -eq 0 ] && [ "$preflight_rc" -eq 0 ]; then status=TUNTAS; fi
+          if [ "$rc0" -eq 0 ] && [ "$rccfg" -eq 0 ] && [ "$rc1" -eq 0 ] && [ "$rc2" -eq 0 ] && [ "$preflight_rc" -eq 0 ]; then status=TUNTAS; fi
           final_rc=0
           if [ "$status" != "TUNTAS" ]; then final_rc=2; fi
           {
@@ -380,6 +394,7 @@ jobs:
             echo "SOURCE_SHA=$GITHUB_SHA"
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "UQ0_EXIT_CODE=$rc0"
+            echo "UQ0_CFG_EXIT_CODE=$rccfg"
             echo "UQ1_EXIT_CODE=$rc1"
             echo "UQ2_EXIT_CODE=$rc2"
             echo "PREFLIGHT_EXIT_CODE=$preflight_rc"
@@ -395,6 +410,7 @@ jobs:
           WORKFLOW_RUN_ID=$GITHUB_RUN_ID
           OVERALL_STATUS=$status
           UQ0_EXIT_CODE=$rc0
+          UQ0_CFG_EXIT_CODE=$rccfg
           UQ1_EXIT_CODE=$rc1
           UQ2_EXIT_CODE=$rc2
           PREFLIGHT_EXIT_CODE=$preflight_rc
@@ -410,6 +426,7 @@ jobs:
           CODE_FILES_CHANGED_BY_CODE_COMMIT:
           .github/workflows/uq0-uq2-audit.yml
           tools/stage1/RunUQ0.py
+          tools/stage1/RunUQ0CFG.py
           tools/stage1/RunUQ1.py
           tools/stage1/RunUQ2.py
           EOF
@@ -418,8 +435,8 @@ jobs:
           dest="reports/ui-audit-2026-11-13/uq/run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
           cp -R "$OUT/UQ0" "$OUT/UQ1" "$OUT/UQ2" "$OUT/PREFLIGHT" "$OUT/ACTIONS" "$dest/"
-          cp "$OUT/UQ0_EXECUTION_LOG.txt" "$OUT/UQ1_EXECUTION_LOG.txt" "$OUT/UQ2_EXECUTION_LOG.txt" "$dest/" 2>/dev/null || true
-          cp "$OUT/UQ0_EXIT_CODE.txt" "$OUT/UQ1_EXIT_CODE.txt" "$OUT/UQ2_EXIT_CODE.txt" "$dest/" 2>/dev/null || true
+          cp "$OUT/UQ0_EXECUTION_LOG.txt" "$OUT/UQ0_CFG_EXECUTION_LOG.txt" "$OUT/UQ1_EXECUTION_LOG.txt" "$OUT/UQ2_EXECUTION_LOG.txt" "$dest/" 2>/dev/null || true
+          cp "$OUT/UQ0_EXIT_CODE.txt" "$OUT/UQ0_CFG_EXIT_CODE.txt" "$OUT/UQ1_EXIT_CODE.txt" "$OUT/UQ2_EXIT_CODE.txt" "$dest/" 2>/dev/null || true
           cp "$OUT/CHECKPOINT_VERIFY.txt" "$OUT/EMULATOR_SETUP_EXIT_CODE.txt" "$dest/" 2>/dev/null || true
           cp "$OUT/UQ_FINAL_CLOSEOUT.txt" "$dest/UQ_FINAL_CLOSEOUT.txt"
           {
