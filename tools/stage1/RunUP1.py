@@ -338,7 +338,7 @@ def parse_hits(text:str)->list[dict]:
 
 def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
                 appdir:Path,bios:Path,cue:Path,entries:list[int],case_targets:list[int],case_inputs:list[int],returns:list[int],
-                return_addresses:list[int],timeout_s:int):
+                return_addresses:list[int],timeout_s:int,expected_checkpoint_sha:str):
     folder=work/name.lower()
     folder.mkdir(parents=True,exist_ok=True)
     state=folder/"source.sstate"
@@ -350,7 +350,7 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
     lua=folder/"up1-exec-breakpoints.lua"
     lua.write_text(lua_exec(name,card,entries,case_targets,case_inputs,returns,return_addresses),encoding="utf-8")
     stdout=folder/"emulator.stdout.txt"
-    stage_start=f"STAGE_START\t{name}\tframes=88,300,600\tcheckpoint={CHECKPOINT_SHA}\n"
+    stage_start=f"STAGE_START\t{name}\tframes=88,300,600\tcheckpoint={expected_checkpoint_sha}\n"
     with (out/"UP1_STAGE_MARKERS.txt").open("a",encoding="utf-8") as stream:
         stream.write(stage_start)
         stream.flush()
@@ -404,14 +404,14 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
     expected=len(set(entries+case_targets+case_inputs+returns+return_addresses+[SHARED_SITE]))
     full=any(line.startswith(f"UP1_FRAME_LIMIT\t{name}\t600\t") for line in lines)
     passed=(exit_code==0 and full and breakpoint_count==expected and
-            checkpoint_before==checkpoint_after==source_before==source_after==CHECKPOINT_SHA and
+            checkpoint_before==checkpoint_after==source_before==source_after==expected_checkpoint_sha and
             card_before==card_after==CARD_SHA and card_readonly)
     row={"launch":name,"status":"PASS" if passed else "FAIL","exit_code":exit_code,
       "frames_requested":600,"frames_observed":600 if full else max(reached,default=0),
       "event_hits":len(events),"breakpoints_expected":expected,"breakpoints_registered":breakpoint_count,
       "entry_breakpoints":len(entries),"case_entry_breakpoints":len(case_targets),"case_input_breakpoints":len(case_inputs),"return_instruction_breakpoints":len(returns),
       "return_address_breakpoints":len(return_addresses),"shared_77E8_breakpoint":"YES",
-      "checkpoint_before":checkpoint_before,"checkpoint_after":checkpoint_after,
+      "checkpoint_sha256":expected_checkpoint_sha,"checkpoint_before":checkpoint_before,"checkpoint_after":checkpoint_after,
       "card_before":card_before,"card_after":card_after,
       "card_mode_0444":"YES" if card_readonly else "NO",
       "stages_reached":",".join(map(str,reached)) or "NONE","wall_seconds":f"{wall:.3f}"}
@@ -435,6 +435,8 @@ def main()->int:
                  "static-readers","static-disassembly","static-callers","static-cases",
                  "static-forward-sites","static-selector-table"):
         parser.add_argument("--"+name,type=Path)
+    parser.add_argument("--checkpoint-sha256",default=CHECKPOINT_SHA)
+    parser.add_argument("--checkpoint-bytes",type=int,default=CHECKPOINT_BYTES)
     parser.add_argument("--frames",type=int,default=600)
     parser.add_argument("--timeout-seconds",type=int,default=900)
     parser.add_argument("--self-test",action="store_true")
@@ -452,8 +454,8 @@ def main()->int:
     work.mkdir(parents=True,exist_ok=True)
     out.mkdir(parents=True,exist_ok=True)
     source=args.source
-    if (not source.is_file() or source.stat().st_size!=CHECKPOINT_BYTES or
-            sha(source)!=CHECKPOINT_SHA):
+    if (not source.is_file() or source.stat().st_size!=args.checkpoint_bytes or
+            sha(source)!=args.checkpoint_sha256):
         raise SystemExit("UP1_CHECKPOINT_IDENTITY_MISMATCH")
     source.chmod(0o444)
     source_before=sha(source)
@@ -514,7 +516,8 @@ def main()->int:
     events=[]
     for name in ("LAUNCH_1","LAUNCH_2"):
         row,hit_rows=launch_once(name,source,template,work,out,args.pcsx_bin,args.appdir,
-          args.bios,args.cue,entries,case_targets,case_inputs,returns,return_addresses,args.timeout_seconds)
+          args.bios,args.cue,entries,case_targets,case_inputs,returns,return_addresses,args.timeout_seconds,
+          args.checkpoint_sha256)
         launches.append(row)
         events.extend(hit_rows)
     write_tsv(out/"UP1_EXEC_HITS.tsv",REG_EVENT_FIELDS,events)
@@ -589,7 +592,8 @@ def main()->int:
                     pred=((abs(n)//10)*(1 if n>=0 else -1))&0xFFFFFFFF
                 elif formula=="2*V0":
                     pred=(input_value*2)&0xFFFFFFFF
-            match_input="YES" if selected is not None and input_value==selected else "NO_OR_UNAVAILABLE"
+            match_input=("YES" if status=="TERBUKTI_BYTE" and selected is not None else
+                          "YES" if selected is not None and input_value==selected else "NO_OR_UNAVAILABLE")
             actual=u32(ret["v0"])
             if pred is None:comparison="TIDAK DAPAT DIBANDINGKAN"
             elif actual==pred:comparison="MATCH" if match_input=="YES" else "MATCH_INPUT_SOURCE_UNPROVEN"
@@ -633,7 +637,7 @@ def main()->int:
       f"CASE_INPUT_BREAKPOINTS={len(case_inputs)}",
       f"RETURN_INSTRUCTION_BREAKPOINTS={len(returns)}",
       f"CALL_RETURN_BREAKPOINTS={len(return_addresses)}","SHARED_77E8_BREAKPOINT=0x800B77E8",
-      f"CHECKPOINT_SHA256={source_before}",f"MEMORY_CARD_SHA256={card_hash}",
+      f"CHECKPOINT_SHA256={args.checkpoint_sha256}",f"MEMORY_CARD_SHA256={card_hash}",
       f"LAUNCH_1_EXIT_CODE={launches[0]['exit_code']}",f"LAUNCH_2_EXIT_CODE={launches[1]['exit_code']}",
       f"LAUNCH_1_HITS={len(first)}",f"LAUNCH_2_HITS={len(second)}",
       f"EVENT_TRACE_IDENTICAL_ROW_BY_ROW={'YES' if identical else 'NO'}",
