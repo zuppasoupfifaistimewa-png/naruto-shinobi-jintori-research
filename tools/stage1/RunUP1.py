@@ -29,6 +29,7 @@ LAUNCH_FIELDS=["launch","status","exit_code","frames_requested","frames_observed
 COMPARE_FIELDS=["metric","launch_1","launch_2","same","interpretation"]
 RECORD_SELECTOR_FIELDS=["launch","record_index","record_address","record_selector","rec_20","selected_offset","selected_value",
  "rec_10","rec_12","rec_14","rec_16","rec_18","rec_1A","rec_1C","rec_1E"]
+PAD_ACTION_FIELDS=["launch","frame","button","phase","readback","status"]
 SELECTOR_FIELDS=["launch","frame","selector_value","table_target_pc","case_entry_pc","return_pc",
  "record_index","record_selector","rec_20","selected_offset","lv_selected","case_input_pc","input_register",
  "case_input_value","expression_candidate","predicted_v0","v0_at_return",
@@ -99,7 +100,7 @@ end)
 print("UP1_CARD_WARMUP_READY=YES")
 '''.lstrip()
 
-def lua_exec(launch:str,card:Path,entries:list[int],case_targets:list[int],case_inputs:list[int],returns:list[int],return_addrs:list[int])->str:
+def lua_exec(launch:str,card:Path,entries:list[int],case_targets:list[int],case_inputs:list[int],returns:list[int],return_addrs:list[int],input_actions:list[tuple[int,str]])->str:
     card_s=str(card).replace("\\","\\\\").replace('"','\\"')
     roles={}
     for address in entries:
@@ -116,17 +117,29 @@ def lua_exec(launch:str,card:Path,entries:list[int],case_targets:list[int],case_
     table=",".join("{pc=0x%08X,roles={%s}}"%(address,",".join('"'+role+'"' for role in labels))
                    for address,labels in sorted(roles.items()))
     offsets=",".join(str(value) for value in VALUE_OFFSETS)
+    action_table=",".join("{frame=%d,button=%s}"%(frame,'"'+button+'"') for frame,button in input_actions)
     return r'''
 local ffi=require("ffi")
 local LAUNCH="'''+launch+r'''"
 local CARD_PATH="'''+card_s+r'''"
 local BP_SITES={'''+table+r'''}
 local OFFSETS={'''+offsets+r'''}
+local INPUT_ACTIONS={'''+action_table+r'''}
 local RAM_START=0x80000000
 local RAM_END=0x80200000
 local MOD=4294967296
 local STRIDE=0x124
 local mem=PCSX.getMemPtr()
+local pad=nil
+local padButtons=nil
+if #INPUT_ACTIONS>0 then
+ local ok,p=pcall(function() return PCSX.SIO0.slots[1].pads[1] end)
+ local okb,b=pcall(function() return PCSX.CONSTS.PAD.BUTTON end)
+ if ok then pad=p end
+ if okb then padButtons=b end
+end
+local activePadButton=nil
+local inputIndex=1
 local loaded,started,finished=false,false,false
 local post,runtimeP,hits=0,nil,0
 local snapshotDone=false
@@ -280,6 +293,39 @@ _G.upVsync=PCSX.Events.createEventListener("GPU::Vsync",function()
  end
  if not loaded then return end
  post=post+1
+ local scheduled=INPUT_ACTIONS[inputIndex]
+ if scheduled then
+  if post==scheduled.frame then
+   local button=padButtons and padButtons[scheduled.button]
+   local ok,value=pcall(function()
+    if not pad or not button then error("pad or button unavailable") end
+    pad.setOverride(button)
+    return pad.getButton(button)
+   end)
+   local pass=ok and value==true
+   log("UP1_PAD_INPUT\t"..LAUNCH.."\t"..tostring(post).."\t"..scheduled.button.."\tPRESS\t"..tostring(value).."\t"..(pass and "PASS" or "FAIL"))
+   if pass then activePadButton=button else
+    finished=true
+    PCSX.nextTick(function()PCSX.quit(84)end)
+    return
+   end
+  elseif post==scheduled.frame+8 then
+   local ok,value=pcall(function()
+    if not pad or not activePadButton then error("no active pad button") end
+    pad.clearOverride(activePadButton)
+    return pad.getButton(activePadButton)
+   end)
+   local pass=ok and value==false
+   log("UP1_PAD_INPUT\t"..LAUNCH.."\t"..tostring(post).."\t"..scheduled.button.."\tRELEASE\t"..tostring(value).."\t"..(pass and "PASS" or "FAIL"))
+   activePadButton=nil
+   inputIndex=inputIndex+1
+   if not pass then
+    finished=true
+    PCSX.nextTick(function()PCSX.quit(85)end)
+    return
+   end
+  end
+ end
  if post==88 or post==300 or post==600 then
   log("UP1_STAGE_REACHED\t"..LAUNCH.."\t"..tostring(post).."\t"..tostring(hits))
  end
@@ -289,7 +335,7 @@ _G.upVsync=PCSX.Events.createEventListener("GPU::Vsync",function()
   PCSX.nextTick(function()PCSX.quit(0)end)
  end
 end)
-log("UP1_SCRIPT_READY launch="..LAUNCH.." frame_limit=600 input=NONE ram_writes=NONE")
+log("UP1_SCRIPT_READY launch="..LAUNCH.." frame_limit=600 pad_actions="..tostring(#INPUT_ACTIONS).." ram_writes=NONE")
 '''.lstrip()
 
 def read_entries(path:Path)->list[int]:
@@ -364,6 +410,16 @@ def parse_record_snapshots(text:str)->list[dict]:
             snapshots.append(dict(zip(RECORD_SELECTOR_FIELDS,parts[1:])))
     return snapshots
 
+def parse_pad_inputs(text:str)->list[dict]:
+    rows=[]
+    for line in text.splitlines():
+        if not line.startswith("UP1_PAD_INPUT\t"):
+            continue
+        parts=line.split("\t")
+        if len(parts)==7:
+            rows.append(dict(zip(PAD_ACTION_FIELDS,parts[1:])))
+    return rows
+
 def parse_hits(text:str)->list[dict]:
     events=[]
     for line in text.splitlines():
@@ -376,7 +432,7 @@ def parse_hits(text:str)->list[dict]:
 
 def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
                 appdir:Path,bios:Path,cue:Path,entries:list[int],case_targets:list[int],case_inputs:list[int],returns:list[int],
-                return_addresses:list[int],timeout_s:int,expected_checkpoint_sha:str):
+                return_addresses:list[int],timeout_s:int,expected_checkpoint_sha:str,input_actions:list[tuple[int,str]]):
     folder=work/name.lower()
     folder.mkdir(parents=True,exist_ok=True)
     state=folder/"source.sstate"
@@ -386,7 +442,7 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
     shutil.copyfile(template,card)
     card.chmod(0o444)
     lua=folder/"up1-exec-breakpoints.lua"
-    lua.write_text(lua_exec(name,card,entries,case_targets,case_inputs,returns,return_addresses),encoding="utf-8")
+    lua.write_text(lua_exec(name,card,entries,case_targets,case_inputs,returns,return_addresses,input_actions),encoding="utf-8")
     stdout=folder/"emulator.stdout.txt"
     stage_start=f"STAGE_START\t{name}\tframes=88,300,600\tcheckpoint={expected_checkpoint_sha}\n"
     with (out/"UP1_STAGE_MARKERS.txt").open("a",encoding="utf-8") as stream:
@@ -402,6 +458,7 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
         log_text+="\n"+pcsx_log.read_text(encoding="utf-8",errors="replace")
     events=parse_hits(log_text)
     snapshots=parse_record_snapshots(log_text)
+    pad_rows=parse_pad_inputs(log_text)
     reached=[]
     lines=log_text.splitlines()
     for stage in STAGES:
@@ -442,9 +499,10 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
                 breakpoint_count=0
     expected=len(set(entries+case_targets+case_inputs+returns+return_addresses+[SHARED_SITE]))
     full=any(line.startswith(f"UP1_FRAME_LIMIT\t{name}\t600\t") for line in lines)
+    pad_pass=(len(pad_rows)==2*len(input_actions) and all(row["status"]=="PASS" for row in pad_rows))
     passed=(exit_code==0 and full and breakpoint_count==expected and
             checkpoint_before==checkpoint_after==source_before==source_after==expected_checkpoint_sha and
-            card_before==card_after==CARD_SHA and card_readonly)
+            card_before==card_after==CARD_SHA and card_readonly and pad_pass)
     row={"launch":name,"status":"PASS" if passed else "FAIL","exit_code":exit_code,
       "frames_requested":600,"frames_observed":600 if full else max(reached,default=0),
       "event_hits":len(events),"breakpoints_expected":expected,"breakpoints_registered":breakpoint_count,
@@ -453,12 +511,15 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
       "checkpoint_sha256":expected_checkpoint_sha,"checkpoint_before":checkpoint_before,"checkpoint_after":checkpoint_after,
       "card_before":card_before,"card_after":card_after,
       "card_mode_0444":"YES" if card_readonly else "NO",
-      "stages_reached":",".join(map(str,reached)) or "NONE","wall_seconds":f"{wall:.3f}"}
+      "stages_reached":",".join(map(str,reached)) or "NONE",
+      "pad_actions_scheduled":len(input_actions),"pad_actions_logged":len(pad_rows),
+      "pad_actions_all_pass":"YES" if pad_pass else "NO",
+      "wall_seconds":f"{wall:.3f}"}
     (out/f"UP1_{name}_EXECUTION_TAIL.txt").write_text(
         "\n".join(lines[-240:])+"\n",encoding="utf-8")
     state.unlink(missing_ok=True)
     card.unlink(missing_ok=True)
-    return row,events,snapshots
+    return row,events,snapshots,pad_rows
 
 def self_test():
     assert CHECKPOINT_BYTES==21162799 and STAGES==(88,300,600)
@@ -468,7 +529,9 @@ def self_test():
     assert len(parse_hits(sample))==1
     snapshot="UP1_RECORD_SNAPSHOT\tL1\t4\t0x80100000\t0x01\t0x0180\t0x10\t0x0007\t0x0007\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000"
     assert len(parse_record_snapshots(snapshot))==1
-    print("UP1_SELF_TEST=PASS staged frames, selector trace, 64-record snapshot parser and checkpoint hash")
+    pad_sample="UP1_PAD_INPUT\tL1\t30\tCROSS\tPRESS\ttrue\tPASS"
+    assert len(parse_pad_inputs(pad_sample))==1
+    print("UP1_SELF_TEST=PASS staged frames, selector/snapshot parsers, checkpoint hash and pad input parser")
 
 def main()->int:
     parser=argparse.ArgumentParser()
@@ -478,6 +541,7 @@ def main()->int:
         parser.add_argument("--"+name,type=Path)
     parser.add_argument("--checkpoint-sha256",default=CHECKPOINT_SHA)
     parser.add_argument("--checkpoint-bytes",type=int,default=CHECKPOINT_BYTES)
+    parser.add_argument("--input-sequence",default="")
     parser.add_argument("--frames",type=int,default=600)
     parser.add_argument("--timeout-seconds",type=int,default=900)
     parser.add_argument("--self-test",action="store_true")
@@ -491,6 +555,21 @@ def main()->int:
         parser.error("UP1 requires runtime paths and UP0 static files")
     if args.frames!=600:
         parser.error("UP1 frame window fixed to staged 88 -> 300 -> 600")
+    input_actions=[]
+    allowed_buttons={"UP","DOWN","LEFT","RIGHT","CIRCLE","CROSS","TRIANGLE","SQUARE","START","SELECT","L1","R1","L2","R2"}
+    if args.input_sequence:
+        previous_end=0
+        for token in args.input_sequence.split(","):
+            try:
+                frame_text,button=token.strip().split(":",1)
+                frame=int(frame_text)
+            except (ValueError,TypeError):
+                parser.error("input sequence must use frame:BUTTON comma-separated")
+            button=button.upper()
+            if frame<1 or frame+8>=args.frames or button not in allowed_buttons or frame<previous_end:
+                parser.error("invalid frame/button order in input sequence")
+            input_actions.append((frame,button))
+            previous_end=frame+9
     work,out=args.work,args.out
     work.mkdir(parents=True,exist_ok=True)
     out.mkdir(parents=True,exist_ok=True)
@@ -555,20 +634,27 @@ def main()->int:
     launches=[]
     events=[]
     record_snapshots=[]
+    pad_actions=[]
     for name in ("LAUNCH_1","LAUNCH_2"):
-        row,hit_rows,snapshot_rows=launch_once(name,source,template,work,out,args.pcsx_bin,args.appdir,
+        row,hit_rows,snapshot_rows,pad_rows=launch_once(name,source,template,work,out,args.pcsx_bin,args.appdir,
           args.bios,args.cue,entries,case_targets,case_inputs,returns,return_addresses,args.timeout_seconds,
-          args.checkpoint_sha256)
+          args.checkpoint_sha256,input_actions)
         launches.append(row)
         events.extend(hit_rows)
         record_snapshots.extend(snapshot_rows)
+        pad_actions.extend(pad_rows)
     write_tsv(out/"UP1_EXEC_HITS.tsv",REG_EVENT_FIELDS,events)
     write_tsv(out/"UP1_RECORD_SELECTORS.tsv",RECORD_SELECTOR_FIELDS,record_snapshots)
+    write_tsv(out/"UP1_PAD_ACTIONS.tsv",PAD_ACTION_FIELDS,pad_actions)
     write_tsv(out/"UP1_LAUNCHES.tsv",LAUNCH_FIELDS,launches)
     first=[row for row in events if row["launch"]=="LAUNCH_1"]
     second=[row for row in events if row["launch"]=="LAUNCH_2"]
     signature=lambda rows:[tuple(row[key] for key in REG_EVENT_FIELDS[1:]) for row in rows]
     identical=bool(first) and bool(second) and signature(first)==signature(second)
+    pad_first=[row for row in pad_actions if row["launch"]=="LAUNCH_1"]
+    pad_second=[row for row in pad_actions if row["launch"]=="LAUNCH_2"]
+    pad_signature=lambda rows:[tuple(row[key] for key in PAD_ACTION_FIELDS[1:]) for row in rows]
+    pad_identical=(not input_actions) or (len(pad_first)==len(pad_second)==2*len(input_actions) and pad_signature(pad_first)==pad_signature(pad_second))
     full=all(row["status"]=="PASS" for row in launches)
     def reached(row,stage):
         return "YES" if str(stage) in row["stages_reached"].split(",") else "NO"
@@ -577,6 +663,8 @@ def main()->int:
        "same":"YES" if len(first)==len(second) else "NO","interpretation":"jumlah hit"},
       {"metric":"EVENT_TRACE_ROW_BY_ROW","launch_1":len(first),"launch_2":len(second),
        "same":"YES" if identical else "NO","interpretation":"seluruh kolom dan urutan hit identik"},
+      {"metric":"PAD_ACTION_TRACE_ROW_BY_ROW","launch_1":len(pad_first),"launch_2":len(pad_second),
+       "same":"YES" if pad_identical else "NO","interpretation":"press/release identik"},
       {"metric":"STAGE_88","launch_1":reached(launches[0],88),"launch_2":reached(launches[1],88),
        "same":"SAME_CHECKPOINT","interpretation":"milestone"},
       {"metric":"STAGE_300","launch_1":reached(launches[0],300),"launch_2":reached(launches[1],300),
@@ -680,7 +768,7 @@ def main()->int:
       snapshot_by_launch["LAUNCH_1"]==snapshot_by_launch["LAUNCH_2"])
     case_formula_matches=sum(1 for row in selector_rows if row["comparison_status"]=="MATCH")
     case_formula_mismatches=sum(1 for row in selector_rows if row["comparison_status"]=="MISMATCH")
-    if full and identical:
+    if full and identical and pad_identical:
         status="TUNTAS"
         evidence="K5"
     elif max_stage>0 or any(row["event_hits"]>0 for row in launches):
@@ -701,7 +789,11 @@ def main()->int:
       f"LAUNCH_1_HITS={len(first)}",f"LAUNCH_2_HITS={len(second)}",
       f"EVENT_TRACE_IDENTICAL_ROW_BY_ROW={'YES' if identical else 'NO'}",
       "K5_SCOPE=dua replay dalam kondisi yang sama dari checkpoint identik; bukan variasi independen, identik memang wajar",
-      "INPUT=NONE","RAM_WRITE_INJECTION=NONE","CHECKPOINT_AND_CARD_READ_ONLY=YES",
+      "INPUT_SEQUENCE="+(args.input_sequence or "NONE"),
+      "INPUT=PAD_ONLY" if input_actions else "INPUT=NONE",
+      f"PAD_ACTIONS_EXPECTED={2*len(input_actions)}",f"PAD_ACTIONS_OBSERVED={len(pad_actions)}",
+      f"PAD_ACTION_TRACE_IDENTICAL_ROW_BY_ROW={'YES' if pad_identical else 'NO'}",
+      "RAM_WRITE_INJECTION=NONE","CHECKPOINT_AND_CARD_READ_ONLY=YES",
       "SELECTOR_TO_SITE_MAPPING=BYTE_TABLE_AND_RUNTIME_RECORD_SELECTOR",
       f"SELECTOR_VALUES_OBSERVED={','.join(sorted({row['selector_value'] for row in selector_rows if row['selector_value']!='TIDAK TAHU'}))}",
       f"SELECTOR_RESULT_MATCH_ROWS={case_formula_matches}",

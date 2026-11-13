@@ -317,6 +317,8 @@ jobs:
           [ -s "$ENTRY" ] && [ -s "$DISASM" ] && [ -s "$CALLERS" ] && [ -s "$CASES" ] && [ -s "$FORWARD" ] && [ -s "$JUMPTABLE" ] || prerequisites=1
           rc_c02=2
           rc_c01=2
+          rc_nav_c02=2
+          rc_nav_c01=2
           if [ "$prerequisites" -eq 0 ]; then
             python tools/stage1/RunUP1.py --work "$WORK/emulator/c02" --out "$OUT/UP1" \
               --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
@@ -338,6 +340,27 @@ jobs:
               --static-forward-sites "$FORWARD" --static-selector-table "$JUMPTABLE" \
               --frames 600 --timeout-seconds 900 > "$OUT/UP1_C01_EXECUTION_LOG.txt" 2>&1
             rc_c01=$?
+            mkdir -p "$OUT/UP1_NAV_C02" "$OUT/UP1_NAV_C01"
+            python tools/stage1/RunUP1.py --work "$WORK/emulator/pad-nav-c02" --out "$OUT/UP1_NAV_C02" \
+              --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
+              --cue "$WORK/source/game-run.cue" --source "$SOURCE_C02" \
+              --checkpoint-sha256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35 \
+              --checkpoint-bytes 21162799 --input-sequence "30:UP,90:RIGHT,150:DOWN,210:LEFT,270:UP,330:RIGHT,390:DOWN,450:LEFT,510:CIRCLE" \
+              --static-readers "$ENTRY" --static-disassembly "$DISASM" \
+              --static-callers "$CALLERS" --static-cases "$CASES" \
+              --static-forward-sites "$FORWARD" --static-selector-table "$JUMPTABLE" \
+              --frames 600 --timeout-seconds 900 > "$OUT/UP1_NAV_C02_EXECUTION_LOG.txt" 2>&1
+            rc_nav_c02=$?
+            python tools/stage1/RunUP1.py --work "$WORK/emulator/pad-nav-c01" --out "$OUT/UP1_NAV_C01" \
+              --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
+              --cue "$WORK/source/game-run.cue" --source "$SOURCE_C01" \
+              --checkpoint-sha256 747217064b1a178d7bdfe4ef4722935593dbbea2c89efcbd451e25d651bd014f \
+              --checkpoint-bytes 21162638 --input-sequence "30:UP,90:RIGHT,150:DOWN,210:LEFT,270:UP,330:RIGHT,390:DOWN,450:LEFT,510:CIRCLE" \
+              --static-readers "$ENTRY" --static-disassembly "$DISASM" \
+              --static-callers "$CALLERS" --static-cases "$CASES" \
+              --static-forward-sites "$FORWARD" --static-selector-table "$JUMPTABLE" \
+              --frames 600 --timeout-seconds 900 > "$OUT/UP1_NAV_C01_EXECUTION_LOG.txt" 2>&1
+            rc_nav_c01=$?
           else
             mkdir -p "$OUT/UP1_C01"
             printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=preflight, either checkpoint, emulator or UP0 static-output prerequisites not passed\nEXIT_CODE=2\n' > "$OUT/UP1/UP1_SUMMARY.txt"
@@ -347,122 +370,141 @@ jobs:
           fi
           echo "$rc_c02" > "$OUT/UP1_EXIT_CODE.txt"
           echo "$rc_c01" > "$OUT/UP1_C01_EXIT_CODE.txt"
+          echo "$rc_nav_c02" > "$OUT/UP1_NAV_C02_EXIT_CODE.txt"
+          echo "$rc_nav_c01" > "$OUT/UP1_NAV_C01_EXIT_CODE.txt"
+          if [ "$rc_nav_c02" -ne 0 ] && [ ! -s "$OUT/UP1_NAV_C02/UP1_SUMMARY.txt" ]; then
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=C02 pad navigation runtime failed before summary\nEXIT_CODE=%s\n' "$rc_nav_c02" > "$OUT/UP1_NAV_C02/UP1_SUMMARY.txt"
+          fi
+          if [ "$rc_nav_c01" -ne 0 ] && [ ! -s "$OUT/UP1_NAV_C01/UP1_SUMMARY.txt" ]; then
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=C01 pad navigation runtime failed before summary\nEXIT_CODE=%s\n' "$rc_nav_c01" > "$OUT/UP1_NAV_C01/UP1_SUMMARY.txt"
+          fi
           if [ "$rc_c02" -ne 0 ] && [ ! -s "$OUT/UP1/UP1_SUMMARY.txt" ]; then
             printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=C02 UP1 runtime failed before summary\nEXIT_CODE=%s\n' "$rc_c02" > "$OUT/UP1/UP1_SUMMARY.txt"
           fi
           mkdir -p "$OUT/UP1" "$OUT/UP1_C01"
-          python - "$OUT/UP1" "$OUT/UP1_C01" "$OUT/UP0/UP0_SELECTOR_JUMPTABLE.tsv" <<'PY'
+          mkdir -p "$OUT/UP1_NAV_C01" "$OUT/UP1_NAV_C02"
+          python - "$OUT/UP1" "$OUT/UP1_C01" "$OUT/UP1_NAV_C02" "$OUT/UP1_NAV_C01" "$OUT/UP0/UP0_SELECTOR_JUMPTABLE.tsv" <<'PY'
           import csv
           import sys
           from pathlib import Path
 
-          c02=Path(sys.argv[1]); c01=Path(sys.argv[2]); table=Path(sys.argv[3])
-          conditions=[("C01",c01),("C02",c02)]
-          target_union=set(); selector_union=set(); all_selector_rows=[]
-          all_snapshot_rows=[]; snapshot_selector_union=set()
+          folders={
+              "C01_BASELINE":Path(sys.argv[2]),
+              "C02_BASELINE":Path(sys.argv[1]),
+              "C01_PAD_NAV":Path(sys.argv[4]),
+              "C02_PAD_NAV":Path(sys.argv[3]),
+          }
+          table=Path(sys.argv[5])
           targets_by_selector={}
           with table.open(encoding="utf-8",newline="") as stream:
               for row in csv.DictReader(stream,delimiter="\t"):
                   targets_by_selector[row["selector_value"]]=row["jump_target_pc"]
-          lines=["UP1_MULTI_CHECKPOINT_CONDITION_SUMMARY"]
-          k5_all=True
-          hits_by_selector={}
-          snapshot_by_condition={}
-          for condition,folder in conditions:
-              summary=(folder/"UP1_SUMMARY.txt").read_text(encoding="utf-8",errors="replace")
+          all_selector_rows=[];all_snapshot_rows=[]
+          selector_union=set();target_union=set();snapshot_selector_union=set()
+          repeatable_by_selector={};lines=["UP1_MULTI_CHECKPOINT_AND_PAD_NAVIGATION_SUMMARY"]
+          all_k5=True
+          for condition,folder in folders.items():
               values={}
-              for line in summary.splitlines():
-                  if "=" in line:
-                      key,value=line.split("=",1); values[key]=value
+              summary=folder/"UP1_SUMMARY.txt"
+              if summary.exists():
+                  for line in summary.read_text(encoding="utf-8",errors="replace").splitlines():
+                      if "=" in line:
+                          key,value=line.split("=",1);values[key]=value
               rows=[]
-              path=folder/"UP1_SELECTOR_V0.tsv"
-              if path.exists():
-                  with path.open(encoding="utf-8",newline="") as stream:
+              selector_file=folder/"UP1_SELECTOR_V0.tsv"
+              if selector_file.exists():
+                  with selector_file.open(encoding="utf-8",newline="") as stream:
                       for row in csv.DictReader(stream,delimiter="\t"):
-                          row["condition"]=condition
-                          all_selector_rows.append(row)
-                          rows.append(row)
+                          row["condition"]=condition;all_selector_rows.append(row);rows.append(row)
                           selector=row.get("selector_value","TIDAK TAHU")
                           launch=row.get("launch","TIDAK TAHU")
-                          if selector!="TIDAK TAHU":
+                          if selector in targets_by_selector:
                               selector_union.add(selector)
-                              hits_by_selector.setdefault(selector,{}).setdefault(condition,set()).add(launch)
-                          if row.get("table_target_pc","TIDAK TAHU")!="TIDAK TAHU":
+                              repeatable_by_selector.setdefault(selector,{}).setdefault(condition,set()).add(launch)
+                          if row.get("table_target_pc") in targets_by_selector.values():
                               target_union.add(row["table_target_pc"])
               snapshots=[]
-              snap_path=folder/"UP1_RECORD_SELECTORS.tsv"
-              if snap_path.exists():
-                  with snap_path.open(encoding="utf-8",newline="") as stream:
+              snap_file=folder/"UP1_RECORD_SELECTORS.tsv"
+              if snap_file.exists():
+                  with snap_file.open(encoding="utf-8",newline="") as stream:
                       for row in csv.DictReader(stream,delimiter="\t"):
-                          row["condition"]=condition
-                          all_snapshot_rows.append(row)
-                          snapshots.append(row)
-                          selector=row.get("record_selector","TIDAK TAHU")
-                          if selector.startswith("0x"):
-                              snapshot_selector_union.add(selector)
-              snapshot_by_condition[condition]=snapshots
+                          row["condition"]=condition;all_snapshot_rows.append(row);snapshots.append(row)
+                          try:sel=str(int(row.get("record_selector",""),16))
+                          except (TypeError,ValueError):continue
+                          if sel in targets_by_selector:snapshot_selector_union.add(sel)
+              pad_rows=[]
+              pad_file=folder/"UP1_PAD_ACTIONS.tsv"
+              if pad_file.exists():
+                  with pad_file.open(encoding="utf-8",newline="") as stream:
+                      pad_rows=list(csv.DictReader(stream,delimiter="\t"))
+              by_launch={}
+              for row in pad_rows:by_launch.setdefault(row.get("launch",""),[]).append(row)
+              if condition.endswith("PAD_NAV"):
+                  pad_ok=(len(by_launch.get("LAUNCH_1",[]))==18 and
+                          len(by_launch.get("LAUNCH_2",[]))==18 and
+                          all(row.get("status")=="PASS" for row in pad_rows) and
+                          [tuple(r[k] for k in ("frame","button","phase","readback","status")) for r in by_launch["LAUNCH_1"]]==
+                          [tuple(r[k] for k in ("frame","button","phase","readback","status")) for r in by_launch["LAUNCH_2"]])
+              else:
+                  pad_ok=(values.get("PAD_ACTION_TRACE_IDENTICAL_ROW_BY_ROW")=="YES")
               k5=(values.get("STATUS")=="TUNTAS" and values.get("EVIDENCE")=="K5" and
                   values.get("EVENT_TRACE_IDENTICAL_ROW_BY_ROW")=="YES" and
-                  values.get("MAXIMUM_STAGE_REACHED")=="600")
-              k5_all=k5_all and k5
+                  values.get("PAD_ACTION_TRACE_IDENTICAL_ROW_BY_ROW")=="YES" and
+                  values.get("MAXIMUM_STAGE_REACHED")=="600" and pad_ok)
+              all_k5=all_k5 and k5
               lines.extend([f"{condition}_STATUS={values.get('STATUS','TIDAK TAHU')}",
                 f"{condition}_EVIDENCE={values.get('EVIDENCE','TIDAK TAHU')}",
                 f"{condition}_CHECKPOINT_SHA256={values.get('CHECKPOINT_SHA256','TIDAK TAHU')}",
                 f"{condition}_EVENT_TRACE_IDENTICAL_ROW_BY_ROW={values.get('EVENT_TRACE_IDENTICAL_ROW_BY_ROW','TIDAK TAHU')}",
+                f"{condition}_PAD_ACTION_TRACE_IDENTICAL_ROW_BY_ROW={values.get('PAD_ACTION_TRACE_IDENTICAL_ROW_BY_ROW','TIDAK TAHU')}",
+                f"{condition}_PAD_ACTION_ROWS={len(pad_rows)}",
                 f"{condition}_SELECTOR_ROWS={len(rows)}",
-                f"{condition}_RECORD_SNAPSHOT_ROWS={len(snapshots)}",
-                f"{condition}_RECORD_SNAPSHOT_LAUNCHES={','.join(sorted({row.get('launch','') for row in snapshots}))}"])
-          repeatable_selectors=[]
-          for selector,conditions_seen in hits_by_selector.items():
-              if any({"LAUNCH_1","LAUNCH_2"}.issubset(launches) for launches in conditions_seen.values()):
-                  repeatable_selectors.append(selector)
+                f"{condition}_RECORD_SNAPSHOT_ROWS={len(snapshots)}"])
+          repeatable=[]
+          for selector,seen in repeatable_by_selector.items():
+              if any({"LAUNCH_1","LAUNCH_2"}.issubset(launches) for launches in seen.values()):
+                  repeatable.append(selector)
           matches=sum(1 for row in all_selector_rows if row.get("comparison_status")=="MATCH")
           mismatches=sum(1 for row in all_selector_rows if row.get("comparison_status")=="MISMATCH")
           unproven=sum(1 for row in all_selector_rows if row.get("comparison_status") in
                        ("TIDAK DAPAT DIBANDINGKAN","MATCH_INPUT_SOURCE_UNPROVEN"))
-          formula_case_complete=(set(selector_union)==set(targets_by_selector) and
-              len(repeatable_selectors)==len(targets_by_selector) and
-              matches>0 and mismatches==0 and unproven==0)
-          snapshot_selector_decimal=sorted({str(int(value,16)) for value in snapshot_selector_union})
-          snapshot_target_union={targets_by_selector[value] for value in snapshot_selector_decimal if value in targets_by_selector}
-          snapshot_repeatable=True
-          for condition,snapshots in snapshot_by_condition.items():
-              by_launch={}
-              for row in snapshots:
-                  by_launch.setdefault(row.get("launch",""),{})[row.get("record_index","")]=(
-                    row.get("record_selector",""),row.get("rec_20",""),row.get("selected_offset",""),
-                    row.get("selected_value",""))
-              if not {"LAUNCH_1","LAUNCH_2"}.issubset(by_launch):
-                  snapshot_repeatable=False
-              elif by_launch["LAUNCH_1"]!=by_launch["LAUNCH_2"]:
-                  snapshot_repeatable=False
-          lines.extend([f"REPEATABILITY_K5_ALL_CHECKPOINTS={'TUNTAS' if k5_all else 'BELUM'}",
-            "INPUT=NONE","RAM_WRITE_INJECTION=NONE",
-            f"CASE_TARGETS_EXPECTED={len(targets_by_selector)}",f"CASE_TARGETS_OBSERVED={len(target_union)}",
-            f"CASE_TARGET_COVERAGE={'TUNTAS' if len(target_union)==len(targets_by_selector) else 'SEBAGIAN'}",
+          required=set(targets_by_selector)
+          formula_k5=(selector_union==required and set(repeatable)==required and
+                      matches>0 and mismatches==0 and unproven==0 and all_k5)
+          snapshot_repeatable=True;by_condition={}
+          for row in all_snapshot_rows:
+              by_condition.setdefault((row.get("condition"),row.get("launch")),{})[row.get("record_index","")]=(
+                  row.get("record_selector",""),row.get("rec_20",""),row.get("selected_offset",""),row.get("selected_value",""))
+          for condition in folders:
+              first=by_condition.get((condition,"LAUNCH_1"));second=by_condition.get((condition,"LAUNCH_2"))
+              if first is not None or second is not None:
+                  if first is None or second is None or first!=second:snapshot_repeatable=False
+          lines.extend(["INPUT=PAD_ONLY_FOR_PAD_NAV_CONDITIONS; baseline conditions use NONE",
+            "RAM_WRITE_INJECTION=NONE",
+            f"REPEATABILITY_K5_ALL_CONDITIONS={'TUNTAS' if all_k5 else 'BELUM'}",
+            f"CASE_TARGETS_EXPECTED={len(required)}",f"CASE_TARGETS_EXECUTED={len(selector_union)}",
+            f"CASE_TARGET_COVERAGE={'TUNTAS' if selector_union==required else 'SEBAGIAN'}",
             f"SELECTOR_VALUES_EXECUTED={','.join(sorted(selector_union))}",
-            f"SELECTOR_VALUES_WITH_TWO_IDENTICAL_REPLAYS={','.join(sorted(repeatable_selectors))}",
-            f"RECORD_SELECTOR_VALUES_PRESENT_IN_RAM={','.join(snapshot_selector_decimal)}",
-            f"RECORD_SNAPSHOT_ROWS_TOTAL={len(all_snapshot_rows)}",
-            f"RECORD_SNAPSHOT_TARGETS_PRESENT_IN_RAM={len(snapshot_target_union)}",
-            f"RECORD_SNAPSHOT_TARGET_COVERAGE={'TUNTAS' if len(snapshot_target_union)==len(targets_by_selector) else 'SEBAGIAN'}",
-            f"RECORD_SNAPSHOT_REPEATABLE_WITHIN_EACH_CHECKPOINT={'YES' if snapshot_repeatable else 'NO_OR_INCOMPLETE'}",
-            f"SELECTOR_RESULT_MATCH_ROWS={matches}",
-            f"SELECTOR_RESULT_MISMATCH_ROWS={mismatches}",
+            f"SELECTOR_VALUES_WITH_TWO_IDENTICAL_REPLAYS={','.join(sorted(repeatable))}",
+            f"RECORD_SELECTOR_VALUES_PRESENT_IN_RAM={','.join(sorted(snapshot_selector_union))}",
+            f"RECORD_SNAPSHOT_TARGET_COVERAGE={'TUNTAS' if snapshot_selector_union==required else 'SEBAGIAN'}",
+            f"RECORD_SNAPSHOT_REPEATABLE_WITHIN_CONDITIONS={'YES' if snapshot_repeatable else 'NO_OR_INCOMPLETE'}",
+            f"SELECTOR_RESULT_MATCH_ROWS={matches}",f"SELECTOR_RESULT_MISMATCH_ROWS={mismatches}",
             f"SELECTOR_RESULT_UNPROVEN_ROWS={unproven}",
-            f"CASE_FORMULA_K5={'TUNTAS' if formula_case_complete else 'BELUM'}"])
-          (c02/"UP1_MULTI_CHECKPOINT_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
+            f"CASE_FORMULA_K5={'TUNTAS' if formula_k5 else 'BELUM'}"])
+          dest=folders["C02_BASELINE"]
+          (dest/"UP1_MULTI_CHECKPOINT_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
           if all_selector_rows:
-              fields=list(all_selector_rows[0].keys())
-              with (c02/"UP1_ALL_SELECTOR_ROWS.tsv").open("w",encoding="utf-8",newline="") as stream:
+              with (dest/"UP1_ALL_SELECTOR_ROWS.tsv").open("w",encoding="utf-8",newline="") as stream:
+                  fields=list(all_selector_rows[0].keys())
                   writer=csv.DictWriter(stream,fieldnames=fields,delimiter="\t",extrasaction="ignore",lineterminator="\n")
                   writer.writeheader();writer.writerows(all_selector_rows)
           if all_snapshot_rows:
-              fields=list(all_snapshot_rows[0].keys())
-              with (c02/"UP1_ALL_RECORD_SELECTORS.tsv").open("w",encoding="utf-8",newline="") as stream:
+              with (dest/"UP1_ALL_RECORD_SELECTORS.tsv").open("w",encoding="utf-8",newline="") as stream:
+                  fields=list(all_snapshot_rows[0].keys())
                   writer=csv.DictWriter(stream,fieldnames=fields,delimiter="\t",extrasaction="ignore",lineterminator="\n")
                   writer.writeheader();writer.writerows(all_snapshot_rows)
-          (c02/"UP1_CASE_FORMULA_K5.txt").write_text("TUNTAS\n" if formula_case_complete else "BELUM\n",encoding="utf-8")
+          (dest/"UP1_CASE_FORMULA_K5.txt").write_text("TUNTAS\n" if formula_k5 else "BELUM\n",encoding="utf-8")
           print("\n".join(lines),flush=True)
           PY
           merge_rc=$?
@@ -516,12 +558,14 @@ jobs:
           rc0="$(cat "$OUT/UP0_EXIT_CODE.txt")"
           rc1="$(cat "$OUT/UP1_EXIT_CODE.txt")"
           rc1c01="$(cat "$OUT/UP1_C01_EXIT_CODE.txt")"
+          rc_nav_c02="$(cat "$OUT/UP1_NAV_C02_EXIT_CODE.txt" 2>/dev/null || echo 2)"
+          rc_nav_c01="$(cat "$OUT/UP1_NAV_C01_EXIT_CODE.txt" 2>/dev/null || echo 2)"
           case_rc=2
           [ "$(cat "$OUT/UP1/UP1_CASE_FORMULA_K5.txt")" = "TUNTAS" ] && case_rc=0
           rc2="$(cat "$OUT/UP2_EXIT_CODE.txt")"
           preflight_rc="$(grep '^EXIT_CODE=' "$OUT/PREFLIGHT/UP_PREFLIGHT_RESULT.txt" | tail -n 1 | cut -d= -f2)"
           final_rc=0
-          for code in "$rc0" "$rc1" "$rc1c01" "$case_rc" "$rc2" "$preflight_rc"; do
+          for code in "$rc0" "$rc1" "$rc1c01" "$rc_nav_c02" "$rc_nav_c01" "$case_rc" "$rc2" "$preflight_rc"; do
             [ "$code" = "0" ] || final_rc=2
           done
           if [ "$final_rc" = "0" ]; then status=TUNTAS
@@ -537,6 +581,8 @@ jobs:
             echo "UP0_EXIT_CODE=$rc0"
             echo "UP1_C02_EXIT_CODE=$rc1"
             echo "UP1_C01_EXIT_CODE=$rc1c01"
+            echo "UP1_NAV_C02_EXIT_CODE=$rc_nav_c02"
+            echo "UP1_NAV_C01_EXIT_CODE=$rc_nav_c01"
             echo "CASE_FORMULA_K5_EXIT_CODE=$case_rc"
             echo "UP2_EXIT_CODE=$rc2"
             echo "PREFLIGHT_EXIT_CODE=$preflight_rc"
@@ -553,6 +599,8 @@ jobs:
           UP0_EXIT_CODE=$rc0
           UP1_C02_EXIT_CODE=$rc1
           UP1_C01_EXIT_CODE=$rc1c01
+          UP1_NAV_C02_EXIT_CODE=$rc_nav_c02
+          UP1_NAV_C01_EXIT_CODE=$rc_nav_c01
           CASE_FORMULA_K5_EXIT_CODE=$case_rc
           UP2_EXIT_CODE=$rc2
           PREFLIGHT_EXIT_CODE=$preflight_rc
@@ -570,14 +618,20 @@ jobs:
           if [ ! -s "$OUT/UP1_C01_EXIT_CODE.txt" ]; then echo 2 > "$OUT/UP1_C01_EXIT_CODE.txt"; fi
           if [ ! -s "$OUT/UP1_C01_EXECUTION_LOG.txt" ]; then printf 'STATUS=BELUM\nREASON=C01 replay stage skipped\nEXIT_CODE=2\n' > "$OUT/UP1_C01_EXECUTION_LOG.txt"; fi
           if [ ! -s "$OUT/UP1_C01/UP1_SUMMARY.txt" ]; then printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=C01 summary missing\nEXIT_CODE=2\n' > "$OUT/UP1_C01/UP1_SUMMARY.txt"; fi
+          for nav in C01 C02; do
+            mkdir -p "$OUT/UP1_NAV_$nav"
+            if [ ! -s "$OUT/UP1_NAV_$nav/UP1_SUMMARY.txt" ]; then printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=pad navigation summary missing\nEXIT_CODE=2\n' > "$OUT/UP1_NAV_$nav/UP1_SUMMARY.txt"; fi
+            if [ ! -s "$OUT/UP1_NAV_${nav}_EXECUTION_LOG.txt" ]; then printf 'PAD_NAV_NOT_RUN\n' > "$OUT/UP1_NAV_${nav}_EXECUTION_LOG.txt"; fi
+            if [ ! -s "$OUT/UP1_NAV_${nav}_EXIT_CODE.txt" ]; then echo 2 > "$OUT/UP1_NAV_${nav}_EXIT_CODE.txt"; fi
+          done
           if [ ! -s "$OUT/UP1/UP1_CASE_FORMULA_K5.txt" ]; then printf 'BELUM\n' > "$OUT/UP1/UP1_CASE_FORMULA_K5.txt"; fi
           git fetch origin main
           git switch -C up-report-publish origin/main
           dest="reports/ui-audit-2026-11-13/up/run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          cp -R "$OUT/UP0" "$OUT/UP1" "$OUT/UP1_C01" "$OUT/UP2" "$OUT/PREFLIGHT" "$OUT/ACTIONS" "$dest/"
-          cp "$OUT/UP0_EXECUTION_LOG.txt" "$OUT/UP1_EXECUTION_LOG.txt" "$OUT/UP1_C01_EXECUTION_LOG.txt" "$OUT/UP2_EXECUTION_LOG.txt" "$dest/"
-          cp "$OUT/UP0_EXIT_CODE.txt" "$OUT/UP1_EXIT_CODE.txt" "$OUT/UP1_C01_EXIT_CODE.txt" "$OUT/UP2_EXIT_CODE.txt" "$dest/"
+          cp -R "$OUT/UP0" "$OUT/UP1" "$OUT/UP1_C01" "$OUT/UP1_NAV_C01" "$OUT/UP1_NAV_C02" "$OUT/UP2" "$OUT/PREFLIGHT" "$OUT/ACTIONS" "$dest/"
+          cp "$OUT/UP0_EXECUTION_LOG.txt" "$OUT/UP1_EXECUTION_LOG.txt" "$OUT/UP1_C01_EXECUTION_LOG.txt" "$OUT/UP1_NAV_C01_EXECUTION_LOG.txt" "$OUT/UP1_NAV_C02_EXECUTION_LOG.txt" "$OUT/UP2_EXECUTION_LOG.txt" "$dest/"
+          cp "$OUT/UP0_EXIT_CODE.txt" "$OUT/UP1_EXIT_CODE.txt" "$OUT/UP1_C01_EXIT_CODE.txt" "$OUT/UP1_NAV_C01_EXIT_CODE.txt" "$OUT/UP1_NAV_C02_EXIT_CODE.txt" "$OUT/UP2_EXIT_CODE.txt" "$dest/"
           cp "$OUT/UP_FINAL_CLOSEOUT.txt" "$dest/UP_FINAL_CLOSEOUT.txt"
           {
             echo "FILES_CHANGED_BY_RESULT_COMMIT:"
