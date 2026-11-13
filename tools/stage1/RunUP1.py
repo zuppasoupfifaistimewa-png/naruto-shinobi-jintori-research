@@ -458,7 +458,6 @@ def main()->int:
             sha(source)!=args.checkpoint_sha256):
         raise SystemExit("UP1_CHECKPOINT_IDENTITY_MISMATCH")
     source.chmod(0o444)
-    source_before=sha(source)
     entries=read_entries(args.static_readers)
     case_targets=read_case_targets(args.static_selector_table)
     case_inputs=read_case_inputs(args.static_selector_table)
