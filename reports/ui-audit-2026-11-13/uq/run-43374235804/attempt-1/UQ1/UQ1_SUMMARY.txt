@@ -1,0 +1,4 @@
+STATUS=BELUM
+EVIDENCE=K0
+REASON=preflight/UQ0/checkpoint/emulator prerequisites failed
+EXIT_CODE=2

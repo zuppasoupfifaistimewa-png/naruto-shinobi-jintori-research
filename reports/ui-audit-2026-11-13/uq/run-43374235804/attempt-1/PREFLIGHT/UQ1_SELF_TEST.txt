@@ -1,0 +1,1 @@
+UQ1_SELF_TEST=PASS write-watch table 44x2, checkpoint/card identities, staged windows

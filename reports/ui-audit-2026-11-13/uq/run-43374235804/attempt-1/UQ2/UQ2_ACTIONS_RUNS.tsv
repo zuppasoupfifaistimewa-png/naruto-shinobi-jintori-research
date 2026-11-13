@@ -1,0 +1,2 @@
+run_id	name	path	event	status	conclusion	head_sha	created_at	source_sha_match	preflight_marker_status	workflow_class
+43374235804	UQ0-UQ2 — caller/selector audit, checkpoint write probe and history ledger	.github/workflows/uq0-uq2-audit.yml	push	in_progress		dd3fe677edf7df73022b8608c761a78b84897259	2026-11-13T05:46:47Z	YES	FAIL_OR_MISSING_PREFLIGHT	UQ_CODE_RUN
