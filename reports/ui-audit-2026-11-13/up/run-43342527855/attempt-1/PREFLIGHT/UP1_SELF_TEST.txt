@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research/tools/stage1/RunUP1.py", line 704, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research/tools/stage1/RunUP1.py", line 486, in main
+    self_test()
+  File "/home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research/tools/stage1/RunUP1.py", line 470, in self_test
+    assert len(parse_record_snapshots(snapshot))==1
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
