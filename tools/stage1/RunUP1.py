@@ -19,6 +19,8 @@ VALUE_OFFSETS=tuple(range(0x10,0x20,2))
 STAGES=(88,300,600)
 ENTRY_CANDIDATES=(0x800B76BC,0x800B770C)
 SHARED_SITE=0x800B77E8
+DISPATCH_SELECTOR=0x800B7738
+DISPATCH_TARGET=0x800B7758
 REG_EVENT_FIELDS=["launch","frame","role","pc","a0","a1","a2","a3","ra","v0","v1","runtime_P",
  "record_index","record_address","record_selector","rec_20","selected_offset","selected_value",
  "rec_10","rec_12","rec_14","rec_16","rec_18","rec_1A","rec_1C","rec_1E"]
@@ -32,8 +34,11 @@ RECORD_SELECTOR_FIELDS=["launch","record_index","record_address","record_selecto
 PAD_ACTION_FIELDS=["launch","frame","button","phase","readback","status"]
 SELECTOR_FIELDS=["launch","frame","selector_value","table_target_pc","case_entry_pc","return_pc",
  "record_index","record_selector","rec_20","selected_offset","lv_selected","case_input_pc","input_register",
- "case_input_value","expression_candidate","predicted_v0","v0_at_return",
+ "case_input_value","expression_candidate","predicted_v0","v0_at_return","dispatch_pc",
+ "dispatch_selector_v1","dispatch_record_byte","dispatch_source_match","observed_jump_target","target_match_status",
  "input_matches_selected","comparison_status","evidence_limit"]
+DISPATCH_FIELDS=["launch","frame","record_index","record_address","dispatch_selector_v1",
+ "record_selector_byte","selector_source_match","ra","dispatch_pc"]
 
 def sha(path:Path)->str:
     h=hashlib.sha256()
@@ -113,6 +118,8 @@ def lua_exec(launch:str,card:Path,entries:list[int],case_targets:list[int],case_
         roles.setdefault(address,[]).append("RETURN_INSTRUCTION")
     for address in return_addrs:
         roles.setdefault(address,[]).append("CALL_RETURN")
+    roles.setdefault(DISPATCH_SELECTOR,[]).append("DISPATCH_SELECTOR")
+    roles.setdefault(DISPATCH_TARGET,[]).append("DISPATCH_TARGET")
     roles.setdefault(SHARED_SITE,[]).append("SHARED_77E8")
     table=",".join("{pc=0x%08X,roles={%s}}"%(address,",".join('"'+role+'"' for role in labels))
                    for address,labels in sorted(roles.items()))
@@ -497,8 +504,10 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
                 breakpoint_count=int(line.split("=")[1].split()[0])
             except (IndexError,ValueError):
                 breakpoint_count=0
-    expected=len(set(entries+case_targets+case_inputs+returns+return_addresses+[SHARED_SITE]))
-    full=any(line.startswith(f"UP1_FRAME_LIMIT\t{name}\t600\t") for line in lines)
+    expected=len(set(entries+case_targets+case_inputs+returns+return_addresses+
+                     [SHARED_SITE,DISPATCH_SELECTOR,DISPATCH_TARGET]))
+    full=(any(line.startswith(f"UP1_FRAME_LIMIT\t{name}\t600\t") for line in lines) or
+          (exit_code==0 and any(line.startswith(f"UP1_STAGE_REACHED\t{name}\t600\t") for line in lines)))
     pad_pass=(len(pad_rows)==2*len(input_actions) and all(row["status"]=="PASS" for row in pad_rows))
     passed=(exit_code==0 and full and breakpoint_count==expected and
             checkpoint_before==checkpoint_after==source_before==source_after==expected_checkpoint_sha and
@@ -681,30 +690,46 @@ def main()->int:
         return value if value is not None and value<0x80000000 else (value-0x100000000 if value is not None else None)
     def hex32(value):
         return "TIDAK TAHU" if value is None else f"0x{value&0xFFFFFFFF:08X}"
+    dispatch_rows=[]
     for launch_name,launch_events in (("LAUNCH_1",first),("LAUNCH_2",second)):
-        for ret in (row for row in launch_events if row["role"]=="CALL_RETURN"):
-            candidates=[row for row in launch_events
-              if row["role"]=="ENTRY" and row["ra"]==ret["pc"] and
-              int(row["frame"])<=int(ret["frame"])]
-            entry=candidates[-1] if candidates else None
-            case_candidates=[row for row in launch_events
-              if row["role"]=="CASE_ENTRY" and row["ra"]==ret["pc"] and
-              int(row["frame"])<=int(ret["frame"])]
-            if entry:
-                same_record=[row for row in case_candidates if row["record_index"]==entry["record_index"]]
-                if same_record:case_candidates=same_record
-            case=case_candidates[-1] if case_candidates else None
-            input_candidates=[row for row in launch_events
-              if row["role"]=="CASE_INPUT" and row["ra"]==ret["pc"] and
-              int(row["frame"])<=int(ret["frame"])]
-            pairing_record=(entry or case)
-            if pairing_record:
-                same_record=[row for row in input_candidates if row["record_index"]==pairing_record["record_index"]]
-                if same_record:input_candidates=same_record
-            case_input=input_candidates[-1] if input_candidates else None
-            source_row=entry or case
-            sel=u32(source_row["record_selector"]) if source_row else None
-            selmap=selector_map.get(sel,{})
+        for event in launch_events:
+            if event["role"]!="DISPATCH_SELECTOR":
+                continue
+            raw_selector=u32(event["v1"])
+            raw_record=u32(event["record_selector"])
+            source_match=("YES" if raw_selector is not None and raw_record is not None and raw_selector==raw_record
+                          else "NO" if raw_selector is not None and raw_record is not None else "TIDAK TAHU")
+            dispatch_rows.append({"launch":launch_name,"frame":event["frame"],
+              "record_index":event["record_index"],"record_address":event["record_address"],
+              "dispatch_selector_v1":event["v1"],"record_selector_byte":event["record_selector"],
+              "selector_source_match":source_match,"ra":event["ra"],"dispatch_pc":event["pc"]})
+    selector_rows=[]
+    for launch_name,launch_events in (("LAUNCH_1",first),("LAUNCH_2",second)):
+        for ret_pos,ret in enumerate(launch_events):
+            if ret["role"]!="CALL_RETURN":
+                continue
+            prior=launch_events[:ret_pos]
+            def latest(role,record_index=None):
+                candidates=[row for row in prior if row["role"]==role and row["ra"]==ret["pc"]]
+                if record_index is not None:
+                    same=[row for row in candidates if row["record_index"]==record_index]
+                    if same:
+                        candidates=same
+                return candidates[-1] if candidates else None
+            entry=latest("ENTRY")
+            record_index=entry["record_index"] if entry else None
+            dispatch=latest("DISPATCH_SELECTOR",record_index)
+            if record_index is None and dispatch:
+                record_index=dispatch["record_index"]
+            case=latest("CASE_ENTRY",record_index)
+            case_input=latest("CASE_INPUT",record_index)
+            dispatch_target=latest("DISPATCH_TARGET",record_index)
+            source_row=entry or dispatch or case
+            selector_raw=dispatch["v1"] if dispatch else (source_row["record_selector"] if source_row else None)
+            sel=u32(selector_raw)
+            if sel not in selector_map:
+                continue
+            selmap=selector_map[sel]
             target=selmap.get("jump_target_pc","TIDAK TAHU")
             input_reg=selmap.get("input_register","TIDAK TAHU")
             input_event=case_input or case
@@ -714,10 +739,10 @@ def main()->int:
             selected=u32(entry["selected_value"]) if entry else None
             pred=None
             formula=selmap.get("expression_candidate","TIDAK TAHU")
-            status=selmap.get("formula_status","TIDAK TAHU")
-            if status=="TERBUKTI_BYTE" and selected is not None:
+            formula_status=selmap.get("formula_status","TIDAK TAHU")
+            if formula_status=="TERBUKTI_BYTE" and selected is not None:
                 pred=selected
-            elif status=="TERBUKTI_BYTE_SEQUENCE" and input_value is not None:
+            elif formula_status=="TERBUKTI_BYTE_SEQUENCE" and input_value is not None:
                 if formula=="signed_trunc((12*V1)/10)":
                     n=signed32((input_value*12)&0xFFFFFFFF)
                     pred=((abs(n)//10)*(1 if n>=0 else -1))&0xFFFFFFFF
@@ -729,16 +754,32 @@ def main()->int:
                     pred=((abs(n)//10)*(1 if n>=0 else -1))&0xFFFFFFFF
                 elif formula=="2*V0":
                     pred=(input_value*2)&0xFFFFFFFF
-            match_input=("YES" if status=="TERBUKTI_BYTE" and selected is not None else
-                          "YES" if status=="TERBUKTI_BYTE_SEQUENCE" and case_input is not None and input_value is not None
-                          else "NO_OR_UNAVAILABLE")
+            match_input=("YES" if formula_status=="TERBUKTI_BYTE" and selected is not None else
+                         "YES" if formula_status=="TERBUKTI_BYTE_SEQUENCE" and case_input is not None and input_value is not None
+                         else "NO_OR_UNAVAILABLE")
             actual=u32(ret["v0"])
-            if pred is None:comparison="TIDAK DAPAT DIBANDINGKAN"
-            elif actual==pred:comparison="MATCH" if match_input=="YES" else "MATCH_INPUT_SOURCE_UNPROVEN"
-            else:comparison="MISMATCH"
+            dispatch_value=u32(dispatch["v1"]) if dispatch else None
+            record_byte=u32(source_row["record_selector"]) if source_row else None
+            dispatch_match=("YES" if dispatch_value is not None and record_byte is not None and dispatch_value==record_byte
+                            else "NO" if dispatch_value is not None and record_byte is not None else "TIDAK TAHU")
+            observed_jump=u32(dispatch_target["v0"]) if dispatch_target else None
+            expected_jump=u32(target) if isinstance(target,str) and target.startswith("0x") else None
+            case_matches=(case is not None and case["pc"]==target)
+            jump_matches=(observed_jump is not None and expected_jump is not None and observed_jump==expected_jump)
+            target_match="YES" if case_matches and jump_matches else "NO" if case is not None or dispatch_target is not None else "TIDAK TAHU"
+            if pred is None:
+                comparison="TIDAK DAPAT DIBANDINGKAN"
+            elif actual!=pred:
+                comparison="MISMATCH"
+            elif dispatch_match!="YES" or target_match!="YES":
+                comparison="MATCH_INPUT_SOURCE_UNPROVEN"
+            elif match_input=="YES":
+                comparison="MATCH"
+            else:
+                comparison="MATCH_INPUT_SOURCE_UNPROVEN"
             selector_rows.append({"launch":launch_name,"frame":ret["frame"],
-              "selector_value":str(sel) if sel is not None else "TIDAK TAHU",
-              "table_target_pc":target,"case_entry_pc":case["pc"] if case else "TIDAK TAHU",
+              "selector_value":str(sel),"table_target_pc":target,
+              "case_entry_pc":case["pc"] if case else "TIDAK TAHU",
               "return_pc":ret["pc"],"record_index":source_row["record_index"] if source_row else "TIDAK TAHU",
               "record_selector":source_row["record_selector"] if source_row else "TIDAK TAHU",
               "rec_20":entry["rec_20"] if entry else "TIDAK TAHU",
@@ -747,9 +788,14 @@ def main()->int:
               "case_input_pc":case_input["pc"] if case_input else "TIDAK TAHU",
               "input_register":input_reg,"case_input_value":input_raw or "TIDAK TAHU",
               "expression_candidate":formula,"predicted_v0":hex32(pred),
-              "v0_at_return":ret["v0"],"input_matches_selected":match_input,
-              "comparison_status":comparison,
-              "evidence_limit":"Kecocokan per replay; selector/target berasal dari tabel byte; V1/V0 dipakai hanya sesuai input_register byte"})
+              "v0_at_return":ret["v0"],"dispatch_pc":dispatch["pc"] if dispatch else "TIDAK TAHU",
+              "dispatch_selector_v1":dispatch["v1"] if dispatch else "TIDAK TAHU",
+              "dispatch_record_byte":source_row["record_selector"] if source_row else "TIDAK TAHU",
+              "dispatch_source_match":dispatch_match,
+              "observed_jump_target":hex32(observed_jump),"target_match_status":target_match,
+              "input_matches_selected":match_input,"comparison_status":comparison,
+              "evidence_limit":"Selector dari V1 pada lbu-dispatch; target diperiksa pada JR; sumber record byte dibandingkan langsung"})
+    write_tsv(out/"UP1_DISPATCH_SELECTORS.tsv",DISPATCH_FIELDS,dispatch_rows)
     write_tsv(out/"UP1_SELECTOR_V0.tsv",SELECTOR_FIELDS,selector_rows)
     max_stage=max((max([int(value) for value in row["stages_reached"].split(",") if value.isdigit()],default=0)
                    for row in launches),default=0)
