@@ -19,16 +19,18 @@ VALUE_OFFSETS=tuple(range(0x10,0x20,2))
 STAGES=(88,300,600)
 ENTRY_CANDIDATES=(0x800B76BC,0x800B770C)
 SHARED_SITE=0x800B77E8
-REG_EVENT_FIELDS=["launch","frame","role","pc","a0","a1","a2","a3","ra","v0","runtime_P",
- "record_index","record_address","rec_20","selected_offset","selected_value",
+REG_EVENT_FIELDS=["launch","frame","role","pc","a0","a1","a2","a3","ra","v0","v1","runtime_P",
+ "record_index","record_address","record_selector","rec_20","selected_offset","selected_value",
  "rec_10","rec_12","rec_14","rec_16","rec_18","rec_1A","rec_1C","rec_1E"]
 LAUNCH_FIELDS=["launch","status","exit_code","frames_requested","frames_observed","event_hits",
- "breakpoints_expected","breakpoints_registered","entry_breakpoints","return_instruction_breakpoints",
+ "breakpoints_expected","breakpoints_registered","entry_breakpoints","case_entry_breakpoints","return_instruction_breakpoints",
  "return_address_breakpoints","shared_77E8_breakpoint","checkpoint_before","checkpoint_after",
  "card_before","card_after","card_mode_0444","stages_reached","wall_seconds"]
 COMPARE_FIELDS=["metric","launch_1","launch_2","same","interpretation"]
-SELECTOR_FIELDS=["launch","frame","entry_pc","return_pc","record_index","selector_a1","rec_20",
- "selected_offset","lv_selected","v0_at_return","predicted_lv_multiplier","comparison","evidence_limit"]
+SELECTOR_FIELDS=["launch","frame","selector_value","table_target_pc","case_entry_pc","return_pc",
+ "record_index","record_selector","rec_20","selected_offset","lv_selected","input_register",
+ "case_input_value","expression_candidate","predicted_v0","v0_at_return",
+ "input_matches_selected","comparison_status","evidence_limit"]
 
 def sha(path:Path)->str:
     h=hashlib.sha256()
@@ -95,11 +97,13 @@ end)
 print("UP1_CARD_WARMUP_READY=YES")
 '''.lstrip()
 
-def lua_exec(launch:str,card:Path,entries:list[int],returns:list[int],return_addrs:list[int])->str:
+def lua_exec(launch:str,card:Path,entries:list[int],case_targets:list[int],returns:list[int],return_addrs:list[int])->str:
     card_s=str(card).replace("\\","\\\\").replace('"','\\"')
     roles={}
     for address in entries:
         roles.setdefault(address,[]).append("ENTRY")
+    for address in case_targets:
+        roles.setdefault(address,[]).append("CASE_ENTRY")
     for address in returns:
         roles.setdefault(address,[]).append("RETURN_INSTRUCTION")
     for address in return_addrs:
@@ -125,6 +129,7 @@ local bpHandles={}
 local function log(s) print(s);pcall(function()io.stdout:flush()end) end
 local function hx(v,w)
  if v==nil then return "TIDAK_TAHU" end
+ if w==1 then return string.format("0x%02X",tonumber(v)%256) end
  if w==2 then return string.format("0x%04X",tonumber(v)%65536) end
  return string.format("0x%08X",tonumber(v)%MOD)
 end
@@ -142,8 +147,8 @@ local function readv(a,w)
  return value
 end
 local function record_hit(role)
- if hits>=4096 then
-  if hits==4096 then log("UP1_HIT_CAP_REACHED launch="..LAUNCH.." cap=4096") end
+ if hits>=12000 then
+  if hits==12000 then log("UP1_HIT_CAP_REACHED launch="..LAUNCH.." cap=12000") end
   return false
  end
  hits=hits+1
@@ -155,15 +160,18 @@ local function record_hit(role)
  local a3=tonumber(r.GPR.r[7])%MOD
  local ra=tonumber(r.GPR.r[31])%MOD
  local v0=tonumber(r.GPR.r[2])%MOD
+ local v1=tonumber(r.GPR.r[3])%MOD
  local index="-"
  local rec=nil
  local f20=nil
+ local recordSelector=nil
  local selectedOffset=nil
  local selectedValue=nil
  local values={}
  if runtimeP and a0<64 then
   index=tostring(a0)
   rec=runtimeP+a0*STRIDE
+  recordSelector=readv(rec+0x0B,1)
   f20=readv(rec+0x20,2)
   if f20 then
    local selector=math.floor(f20/128); selectedOffset=0x10+(math.floor((selector%64)/2)%16)*2
@@ -173,7 +181,7 @@ local function record_hit(role)
  end
  local function hv(v,w) if v==nil then return "TIDAK_TAHU" end;return hx(v,w) end
  local fields={"UP1_HIT",LAUNCH,tostring(post),role,hx(pc),hx(a0),hx(a1),hx(a2),hx(a3),
-  hx(ra),hx(v0),hx(runtimeP),index,rec and hx(rec) or "TIDAK_TAHU",hv(f20,2),
+  hx(ra),hx(v0),hx(v1),hx(runtimeP),index,rec and hx(rec) or "TIDAK_TAHU",hv(recordSelector,1),hv(f20,2),
   selectedOffset and string.format("0x%02X",selectedOffset) or "TIDAK_TAHU",
   hv(selectedValue,2),hv(values[0x10],2),hv(values[0x12],2),hv(values[0x14],2),
   hv(values[0x16],2),hv(values[0x18],2),hv(values[0x1A],2),hv(values[0x1C],2),hv(values[0x1E],2)}
@@ -266,9 +274,13 @@ def read_entries(path:Path)->list[int]:
                 continue
     return sorted(set(entries)) or [0x800B770C]
 
-def read_returns(disassembly:Path,callers:Path)->tuple[list[int],list[int]]:
+def read_returns(disassembly:Path,callers:Path,forward_sites:Path)->tuple[list[int],list[int]]:
     returns=[]
     with disassembly.open(encoding="utf-8",newline="") as stream:
+        for row in csv.DictReader(stream,delimiter="\t"):
+            if row.get("instruction","").startswith("jr $ra"):
+                returns.append(int(row["pc"],16))
+    with forward_sites.open(encoding="utf-8",newline="") as stream:
         for row in csv.DictReader(stream,delimiter="\t"):
             if row.get("instruction","").startswith("jr $ra"):
                 returns.append(int(row["pc"],16))
@@ -286,6 +298,24 @@ def read_returns(disassembly:Path,callers:Path)->tuple[list[int],list[int]]:
                 continue
     return sorted(set(returns)),sorted(set(return_addresses))
 
+def read_case_targets(selector_table:Path)->list[int]:
+    targets=[]
+    with selector_table.open(encoding="utf-8",newline="") as stream:
+        for row in csv.DictReader(stream,delimiter="\t"):
+            if row.get("jump_target_pc","").startswith("0x"):
+                targets.append(int(row["jump_target_pc"],16))
+    return sorted(set(targets))
+
+def read_selector_map(selector_table:Path)->dict[int,dict]:
+    mapping={}
+    with selector_table.open(encoding="utf-8",newline="") as stream:
+        for row in csv.DictReader(stream,delimiter="\t"):
+            try:
+                mapping[int(row["selector_value"])]=row
+            except (KeyError,TypeError,ValueError):
+                continue
+    return mapping
+
 def parse_hits(text:str)->list[dict]:
     events=[]
     for line in text.splitlines():
@@ -297,7 +327,7 @@ def parse_hits(text:str)->list[dict]:
     return events
 
 def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
-                appdir:Path,bios:Path,cue:Path,entries:list[int],returns:list[int],
+                appdir:Path,bios:Path,cue:Path,entries:list[int],case_targets:list[int],returns:list[int],
                 return_addresses:list[int],timeout_s:int):
     folder=work/name.lower()
     folder.mkdir(parents=True,exist_ok=True)
@@ -308,7 +338,7 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
     shutil.copyfile(template,card)
     card.chmod(0o444)
     lua=folder/"up1-exec-breakpoints.lua"
-    lua.write_text(lua_exec(name,card,entries,returns,return_addresses),encoding="utf-8")
+    lua.write_text(lua_exec(name,card,entries,case_targets,returns,return_addresses),encoding="utf-8")
     stdout=folder/"emulator.stdout.txt"
     stage_start=f"STAGE_START\t{name}\tframes=88,300,600\tcheckpoint={CHECKPOINT_SHA}\n"
     with (out/"UP1_STAGE_MARKERS.txt").open("a",encoding="utf-8") as stream:
@@ -361,7 +391,7 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
                 breakpoint_count=int(line.split("=")[1].split()[0])
             except (IndexError,ValueError):
                 breakpoint_count=0
-    expected=len(set(entries+returns+return_addresses+[SHARED_SITE]))
+    expected=len(set(entries+case_targets+returns+return_addresses+[SHARED_SITE]))
     full=any(line.startswith(f"UP1_FRAME_LIMIT\t{name}\t600\t") for line in lines)
     passed=(exit_code==0 and full and breakpoint_count==expected and
             checkpoint_before==checkpoint_after==source_before==source_after==CHECKPOINT_SHA and
@@ -369,7 +399,7 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
     row={"launch":name,"status":"PASS" if passed else "FAIL","exit_code":exit_code,
       "frames_requested":600,"frames_observed":600 if full else max(reached,default=0),
       "event_hits":len(events),"breakpoints_expected":expected,"breakpoints_registered":breakpoint_count,
-      "entry_breakpoints":len(entries),"return_instruction_breakpoints":len(returns),
+      "entry_breakpoints":len(entries),"case_entry_breakpoints":len(case_targets),"return_instruction_breakpoints":len(returns),
       "return_address_breakpoints":len(return_addresses),"shared_77E8_breakpoint":"YES",
       "checkpoint_before":checkpoint_before,"checkpoint_after":checkpoint_after,
       "card_before":card_before,"card_after":card_after,
@@ -383,16 +413,17 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
 
 def self_test():
     assert CHECKPOINT_BYTES==21162799 and STAGES==(88,300,600)
-    assert len(REG_EVENT_FIELDS)==24 and VALUE_OFFSETS==(0x10,0x12,0x14,0x16,0x18,0x1A,0x1C,0x1E)
+    assert len(REG_EVENT_FIELDS)==26 and VALUE_OFFSETS==(0x10,0x12,0x14,0x16,0x18,0x1A,0x1C,0x1E)
     sample=("UP1_HIT\tL1\t88\tENTRY\t0x800B770C\t0x4\t0x2\t0x0\t0x0\t0x800B7790\t0xC\t"
-      "0x80100000\t4\t0x80100490\t0x0180\t0x10\t0x0007\t0x0007\t0x0\t0x0\t0x0\t0x0\t0x0\t0x0\t0x0")
+      "0x80100000\t4\t0x80100490\t0x00000007\t0x00\t0x0180\t0x10\t0x0007\t0x0007\t0x0\t0x0\t0x0\t0x0\t0x0\t0x0\t0x0")
     assert len(parse_hits(sample))==1
-    print("UP1_SELF_TEST=PASS 88/300/600 markers, 24 fields, checkpoint hash and event parser")
+    print("UP1_SELF_TEST=PASS staged frames, 26-field selector trace, checkpoint hash and event parser")
 
 def main()->int:
     parser=argparse.ArgumentParser()
     for name in ("work","out","pcsx-bin","appdir","bios","cue","source",
-                 "static-readers","static-disassembly","static-callers","static-cases"):
+                 "static-readers","static-disassembly","static-callers","static-cases",
+                 "static-forward-sites","static-selector-table"):
         parser.add_argument("--"+name,type=Path)
     parser.add_argument("--frames",type=int,default=600)
     parser.add_argument("--timeout-seconds",type=int,default=900)
@@ -402,7 +433,7 @@ def main()->int:
         self_test()
         return 0
     required=(args.work,args.out,args.pcsx_bin,args.appdir,args.bios,args.cue,args.source,
-              args.static_readers,args.static_disassembly,args.static_callers,args.static_cases)
+              args.static_readers,args.static_disassembly,args.static_callers,args.static_cases,args.static_forward_sites,args.static_selector_table)
     if not all(required):
         parser.error("UP1 requires runtime paths and UP0 static files")
     if args.frames!=600:
@@ -417,7 +448,11 @@ def main()->int:
     source.chmod(0o444)
     source_before=sha(source)
     entries=read_entries(args.static_readers)
-    returns,return_addresses=read_returns(args.static_disassembly,args.static_callers)
+    case_targets=read_case_targets(args.static_selector_table)
+    selector_map=read_selector_map(args.static_selector_table)
+    if not case_targets or len(selector_map)!=5:
+        raise SystemExit("UP1_SELECTOR_TABLE_MUST_HAVE_FIVE_BYTE_MAPPED_CASES")
+    returns,return_addresses=read_returns(args.static_disassembly,args.static_callers,args.static_forward_sites)
     marker=out/"UP1_STAGE_MARKERS.txt"
     marker.write_text("UP1_STAGED_EXEC_BREAKPOINT_RUN\nWINDOWS=88,300,600\nINPUT=NONE\nRAM_WRITE_INJECTION=NONE\n",encoding="utf-8")
     cards=work/"cards"
@@ -468,7 +503,7 @@ def main()->int:
     events=[]
     for name in ("LAUNCH_1","LAUNCH_2"):
         row,hit_rows=launch_once(name,source,template,work,out,args.pcsx_bin,args.appdir,
-          args.bios,args.cue,entries,returns,return_addresses,args.timeout_seconds)
+          args.bios,args.cue,entries,case_targets,returns,return_addresses,args.timeout_seconds)
         launches.append(row)
         events.extend(hit_rows)
     write_tsv(out/"UP1_EXEC_HITS.tsv",REG_EVENT_FIELDS,events)
@@ -491,29 +526,76 @@ def main()->int:
        "same":"SAME_CHECKPOINT","interpretation":"milestone"},
       {"metric":"STAGE_600","launch_1":reached(launches[0],600),"launch_2":reached(launches[1],600),
        "same":"SAME_CHECKPOINT","interpretation":"milestone"}])
-    # The static case table is descriptive per reader site; selector-to-case mapping is not assumed.
     with args.static_cases.open(encoding="utf-8",newline="") as stream:
         list(csv.DictReader(stream,delimiter="\t"))
     selector_rows=[]
+    def u32(value):
+        try:return int(value,16)&0xFFFFFFFF
+        except (TypeError,ValueError):return None
+    def signed32(value):
+        return value if value is not None and value<0x80000000 else (value-0x100000000 if value is not None else None)
+    def hex32(value):
+        return "TIDAK TAHU" if value is None else f"0x{value&0xFFFFFFFF:08X}"
     for launch_name,launch_events in (("LAUNCH_1",first),("LAUNCH_2",second)):
         for ret in (row for row in launch_events if row["role"]=="CALL_RETURN"):
             candidates=[row for row in launch_events
               if row["role"]=="ENTRY" and row["ra"]==ret["pc"] and
               int(row["frame"])<=int(ret["frame"])]
             entry=candidates[-1] if candidates else None
-            selector=entry["a1"] if entry else "TIDAK TAHU"
+            case_candidates=[row for row in launch_events
+              if row["role"]=="CASE_ENTRY" and row["ra"]==ret["pc"] and
+              int(row["frame"])<=int(ret["frame"])]
+            if entry:
+                same_record=[row for row in case_candidates if row["record_index"]==entry["record_index"]]
+                if same_record:case_candidates=same_record
+            case=case_candidates[-1] if case_candidates else None
+            source_row=entry or case
+            sel=u32(source_row["record_selector"]) if source_row else None
+            selmap=selector_map.get(sel,{})
+            target=selmap.get("jump_target_pc","TIDAK TAHU")
+            input_reg=selmap.get("input_register","TIDAK TAHU")
+            input_raw=(case.get("v1") if case and input_reg=="$v1" else
+                       case.get("v0") if case and input_reg=="$v0" else None)
+            input_value=u32(input_raw)
+            selected=u32(entry["selected_value"]) if entry else None
+            pred=None
+            formula=selmap.get("expression_candidate","TIDAK TAHU")
+            status=selmap.get("formula_status","TIDAK TAHU")
+            if status=="TERBUKTI_BYTE" and selected is not None:
+                pred=selected
+            elif status=="TERBUKTI_BYTE_SEQUENCE" and input_value is not None:
+                if formula=="signed_trunc((12*V1)/10)":
+                    n=signed32((input_value*12)&0xFFFFFFFF)
+                    pred=((abs(n)//10)*(1 if n>=0 else -1))&0xFFFFFFFF
+                elif formula=="2*V0":
+                    pred=(input_value*2)&0xFFFFFFFF
+            match_input="YES" if selected is not None and input_value==selected else "NO_OR_UNAVAILABLE"
+            actual=u32(ret["v0"])
+            if pred is None:comparison="TIDAK DAPAT DIBANDINGKAN"
+            elif actual==pred:comparison="MATCH" if match_input=="YES" else "MATCH_INPUT_SOURCE_UNPROVEN"
+            else:comparison="MISMATCH"
             selector_rows.append({"launch":launch_name,"frame":ret["frame"],
-              "entry_pc":entry["pc"] if entry else "TIDAK TAHU","return_pc":ret["pc"],
-              "record_index":entry["record_index"] if entry else ret["record_index"],
-              "selector_a1":selector,"rec_20":entry["rec_20"] if entry else ret["rec_20"],
-              "selected_offset":entry["selected_offset"] if entry else ret["selected_offset"],
-              "lv_selected":entry["selected_value"] if entry else ret["selected_value"],
-              "v0_at_return":ret["v0"],"predicted_lv_multiplier":"TIDAK TAHU",
-              "comparison":"TIDAK DAPAT DIBANDINGKAN",
-              "evidence_limit":"UP0 menyajikan rumus per situs pembaca; pemetaan nilai selector a1 ke situs/case belum terbukti"})
+              "selector_value":str(sel) if sel is not None else "TIDAK TAHU",
+              "table_target_pc":target,"case_entry_pc":case["pc"] if case else "TIDAK TAHU",
+              "return_pc":ret["pc"],"record_index":source_row["record_index"] if source_row else "TIDAK TAHU",
+              "record_selector":source_row["record_selector"] if source_row else "TIDAK TAHU",
+              "rec_20":entry["rec_20"] if entry else "TIDAK TAHU",
+              "selected_offset":entry["selected_offset"] if entry else "TIDAK TAHU",
+              "lv_selected":entry["selected_value"] if entry else "TIDAK TAHU",
+              "input_register":input_reg,"case_input_value":input_raw or "TIDAK TAHU",
+              "expression_candidate":formula,"predicted_v0":hex32(pred),
+              "v0_at_return":ret["v0"],"input_matches_selected":match_input,
+              "comparison_status":comparison,
+              "evidence_limit":"Kecocokan per replay; selector/target berasal dari tabel byte; V1/V0 dipakai hanya sesuai input_register byte"})
     write_tsv(out/"UP1_SELECTOR_V0.tsv",SELECTOR_FIELDS,selector_rows)
     max_stage=max((max([int(value) for value in row["stages_reached"].split(",") if value.isdigit()],default=0)
                    for row in launches),default=0)
+    observed_targets={row["pc"] for row in events if row["role"]=="CASE_ENTRY"}
+    mapped_targets={f"0x{value:08X}" for value in case_targets}
+    case_coverage="TUNTAS" if observed_targets==mapped_targets else "SEBAGIAN"
+    selector_values=sorted({row["selector_value"] for row in selector_rows if row["selector_value"]!="TIDAK TAHU"})
+    case_formula_matches=sum(1 for row in selector_rows if row["comparison_status"]=="MATCH")
+    case_formula_mismatches=sum(1 for row in selector_rows if row["comparison_status"]=="MISMATCH")
     if full and identical:
         status="TUNTAS"
         evidence="K5"
@@ -526,6 +608,7 @@ def main()->int:
     summary=["UP1_TWO_CHECKPOINT_LAUNCH_EXEC_BREAKPOINT_AUDIT",
       f"STATUS={status}",f"EVIDENCE={evidence}",f"MAXIMUM_STAGE_REACHED={max_stage}",
       "ENTRY_BREAKPOINT_PCS="+",".join(f"0x{value:08X}" for value in entries),
+      f"CASE_ENTRY_BREAKPOINTS={len(case_targets)}",
       f"RETURN_INSTRUCTION_BREAKPOINTS={len(returns)}",
       f"CALL_RETURN_BREAKPOINTS={len(return_addresses)}","SHARED_77E8_BREAKPOINT=0x800B77E8",
       f"CHECKPOINT_SHA256={source_before}",f"MEMORY_CARD_SHA256={card_hash}",
@@ -534,7 +617,14 @@ def main()->int:
       f"EVENT_TRACE_IDENTICAL_ROW_BY_ROW={'YES' if identical else 'NO'}",
       "K5_SCOPE=dua replay dalam kondisi yang sama dari checkpoint identik; bukan variasi independen, identik memang wajar",
       "INPUT=NONE","RAM_WRITE_INJECTION=NONE","CHECKPOINT_AND_CARD_READ_ONLY=YES",
-      "SELECTOR_TO_SITE_MAPPING=TIDAK TAHU kecuali bukti statis membuktikannya",
+      "SELECTOR_TO_SITE_MAPPING=BYTE_TABLE_AND_RUNTIME_RECORD_SELECTOR",
+      f"SELECTOR_VALUES_OBSERVED={','.join(sorted({row['selector_value'] for row in selector_rows if row['selector_value']!='TIDAK TAHU'}))}",
+      f"SELECTOR_RESULT_MATCH_ROWS={case_formula_matches}",
+      f"SELECTOR_RESULT_MISMATCH_ROWS={case_formula_mismatches}",
+      f"CASE_TARGETS_EXPECTED={len(mapped_targets)}",
+      f"CASE_TARGETS_OBSERVED={len(observed_targets)}",
+      f"CASE_TARGET_COVERAGE={case_coverage}",
+      f"SELECTOR_VALUES_OBSERVED={','.join(selector_values)}",
       "GAMEPLAY_FIELD_MEANING=TIDAK TAHU",
       "EXIT_CODE=0" if status=="TUNTAS" else "EXIT_CODE=2"]
     (out/"UP1_SUMMARY.txt").write_text("\n".join(summary)+"\n",encoding="utf-8")

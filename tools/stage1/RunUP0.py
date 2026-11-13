@@ -837,39 +837,90 @@ def main_up0(a):
                       "basis_class":pb,"def_chain":";".join(f"0x{pcbase+4*z:08X}:{ins[z]['text']}" for z in ch),
                       "setup_a0":setup_text[0],"setup_a1":setup_text[1],"setup_a2":setup_text[2],"setup_a3":setup_text[3],
                       "reason":pd if proven else "ARGUMENT_CALLER_TIDAK_MEMBUKTIKAN_RANTAI_LUI_LW_EA84_INDEX_X_0x124"})
-    exprs=[];entry_ins=rmap["ENTRY1"][4]
-    for sid,site in enumerate(FORWARD_SITES,1):
-        trace=[x for x in fwd if x["site_id"]==sid];factors=[];divs=[];jump=[]
-        jump_indices=[int(x["index"]) for x in trace if x["target_pc"]=="0x800B77E8"]
-        first_shared_jump=min(jump_indices) if jump_indices else None
-        for x in trace:
-            ix=int(x["index"]);d=entry_ins[ix]
-            before_shared=first_shared_jump is None or ix<first_shared_jump
-            tainted={REGS.index(y[1:]) for y in x["tracked_registers"].split(",") if y.startswith("$") and y[1:] in REGS}
-            if d["mn"] in ("mult","multu") and before_shared:
-                for t,o in ((d["rs"],d["rt"]),(d["rt"],d["rs"])):
-                    if t in tainted:
-                        c=const_reg_before(entry_ins,ix,o)
-                        if c not in (None,0):factors.append(c)
-            if d["mn"] in ("div","divu"):
-                for t,o in ((d["rs"],d["rt"]),(d["rt"],d["rs"])):
-                    if t in tainted:
-                        c=const_reg_before(entry_ins,ix,o)
-                        if c not in (None,0):divs.append((c,d["mn"]))
-            if d["mn"]=="sll" and d["rt"] in tainted and d["sh"]>0 and before_shared:
-                factors.append(1<<d["sh"])
-            if d["mn"] in ("addu","add") and d["rs"]==d["rt"] and d["rs"] in tainted and before_shared:
-                factors.append(2)
-            if x["target_pc"]=="0x800B77E8":jump.append(x["trace_pc"])
-        factors=sorted(set(factors));divs=sorted(set(divs))
-        formula="LV" if not factors else "LV*"+"/".join(str(x) for x in factors)
-        if divs:formula+=" / "+"/".join(("signed " if m=="div" else "unsigned ")+str(v) for v,m in divs)
-        if not factors and not divs and not any(x["classification"].startswith("RETURN_V0") for x in trace):formula="TIDAK TAHU"
-        exprs.append({"site_id":sid,"reader_site":f"0x{site:08X}","expression_candidate":formula,
-          "multiplier_candidates":";".join(map(str,factors)) or "TIDAK TAHU",
-          "divisor_candidates":";".join(m+":"+str(v) for v,m in divs) or "TIDAK TAHU",
-          "jump_0x800B77E8":";".join(jump) or "TIDAK TERLIHAT",
-          "return_v0":next((x["return_v0"] for x in fsum if x["site_id"]==sid),"TIDAK TAHU")})
+    entry_ins=rmap["ENTRY1"][4]
+    entry_by_pc={E1_PC+4*i:d for i,d in enumerate(entry_ins)}
+    def at(pc):
+        return entry_by_pc.get(pc)
+    def exact(pc,mn,**fields):
+        d=at(pc)
+        return bool(d and d["mn"]==mn and all(d.get(k)==v for k,v in fields.items()))
+    dispatch_addr=None
+    dispatch_ok=(
+      exact(0x800B7738,"sltiu",rs=3,rt=2,imm=5) and
+      exact(0x800B773C,"beq",rs=2,rt=0,target=0x800B7798) and
+      exact(0x800B7740,"sll",rd=3,rt=3,sh=2) and
+      exact(0x800B7744,"lui",rt=2,imm=0x800B) and
+      exact(0x800B7748,"addiu",rs=2,rt=2,simm=-0x2A0C) and
+      exact(0x800B774C,"addu",rd=3,rs=3,rt=2) and
+      exact(0x800B7750,"lw",rt=2,rs=3) and
+      exact(0x800B7758,"jr",rs=2))
+    selector_rows=[]
+    if dispatch_ok:
+        dispatch_addr=0x800AD5F4
+        table_offset=E1_OFF+(dispatch_addr-E1_PC)
+        for selector in range(5):
+            pos=table_offset+selector*4
+            raw=data[pos:pos+4]
+            target=int.from_bytes(raw,"little")
+            site_id_by_target={0x800B7760:1,0x800B77D4:2,0x800B783C:3,
+                               0x800B7884:4,0x800B78D0:5}
+            sid=site_id_by_target.get(target)
+            trace=[x for x in fwd if sid is not None and x["site_id"]==sid]
+            sequence=";".join(f'{x["trace_pc"]}:{x["instruction"]}' for x in trace)
+            expression="TIDAK TAHU"
+            input_reg="TIDAK TAHU"
+            formula_status="SEQUENCE_ONLY"
+            reader_site=f"0x{FORWARD_SITES[sid-1]:08X}" if sid else "TIDAK TAHU"
+            if target==0x800B7760:
+                direct_ok=(exact(0x800B7780,"lhu",rt=3,rs=2,simm=0x20) and
+                  exact(0x800B7788,"srl",rd=3,rt=3,sh=7) and
+                  exact(0x800B778C,"andi",rs=3,rt=3,imm=0x1E) and
+                  exact(0x800B7790,"addu",rd=2,rs=2,rt=3) and
+                  exact(0x800B7794,"lhu",rt=2,rs=2,simm=0x10))
+                if direct_ok:
+                    expression="U16(record+0x10+((U16(record+0x20)>>7)&0x1E))"
+                    input_reg="RECORD_MEMORY"
+                    formula_status="TERBUKTI_BYTE"
+            elif target==0x800B77D4:
+                divide_ok=(exact(0x800B77D8,"sll",rd=2,rt=3,sh=1) and
+                  exact(0x800B77DC,"addu",rd=2,rs=2,rt=3) and
+                  exact(0x800B77E0,"sll",rd=2,rt=2,sh=2) and
+                  exact(0x800B77E4,"lui",rt=3,imm=0x6666) and
+                  exact(0x800B77E8,"ori",rs=3,rt=3,imm=0x6667) and
+                  exact(0x800B77EC,"mult",rs=2,rt=3) and
+                  exact(0x800B77F0,"mfhi",rd=3) and
+                  exact(0x800B77F4,"sra",rd=3,rt=3,sh=2) and
+                  exact(0x800B77F8,"sra",rd=2,rt=2,sh=31) and
+                  exact(0x800B77FC,"jr",rs=31) and
+                  exact(0x800B7800,"subu",rd=2,rs=3,rt=2))
+                if divide_ok:
+                    expression="signed_trunc((12*V1)/10)"
+                    input_reg="$v1"
+                    formula_status="TERBUKTI_BYTE_SEQUENCE"
+            elif target==0x800B78D0:
+                double_ok=(exact(0x800B78D8,"sll",rd=2,rt=2,sh=1) and
+                           exact(0x800B78DC,"jr",rs=31))
+                if double_ok:
+                    expression="2*V0"
+                    input_reg="$v0"
+                    formula_status="TERBUKTI_BYTE_SEQUENCE"
+            elif target in (0x800B783C,0x800B7884):
+                # Preserve exact operation trace; ORI reaches a common block without
+                # a locally re-established high half of the reciprocal constant.
+                input_reg="$v0" if target==0x800B783C else "$v1"
+                formula_status="TIDAK_TAHU_INITIAL_REGISTER_STATE"
+            selector_rows.append({"selector_value":selector,"table_entry_pc":f"0x{dispatch_addr+selector*4:08X}",
+              "file_offset":f"0x{pos:08X}","bytes_4B":" ".join(f"{v:02X}" for v in raw),
+              "jump_target_pc":f"0x{target:08X}","reader_site_pc":reader_site,
+              "input_register":input_reg,"expression_candidate":expression,
+              "formula_status":formula_status,"operation_sequence":sequence})
+    exprs=[]
+    for row in selector_rows:
+        exprs.append({"site_id":row["selector_value"],"reader_site":row["reader_site_pc"],
+          "expression_candidate":row["expression_candidate"],
+          "multiplier_candidates":"TIDAK TAHU" if row["expression_candidate"]=="TIDAK TAHU" else row["expression_candidate"],
+          "divisor_candidates":"TIDAK TAHU","jump_0x800B77E8":row["jump_target_pc"],
+          "return_v0":row["formula_status"]})
     defs_rows=[]
     for bb,nn,pp,oo,ii,ss in regions: defs_rows.extend(scan_region(bb,nn,pp,oo)[2])
     out=a.out_dir;out.mkdir(parents=True,exist_ok=True)
@@ -929,12 +980,13 @@ def main_up0(a):
     write_tsv(out/"UP0_RMW_U16_20.tsv",["region","load_pc","mask_ops","store_pc","store_instruction","mask_immediates","basis_class","bits_8_11_written"],rmw)
     write_tsv(out/"UP0_SITE_BASES_2_SITES.tsv",["site_pc","function_start","caller_pc","caller_function_start","base_register","basis_status","basis_class","def_chain","setup_a0","setup_a1","setup_a2","setup_a3","reason"],sitebases)
     write_tsv(out/"UP0_CASE_MULTIPLIERS.tsv",["site_id","reader_site","expression_candidate","multiplier_candidates","divisor_candidates","jump_0x800B77E8","return_v0"],exprs)
+    write_tsv(out/"UP0_SELECTOR_JUMPTABLE.tsv",["selector_value","table_entry_pc","file_offset","bytes_4B","jump_target_pc","reader_site_pc","input_register","expression_candidate","formula_status","operation_sequence"],selector_rows)
     write_tsv(out/"UP0_DECODE_VALIDATION.tsv",["source","region","pc","file_offset","bytes_4B","instruction","independent_instruction","independent_control_target","match"],validation)
     write_tsv(out/"UP0_LH_LHU_DEFCHAIN.tsv",DEF,defs_rows)
 
     mismatch=sum(x["match"]!="YES" for x in validation)
     summary=["UP0_BYTE_VERIFIED_READER_TRACER_AND_WRITER_AUDIT",
-      "STATUS="+("TUNTAS" if mismatch==0 and len(fsum)==7 else "SEBAGIAN"),
+      "STATUS="+("TUNTAS" if mismatch==0 and len(fsum)==7 and dispatch_ok and len(selector_rows)==5 else "SEBAGIAN"),
       "EVIDENCE=K4 maksimum; byte EXE dan Entry 1; statis","K5=NOT_APPLICABLE_STATIC_ONLY",
       f"EXE_SHA256={digest(exe)}",f"DATA_BIN_SHA256={digest(data)}",f"ENTRY1_SHA256={digest(e1)}",
       "ENTRY1_MAPPING=0x10BB000+(PC-0x800AD450)",f"FORWARD_SITES_PROCESSED={len(fsum)}",
@@ -943,10 +995,14 @@ def main_up0(a):
       f"POINTER_LITERAL_ROWS={len(literals)}",f"RECORD_WRITER_ROWS={len(writers)}",
       f"RMW_U16_PLUS_0x20_ROWS={len(rmw)}",f"SITE_BASE_ROWS={len(sitebases)}",
       f"SITE_BASE_TIDAK_TAHU={sum(1 for x in sitebases if x['basis_status']!='TERBUKTI')}",
+      f"DISPATCH_TABLE_BYTE_VALIDATED={'YES' if dispatch_ok else 'NO'}",
+      f"SELECTOR_JUMPTABLE_ROWS={len(selector_rows)}",
+      f"SELECTOR_FORMULAS_BYTE_VALIDATED={sum(1 for x in selector_rows if x['formula_status'] in ('TERBUKTI_BYTE','TERBUKTI_BYTE_SEQUENCE'))}",
+      f"SELECTOR_FORMULAS_TIDAK_TAHU={sum(1 for x in selector_rows if x['formula_status'].startswith('TIDAK_TAHU'))}",
       f"INDEPENDENT_DECODE_ROWS={len(validation)}",f"INDEPENDENT_DECODE_MISMATCHES={mismatch}",
       "FIELD_GAMEPLAY_MEANING=TIDAK TAHU","NOTE=offset memori tidak diberi makna gameplay tanpa bukti"]
     (out/"UP0_SUMMARY.txt").write_text("\n".join(summary)+"\n",encoding="utf-8");print("\n".join(summary),flush=True)
-    return 0 if mismatch==0 and len(fsum)==7 else 2
+    return 0 if mismatch==0 and len(fsum)==7 and dispatch_ok and len(selector_rows)==5 else 2
 
 def self_test_up0():
     pc=0x80010000;word=(5<<26)|(8<<21)|(9<<16)|3;raw=word.to_bytes(4,"little")

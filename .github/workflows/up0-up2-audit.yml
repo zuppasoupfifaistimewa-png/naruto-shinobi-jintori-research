@@ -296,17 +296,21 @@ jobs:
           DISASM="$OUT/UP0/UP0_READER_FUNCTION_DISASSEMBLY.tsv"
           CALLERS="$OUT/UP0/UP0_CALLERS.tsv"
           CASES="$OUT/UP0/UP0_CASE_MULTIPLIERS.tsv"
+          FORWARD="$OUT/UP0/UP0_FORWARD_7_SITES.tsv"
+          JUMPTABLE="$OUT/UP0/UP0_SELECTOR_JUMPTABLE.tsv"
           if grep -q '^STATUS=TUNTAS$' "$OUT/PREFLIGHT/UP_PREFLIGHT_RESULT.txt" 2>/dev/null &&
              [ "$(cat "$OUT/CHECKPOINT_VERIFY_EXIT_CODE.txt" 2>/dev/null)" = "0" ] &&
              [ "$(cat "$OUT/EMULATOR_SETUP_EXIT_CODE.txt" 2>/dev/null)" = "0" ] &&
              [ -x "$PCSX_BIN" ] && [ -s "$WORK/input/scph7502.bin" ] &&
              [ -s "$WORK/source/game-run.cue" ] &&
-             [ -s "$ENTRY" ] && [ -s "$DISASM" ] && [ -s "$CALLERS" ] && [ -s "$CASES" ]; then
+             [ -s "$ENTRY" ] && [ -s "$DISASM" ] && [ -s "$CALLERS" ] &&
+             [ -s "$CASES" ] && [ -s "$FORWARD" ] && [ -s "$JUMPTABLE" ]; then
             python tools/stage1/RunUP1.py --work "$WORK/emulator" --out "$OUT/UP1" \
               --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
               --cue "$WORK/source/game-run.cue" --source "$SOURCE" \
               --static-readers "$ENTRY" --static-disassembly "$DISASM" \
               --static-callers "$CALLERS" --static-cases "$CASES" \
+              --static-forward-sites "$FORWARD" --static-selector-table "$JUMPTABLE" \
               --frames 600 --timeout-seconds 900 > "$OUT/UP1_EXECUTION_LOG.txt" 2>&1
             rc=$?
           else
