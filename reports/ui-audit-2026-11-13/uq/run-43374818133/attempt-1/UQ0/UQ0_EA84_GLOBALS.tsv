@@ -1,0 +1,3 @@
+region	load_pc	instruction	base_lui_pc	base_lui	global_ea	global_role	static_writer_pcs	ea84_chain_status
+ENTRY1	0x800D6934	lhu $a0,-5494($v0)	0x800D6930	lui $v0,0x8014	0x8013EA8A	GLOBAL_LOAD_SOURCE; not proven EA84 pointer/record	TIDAK DITEMUKAN	TIDAK TAHU; no complete pointer+index*0x124 chain to caller's a0
+ENTRY1	0x800F04C0	lhu $a0,-5496($v0)	0x800F04B8	lui $v0,0x8014	0x8013EA88	GLOBAL_LOAD_SOURCE; not proven EA84 pointer/record	TIDAK DITEMUKAN	TIDAK TAHU; no complete pointer+index*0x124 chain to caller's a0

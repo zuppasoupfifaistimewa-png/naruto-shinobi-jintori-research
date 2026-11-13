@@ -1,0 +1,1 @@
+UQ0_SELF_TEST=PASS MIPS decode, independent decoder, jal and nibble mask effects
