@@ -1,0 +1,23 @@
+commit_sha	parent_shas	author	date	subject
+e863b68f3e2bc0baaee975488bdc138bc910dd21	9b7381969996b35e8bf8e72a9536d4ca8694ea78	zuppasoupfifaistimewa-png	2026-11-13T11:07:54+07:00	Normalize pad audit log and expand UP1 navigation coverage
+9b7381969996b35e8bf8e72a9536d4ca8694ea78	98252c2ac54d8ba7dd6febb7095d165ac9568f87	github-actions[bot]	2026-11-13T04:04:08Z	Record UP0-UP2 audit results for run 43362693404 [skip ci]
+98252c2ac54d8ba7dd6febb7095d165ac9568f87	52c99296909ea374697ba0c76d33ceac31a76625	zuppasoupfifaistimewa-png	2026-11-13T11:00:50+07:00	Capture live selector dispatch and accept verified frame-600 marker
+52c99296909ea374697ba0c76d33ceac31a76625	a082073cdcdace5aeb6b4704150f5d7aa8ab1a86	github-actions[bot]	2026-11-13T01:33:37Z	Record UP0-UP2 audit results for run 43345484002 [skip ci]
+a082073cdcdace5aeb6b4704150f5d7aa8ab1a86	5fdcf2cd118e4a24ed14a840eb3ad5f0b62a86e8	zuppasoupfifaistimewa-png	2026-11-13T08:30:49+07:00	Replay UP selector paths with verified gamepad inputs
+5fdcf2cd118e4a24ed14a840eb3ad5f0b62a86e8	d04f708285465ab58b719c4beca74ecf518ebfa1	github-actions[bot]	2026-11-13T01:15:16Z	Record UP0-UP2 audit results for run 43343196280 [skip ci]
+d04f708285465ab58b719c4beca74ecf518ebfa1	726cc58031819d9045a250119100f14a1b0db920	zuppasoupfifaistimewa-png	2026-11-13T08:12:55+07:00	Verify UP selector records across both checkpoint replay pairs
+726cc58031819d9045a250119100f14a1b0db920	f0458d069d89630d727544f55511185e6c1b6605	github-actions[bot]	2026-11-13T01:08:43Z	Record UP0-UP2 audit results for run 43342527855 [skip ci]
+f0458d069d89630d727544f55511185e6c1b6605	b07e1bc047e848202a619e5da15b9a433c42cc56	zuppasoupfifaistimewa-png	2026-11-13T08:07:48+07:00	Trace all five selector formulas and snapshot 64 runtime records
+b07e1bc047e848202a619e5da15b9a433c42cc56	f91ffe9e846ddab01c6d8860525ba3919cb37b30	github-actions[bot]	2026-11-13T01:02:53Z	Record UP0-UP2 audit results for run 43341608710 [skip ci]
+f91ffe9e846ddab01c6d8860525ba3919cb37b30	4add4abc27d6045fa2bbdfa42d9994eb301cede1	zuppasoupfifaistimewa-png	2026-11-13T08:00:50+07:00	Remove unused checkpoint hash variable from UP1
+4add4abc27d6045fa2bbdfa42d9994eb301cede1	733cdefa76385921254ea485b2bba774f28a3a2c	github-actions[bot]	2026-11-13T01:00:12Z	Record UP0-UP2 audit results for run 43341398050 [skip ci]
+733cdefa76385921254ea485b2bba774f28a3a2c	89027b7efb15cee6f06f0089af325d7bf1998d59	zuppasoupfifaistimewa-png	2026-11-13T07:59:18+07:00	Test both pre-existing story checkpoints for selector case coverage
+89027b7efb15cee6f06f0089af325d7bf1998d59	4a08370c3a2b194eb587169360ced2e347ef5f1f	github-actions[bot]	2026-11-13T00:51:37Z	Record UP0-UP2 audit results for run 43340171953 [skip ci]
+4a08370c3a2b194eb587169360ced2e347ef5f1f	efa05b8838fbf2b2625b40cfb828f8f87f2890aa	zuppasoupfifaistimewa-png	2026-11-13T07:49:48+07:00	Fix UP selector table isolation and case-entry probes
+efa05b8838fbf2b2625b40cfb828f8f87f2890aa	b0720026b02a0a6e3fd87d60ddc830fd3c8e09a7	github-actions[bot]	2026-11-13T00:47:46Z	Record UP0-UP2 audit results for run 43339749335 [skip ci]
+b0720026b02a0a6e3fd87d60ddc830fd3c8e09a7	873d864bfa8d0d0a2eb7307ab2dc7a12d2bcc8d5	zuppasoupfifaistimewa-png	2026-11-13T07:46:33+07:00	Trace UP selector jump table and runtime case inputs
+873d864bfa8d0d0a2eb7307ab2dc7a12d2bcc8d5	906a031fb8f987f7ab0a77a10b9758d39d561e48	github-actions[bot]	2026-11-12T23:53:29Z	Record UP0-UP2 audit results for run 43332378877 [skip ci]
+906a031fb8f987f7ab0a77a10b9758d39d561e48	e4af2511558aa7a3a162548acafeba03eeebec15	zuppasoupfifaistimewa-png	2026-11-13T06:51:45+07:00	Fix UP0 static preflight lint issues
+e4af2511558aa7a3a162548acafeba03eeebec15	aa43988ade04709066911c78e7c033f945d87d27	github-actions[bot]	2026-11-12T23:50:45Z	Record UP0-UP2 audit results for run 43332124239 [skip ci]
+aa43988ade04709066911c78e7c033f945d87d27	d0c7b1a1dff85ffb439923078e78adf5b958b9a8	zuppasoupfifaistimewa-png	2026-11-13T06:49:53+07:00	Add UP0-UP2 byte, runtime and ledger audit
+d0c7b1a1dff85ffb439923078e78adf5b958b9a8	1ecb9d45ab54542896775b6b559de66028ee89d9	github-actions[bot]	2026-11-12T22:41:49Z	Record UO0-UO2 audit results for run 43321960332 [skip ci]

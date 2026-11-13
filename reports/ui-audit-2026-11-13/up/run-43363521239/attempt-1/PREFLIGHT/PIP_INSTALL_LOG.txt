@@ -1,0 +1,10 @@
+Collecting pyflakes
+  Downloading pyflakes-4.1.0-py2.py3-none-any.whl.metadata (3.7 kB)
+Collecting PyYAML
+  Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Downloading pyflakes-4.1.0-py2.py3-none-any.whl (66 kB)
+Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 3.4 MB/s  0:00:00
+Installing collected packages: PyYAML, pyflakes
+
+Successfully installed PyYAML-6.0.3 pyflakes-4.1.0

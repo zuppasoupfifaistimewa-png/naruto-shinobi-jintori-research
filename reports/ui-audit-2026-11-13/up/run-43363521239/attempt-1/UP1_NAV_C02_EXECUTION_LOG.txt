@@ -1,0 +1,13 @@
+usage: RunUP1.py [-h] [--work WORK] [--out OUT] [--pcsx-bin PCSX_BIN]
+                 [--appdir APPDIR] [--bios BIOS] [--cue CUE] [--source SOURCE]
+                 [--static-readers STATIC_READERS]
+                 [--static-disassembly STATIC_DISASSEMBLY]
+                 [--static-callers STATIC_CALLERS]
+                 [--static-cases STATIC_CASES]
+                 [--static-forward-sites STATIC_FORWARD_SITES]
+                 [--static-selector-table STATIC_SELECTOR_TABLE]
+                 [--checkpoint-sha256 CHECKPOINT_SHA256]
+                 [--checkpoint-bytes CHECKPOINT_BYTES]
+                 [--input-sequence INPUT_SEQUENCE] [--frames FRAMES]
+                 [--timeout-seconds TIMEOUT_SECONDS] [--self-test]
+RunUP1.py: error: invalid frame/button order in input sequence
