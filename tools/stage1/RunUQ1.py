@@ -378,7 +378,6 @@ def main()->int:
       "-noupdate","-no-ui","-debugger","-interpreter","-bios",str(args.bios),"-iso",str(args.cue),
       "-memcard1",str(template),"-softgpu","-dofile",str(warm),"-logfile",
       str(stdout.with_suffix(".pcsx.log")),"-run"]
-    started=time.monotonic()
     with stdout.open("wb") as stream:
         try:warm_rc=subprocess.run(command,cwd=home,env=app_env(args.appdir,home),
              stdout=stream,stderr=subprocess.STDOUT,check=False).returncode
@@ -418,7 +417,7 @@ def main()->int:
       "MEMORY_CARD_SHA256="+CARD_SHA,"INPUT=NONE","RAM_WRITE_INJECTION=NONE",
       "WATCH_TARGETS=44 records x {u8(+0x0B),u16(+0x20)}",
       "WRITE_BREAKPOINT_KIND=PCSX.addBreakpoint(address,'Write',width); callback sample timing not independently established",
-      f"WRITE_BP_EXPECTED_PER_LAUNCH=88",
+      "WRITE_BP_EXPECTED_PER_LAUNCH=88",
       f"LAUNCH_1_WRITE_BP_REGISTERED={launches[0]['write_bp_registered']}",
       f"LAUNCH_2_WRITE_BP_REGISTERED={launches[1]['write_bp_registered']}",
       f"LAUNCH_1_FRAMES={launches[0]['frames_observed']}",
