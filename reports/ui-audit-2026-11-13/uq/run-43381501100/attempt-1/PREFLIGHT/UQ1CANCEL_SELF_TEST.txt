@@ -1,0 +1,1 @@
+UQ1CANCEL_SELF_TEST=PASS safe CROSS pulse frame 30-38; no Circle
