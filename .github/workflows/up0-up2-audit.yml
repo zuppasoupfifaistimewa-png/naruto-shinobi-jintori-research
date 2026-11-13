@@ -345,7 +345,7 @@ jobs:
               --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
               --cue "$WORK/source/game-run.cue" --source "$SOURCE_C02" \
               --checkpoint-sha256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35 \
-              --checkpoint-bytes 21162799 --input-sequence "30:UP,90:RIGHT,150:DOWN,210:LEFT,270:UP,330:RIGHT,390:DOWN,450:LEFT,510:CIRCLE" \
+              --checkpoint-bytes 21162799 --input-sequence "30:START,90:CIRCLE,150:UP,210:CIRCLE,270:RIGHT,330:CIRCLE,390:TRIANGLE,450:CIRCLE,510:X" \
               --static-readers "$ENTRY" --static-disassembly "$DISASM" \
               --static-callers "$CALLERS" --static-cases "$CASES" \
               --static-forward-sites "$FORWARD" --static-selector-table "$JUMPTABLE" \
@@ -355,7 +355,7 @@ jobs:
               --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
               --cue "$WORK/source/game-run.cue" --source "$SOURCE_C01" \
               --checkpoint-sha256 747217064b1a178d7bdfe4ef4722935593dbbea2c89efcbd451e25d651bd014f \
-              --checkpoint-bytes 21162638 --input-sequence "30:UP,90:RIGHT,150:DOWN,210:LEFT,270:UP,330:RIGHT,390:DOWN,450:LEFT,510:CIRCLE" \
+              --checkpoint-bytes 21162638 --input-sequence "30:START,90:CIRCLE,150:UP,210:CIRCLE,270:RIGHT,330:CIRCLE,390:TRIANGLE,450:CIRCLE,510:X" \
               --static-readers "$ENTRY" --static-disassembly "$DISASM" \
               --static-callers "$CALLERS" --static-cases "$CASES" \
               --static-forward-sites "$FORWARD" --static-selector-table "$JUMPTABLE" \

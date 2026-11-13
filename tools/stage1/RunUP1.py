@@ -422,7 +422,7 @@ def parse_pad_inputs(text:str)->list[dict]:
     for line in text.splitlines():
         if not line.startswith("UP1_PAD_INPUT\t"):
             continue
-        parts=line.split("\t")
+        parts=[part.strip() for part in line.split("\t")]
         if len(parts)==7:
             rows.append(dict(zip(PAD_ACTION_FIELDS,parts[1:])))
     return rows
@@ -538,8 +538,9 @@ def self_test():
     assert len(parse_hits(sample))==1
     snapshot="UP1_RECORD_SNAPSHOT\tL1\t4\t0x80100000\t0x01\t0x0180\t0x10\t0x0007\t0x0007\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000"
     assert len(parse_record_snapshots(snapshot))==1
-    pad_sample="UP1_PAD_INPUT\tL1\t30\tCROSS\tPRESS\ttrue\tPASS"
-    assert len(parse_pad_inputs(pad_sample))==1
+    pad_sample="UP1_PAD_INPUT\tL1\t30\tCROSS\tPRESS\ttrue\tPASS "
+    parsed_pad=parse_pad_inputs(pad_sample)
+    assert len(parsed_pad)==1 and parsed_pad[0]["status"]=="PASS"
     print("UP1_SELF_TEST=PASS staged frames, selector/snapshot parsers, checkpoint hash and pad input parser")
 
 def main()->int:
