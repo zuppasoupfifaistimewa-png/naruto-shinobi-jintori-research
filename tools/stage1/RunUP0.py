@@ -844,6 +844,9 @@ def main_up0(a):
     def exact(pc,mn,**fields):
         d=at(pc)
         return bool(d and d["mn"]==mn and all(d.get(k)==v for k,v in fields.items()))
+    def instruction(pc,text):
+        d=at(pc)
+        return bool(d and d["text"]==text)
     dispatch_addr=None
     dispatch_ok=(
       exact(0x800B7738,"sltiu",rs=3,rt=2,imm=5) and
@@ -871,6 +874,15 @@ def main_up0(a):
             input_reg="TIDAK TAHU"
             formula_status="SEQUENCE_ONLY"
             reader_site=f"0x{FORWARD_SITES[sid-1]:08X}" if sid else "TIDAK TAHU"
+            common_div10=all((
+              instruction(0x800B77E8,"lui $v1,0x6666"),
+              instruction(0x800B77EC,"ori $v1,$v1,0x6667"),
+              instruction(0x800B77F0,"mult $v0,$v1"),
+              instruction(0x800B77F4,"mfhi $v1"),
+              instruction(0x800B77F8,"sra $v1,$v1,2"),
+              instruction(0x800B77FC,"sra $v0,$v0,31"),
+              instruction(0x800B7800,"jr $ra"),
+              instruction(0x800B7804,"subu $v0,$v1,$v0")))
             if target==0x800B7760:
                 direct_ok=(exact(0x800B7780,"lhu",rt=3,rs=2,simm=0x20) and
                   exact(0x800B7788,"srl",rd=3,rt=3,sh=7) and
@@ -882,33 +894,40 @@ def main_up0(a):
                     input_reg="RECORD_MEMORY"
                     formula_status="TERBUKTI_BYTE"
             elif target==0x800B77A0:
-                divide_ok=(exact(0x800B77D8,"sll",rd=2,rt=3,sh=1) and
-                  exact(0x800B77DC,"addu",rd=2,rs=2,rt=3) and
-                  exact(0x800B77E0,"sll",rd=2,rt=2,sh=2) and
-                  exact(0x800B77E4,"lui",rt=3,imm=0x6666) and
-                  exact(0x800B77E8,"ori",rs=3,rt=3,imm=0x6667) and
-                  exact(0x800B77EC,"mult",rs=2,rt=3) and
-                  exact(0x800B77F0,"mfhi",rd=3) and
-                  exact(0x800B77F4,"sra",rd=3,rt=3,sh=2) and
-                  exact(0x800B77F8,"sra",rd=2,rt=2,sh=31) and
-                  exact(0x800B77FC,"jr",rs=31) and
-                  exact(0x800B7800,"subu",rd=2,rs=3,rt=2))
-                if divide_ok:
+                scale12=all((
+                  instruction(0x800B77DC,"sll $v0,$v1,1"),
+                  instruction(0x800B77E0,"addu $v0,$v0,$v1"),
+                  instruction(0x800B77E4,"sll $v0,$v0,2")))
+                if scale12 and common_div10:
                     expression="signed_trunc((12*V1)/10)"
                     input_reg="$v1"
                     formula_status="TERBUKTI_BYTE_SEQUENCE"
+            elif target==0x800B7808:
+                scale15=all((
+                  instruction(0x800B7844,"sll $v1,$v0,4"),
+                  instruction(0x800B7848,"j 0x800B77E8"),
+                  instruction(0x800B784C,"subu $v0,$v1,$v0")))
+                if scale15 and common_div10:
+                    expression="signed_trunc((15*V0)/10)"
+                    input_reg="$v0"
+                    formula_status="TERBUKTI_BYTE_SEQUENCE"
+            elif target==0x800B7850:
+                scale18=all((
+                  instruction(0x800B788C,"sll $v0,$v1,3"),
+                  instruction(0x800B7890,"addu $v0,$v0,$v1"),
+                  instruction(0x800B7894,"j 0x800B77E8"),
+                  instruction(0x800B7898,"sll $v0,$v0,1")))
+                if scale18 and common_div10:
+                    expression="signed_trunc((18*V1)/10)"
+                    input_reg="$v1"
+                    formula_status="TERBUKTI_BYTE_SEQUENCE"
             elif target==0x800B789C:
-                double_ok=(exact(0x800B78D8,"sll",rd=2,rt=2,sh=1) and
-                           exact(0x800B78DC,"jr",rs=31))
+                double_ok=(instruction(0x800B78D8,"sll $v0,$v0,1") and
+                           instruction(0x800B78DC,"jr $ra"))
                 if double_ok:
                     expression="2*V0"
                     input_reg="$v0"
                     formula_status="TERBUKTI_BYTE_SEQUENCE"
-            elif target in (0x800B7808,0x800B7850):
-                # Preserve exact operation trace; ORI reaches a common block without
-                # a locally re-established high half of the reciprocal constant.
-                input_reg="$v0" if target==0x800B7808 else "$v1"
-                formula_status="TIDAK_TAHU_INITIAL_REGISTER_STATE"
             jumptable_rows.append({"selector_value":selector,"table_entry_pc":f"0x{dispatch_addr+selector*4:08X}",
               "file_offset":f"0x{pos:08X}","bytes_4B":" ".join(f"{v:02X}" for v in raw),
               "jump_target_pc":f"0x{target:08X}","reader_site_pc":reader_site,

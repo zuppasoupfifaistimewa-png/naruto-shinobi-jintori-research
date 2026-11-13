@@ -27,6 +27,8 @@ LAUNCH_FIELDS=["launch","status","exit_code","frames_requested","frames_observed
  "return_address_breakpoints","shared_77E8_breakpoint","checkpoint_before","checkpoint_after",
  "card_before","card_after","card_mode_0444","stages_reached","wall_seconds"]
 COMPARE_FIELDS=["metric","launch_1","launch_2","same","interpretation"]
+RECORD_SELECTOR_FIELDS=["launch","record_index","record_address","record_selector","rec_20","selected_offset","selected_value",
+ "rec_10","rec_12","rec_14","rec_16","rec_18","rec_1A","rec_1C","rec_1E"]
 SELECTOR_FIELDS=["launch","frame","selector_value","table_target_pc","case_entry_pc","return_pc",
  "record_index","record_selector","rec_20","selected_offset","lv_selected","case_input_pc","input_register",
  "case_input_value","expression_candidate","predicted_v0","v0_at_return",
@@ -127,6 +129,7 @@ local STRIDE=0x124
 local mem=PCSX.getMemPtr()
 local loaded,started,finished=false,false,false
 local post,runtimeP,hits=0,nil,0
+local snapshotDone=false
 local bpHandles={}
 local function log(s) print(s);pcall(function()io.stdout:flush()end) end
 local function hx(v,w)
@@ -170,6 +173,31 @@ local function record_hit(role)
  local selectedOffset=nil
  local selectedValue=nil
  local values={}
+ if runtimeP and not snapshotDone then
+  snapshotDone=true
+  for recordIndex=0,63 do
+   local recordAddress=runtimeP+recordIndex*STRIDE
+   local selectorByte=readv(recordAddress+0x0B,1)
+   local selectorBits=readv(recordAddress+0x20,2)
+   local chosenOffset=nil
+   local chosenValue=nil
+   if selectorBits then
+    local selectorBitsValue=math.floor(selectorBits/128)
+    chosenOffset=0x10+(math.floor((selectorBitsValue%64)/2)%16)*2
+    chosenValue=readv(recordAddress+chosenOffset,2)
+   end
+   local function snapshotHex(value,width)
+    if value==nil then return "TIDAK_TAHU" end
+    return hx(value,width)
+   end
+   local snapshotFields={"UP1_RECORD_SNAPSHOT",LAUNCH,tostring(recordIndex),hx(recordAddress),
+    snapshotHex(selectorByte,1),snapshotHex(selectorBits,2),
+    chosenOffset and string.format("0x%02X",chosenOffset) or "TIDAK_TAHU",
+    snapshotHex(chosenValue,2)}
+   for _,off in ipairs(OFFSETS) do snapshotFields[#snapshotFields+1]=snapshotHex(readv(recordAddress+off,2),2) end
+   log(table.concat(snapshotFields,"\t"))
+  end
+ end
  if runtimeP and a0<64 then
   index=tostring(a0)
   rec=runtimeP+a0*STRIDE
@@ -326,6 +354,16 @@ def read_selector_map(selector_table:Path)->dict[int,dict]:
                 continue
     return mapping
 
+def parse_record_snapshots(text:str)->list[dict]:
+    snapshots=[]
+    for line in text.splitlines():
+        if not line.startswith("UP1_RECORD_SNAPSHOT\t"):
+            continue
+        parts=line.split("\t")
+        if len(parts)==16:
+            snapshots.append(dict(zip(RECORD_SELECTOR_FIELDS,parts[1:])))
+    return snapshots
+
 def parse_hits(text:str)->list[dict]:
     events=[]
     for line in text.splitlines():
@@ -363,6 +401,7 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
     if pcsx_log.exists():
         log_text+="\n"+pcsx_log.read_text(encoding="utf-8",errors="replace")
     events=parse_hits(log_text)
+    snapshots=parse_record_snapshots(log_text)
     reached=[]
     lines=log_text.splitlines()
     for stage in STAGES:
@@ -419,7 +458,7 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
         "\n".join(lines[-240:])+"\n",encoding="utf-8")
     state.unlink(missing_ok=True)
     card.unlink(missing_ok=True)
-    return row,events
+    return row,events,snapshots
 
 def self_test():
     assert CHECKPOINT_BYTES==21162799 and STAGES==(88,300,600)
@@ -427,7 +466,9 @@ def self_test():
     sample=("UP1_HIT\tL1\t88\tENTRY\t0x800B770C\t0x4\t0x2\t0x0\t0x0\t0x800B7790\t0xC\t"
       "0x80100000\t4\t0x80100490\t0x00000007\t0x00\t0x0180\t0x10\t0x0007\t0x0007\t0x0\t0x0\t0x0\t0x0\t0x0\t0x0\t0x0")
     assert len(parse_hits(sample))==1
-    print("UP1_SELF_TEST=PASS staged frames, 26-field selector trace, checkpoint hash and event parser")
+    snapshot="UP1_RECORD_SNAPSHOT\tL1\t4\t0x80100000\t0x01\t0x0180\t0x10\t0x0007\t0x0007\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000\t0x0000"
+    assert len(parse_record_snapshots(snapshot))==1
+    print("UP1_SELF_TEST=PASS staged frames, selector trace, 64-record snapshot parser and checkpoint hash")
 
 def main()->int:
     parser=argparse.ArgumentParser()
@@ -513,13 +554,16 @@ def main()->int:
     template.chmod(0o444)
     launches=[]
     events=[]
+    record_snapshots=[]
     for name in ("LAUNCH_1","LAUNCH_2"):
-        row,hit_rows=launch_once(name,source,template,work,out,args.pcsx_bin,args.appdir,
+        row,hit_rows,snapshot_rows=launch_once(name,source,template,work,out,args.pcsx_bin,args.appdir,
           args.bios,args.cue,entries,case_targets,case_inputs,returns,return_addresses,args.timeout_seconds,
           args.checkpoint_sha256)
         launches.append(row)
         events.extend(hit_rows)
+        record_snapshots.extend(snapshot_rows)
     write_tsv(out/"UP1_EXEC_HITS.tsv",REG_EVENT_FIELDS,events)
+    write_tsv(out/"UP1_RECORD_SELECTORS.tsv",RECORD_SELECTOR_FIELDS,record_snapshots)
     write_tsv(out/"UP1_LAUNCHES.tsv",LAUNCH_FIELDS,launches)
     first=[row for row in events if row["launch"]=="LAUNCH_1"]
     second=[row for row in events if row["launch"]=="LAUNCH_2"]

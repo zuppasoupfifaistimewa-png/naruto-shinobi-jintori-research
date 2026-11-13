@@ -359,6 +359,7 @@ jobs:
           c02=Path(sys.argv[1]); c01=Path(sys.argv[2]); table=Path(sys.argv[3])
           conditions=[("C01",c01),("C02",c02)]
           target_union=set(); selector_union=set(); all_selector_rows=[]
+          all_snapshot_rows=[]; snapshot_selector_union=set()
           targets_by_selector={}
           with table.open(encoding="utf-8",newline="") as stream:
               for row in csv.DictReader(stream,delimiter="\t"):
@@ -366,6 +367,7 @@ jobs:
           lines=["UP1_MULTI_CHECKPOINT_CONDITION_SUMMARY"]
           k5_all=True
           hits_by_selector={}
+          snapshot_by_condition={}
           for condition,folder in conditions:
               summary=(folder/"UP1_SUMMARY.txt").read_text(encoding="utf-8",errors="replace")
               values={}
@@ -387,6 +389,18 @@ jobs:
                               hits_by_selector.setdefault(selector,{}).setdefault(condition,set()).add(launch)
                           if row.get("table_target_pc","TIDAK TAHU")!="TIDAK TAHU":
                               target_union.add(row["table_target_pc"])
+              snapshots=[]
+              snap_path=folder/"UP1_RECORD_SELECTORS.tsv"
+              if snap_path.exists():
+                  with snap_path.open(encoding="utf-8",newline="") as stream:
+                      for row in csv.DictReader(stream,delimiter="\t"):
+                          row["condition"]=condition
+                          all_snapshot_rows.append(row)
+                          snapshots.append(row)
+                          selector=row.get("record_selector","TIDAK TAHU")
+                          if selector!="TIDAK TAHU":
+                              snapshot_selector_union.add(selector)
+              snapshot_by_condition[condition]=snapshots
               k5=(values.get("STATUS")=="TUNTAS" and values.get("EVIDENCE")=="K5" and
                   values.get("EVENT_TRACE_IDENTICAL_ROW_BY_ROW")=="YES" and
                   values.get("MAXIMUM_STAGE_REACHED")=="600")
@@ -395,7 +409,9 @@ jobs:
                 f"{condition}_EVIDENCE={values.get('EVIDENCE','TIDAK TAHU')}",
                 f"{condition}_CHECKPOINT_SHA256={values.get('CHECKPOINT_SHA256','TIDAK TAHU')}",
                 f"{condition}_EVENT_TRACE_IDENTICAL_ROW_BY_ROW={values.get('EVENT_TRACE_IDENTICAL_ROW_BY_ROW','TIDAK TAHU')}",
-                f"{condition}_SELECTOR_ROWS={len(rows)}"])
+                f"{condition}_SELECTOR_ROWS={len(rows)}",
+                f"{condition}_RECORD_SNAPSHOT_ROWS={len(snapshots)}",
+                f"{condition}_RECORD_SNAPSHOT_LAUNCHES={','.join(sorted({row.get('launch','') for row in snapshots}))}"])
           repeatable_selectors=[]
           for selector,conditions_seen in hits_by_selector.items():
               if any({"LAUNCH_1","LAUNCH_2"}.issubset(launches) for launches in conditions_seen.values()):
@@ -407,12 +423,26 @@ jobs:
           formula_case_complete=(set(selector_union)==set(targets_by_selector) and
               len(repeatable_selectors)==len(targets_by_selector) and
               matches>0 and mismatches==0 and unproven==0)
+          snapshot_repeatable=True
+          for condition,snapshots in snapshot_by_condition.items():
+              by_launch={}
+              for row in snapshots:
+                  by_launch.setdefault(row.get("launch",""),{})[row.get("record_index","")]=(
+                    row.get("record_selector",""),row.get("rec_20",""),row.get("selected_offset",""),
+                    row.get("selected_value",""))
+              if not {"LAUNCH_1","LAUNCH_2"}.issubset(by_launch):
+                  snapshot_repeatable=False
+              elif by_launch["LAUNCH_1"]!=by_launch["LAUNCH_2"]:
+                  snapshot_repeatable=False
           lines.extend([f"REPEATABILITY_K5_ALL_CHECKPOINTS={'TUNTAS' if k5_all else 'BELUM'}",
             "INPUT=NONE","RAM_WRITE_INJECTION=NONE",
             f"CASE_TARGETS_EXPECTED={len(targets_by_selector)}",f"CASE_TARGETS_OBSERVED={len(target_union)}",
             f"CASE_TARGET_COVERAGE={'TUNTAS' if len(target_union)==len(targets_by_selector) else 'SEBAGIAN'}",
-            f"SELECTOR_VALUES_OBSERVED={','.join(sorted(selector_union))}",
+            f"SELECTOR_VALUES_EXECUTED={','.join(sorted(selector_union))}",
             f"SELECTOR_VALUES_WITH_TWO_IDENTICAL_REPLAYS={','.join(sorted(repeatable_selectors))}",
+            f"RECORD_SELECTOR_VALUES_PRESENT_IN_RAM={','.join(sorted(snapshot_selector_union))}",
+            f"RECORD_SNAPSHOT_ROWS_TOTAL={len(all_snapshot_rows)}",
+            f"RECORD_SNAPSHOT_REPEATABLE_WITHIN_EACH_CHECKPOINT={'YES' if snapshot_repeatable else 'NO_OR_INCOMPLETE'}",
             f"SELECTOR_RESULT_MATCH_ROWS={matches}",
             f"SELECTOR_RESULT_MISMATCH_ROWS={mismatches}",
             f"SELECTOR_RESULT_UNPROVEN_ROWS={unproven}",
@@ -423,6 +453,11 @@ jobs:
               with (c02/"UP1_ALL_SELECTOR_ROWS.tsv").open("w",encoding="utf-8",newline="") as stream:
                   writer=csv.DictWriter(stream,fieldnames=fields,delimiter="\t",extrasaction="ignore",lineterminator="\n")
                   writer.writeheader();writer.writerows(all_selector_rows)
+          if all_snapshot_rows:
+              fields=list(all_snapshot_rows[0].keys())
+              with (c02/"UP1_ALL_RECORD_SELECTORS.tsv").open("w",encoding="utf-8",newline="") as stream:
+                  writer=csv.DictWriter(stream,fieldnames=fields,delimiter="\t",extrasaction="ignore",lineterminator="\n")
+                  writer.writeheader();writer.writerows(all_snapshot_rows)
           (c02/"UP1_CASE_FORMULA_K5.txt").write_text("TUNTAS\n" if formula_case_complete else "BELUM\n",encoding="utf-8")
           print("\n".join(lines),flush=True)
           PY
