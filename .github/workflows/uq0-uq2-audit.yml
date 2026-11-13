@@ -8,6 +8,7 @@ on:
       - "tools/stage1/RunUQ0.py"
       - "tools/stage1/RunUQ0CFG.py"
       - "tools/stage1/RunUQ1.py"
+      - "tools/stage1/RunUQ1Cancel.py"
       - "tools/stage1/RunUQ2.py"
   workflow_dispatch:
 
@@ -46,7 +47,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          mkdir -p "$WORK/source" "$WORK/disc" "$WORK/input" "$WORK/checkpoint" "$WORK/emulator" "$OUT/PREFLIGHT" "$OUT/UQ0" "$OUT/UQ1" "$OUT/UQ2" "$OUT/ACTIONS"
+          mkdir -p "$WORK/source" "$WORK/disc" "$WORK/input" "$WORK/checkpoint" "$WORK/emulator" "$OUT/PREFLIGHT" "$OUT/UQ0" "$OUT/UQ1" "$OUT/UQ1CANCEL" "$OUT/UQ2" "$OUT/ACTIONS"
           {
             echo "WORKFLOW_SOURCE_SHA=$GITHUB_SHA"
             echo "SOURCE_CHECKOUT=PASS"
@@ -61,12 +62,12 @@ jobs:
           set +e
           mkdir -p "$OUT/PREFLIGHT"
           report="$OUT/PREFLIGHT/UQ_PREFLIGHT_RESULT.txt"
-          python -m py_compile tools/stage1/RunUQ0.py tools/stage1/RunUQ0CFG.py tools/stage1/RunUQ1.py tools/stage1/RunUQ2.py
+          python -m py_compile tools/stage1/RunUQ0.py tools/stage1/RunUQ0CFG.py tools/stage1/RunUQ1.py tools/stage1/RunUQ1Cancel.py tools/stage1/RunUQ2.py
           compile_rc=$?
           python -m pip install --disable-pip-version-check --no-input pyflakes PyYAML > "$OUT/PREFLIGHT/PIP_INSTALL_LOG.txt" 2>&1
           pip_rc=$?
           if [ "$pip_rc" -eq 0 ]; then
-            python -m pyflakes tools/stage1/RunUQ0.py tools/stage1/RunUQ0CFG.py tools/stage1/RunUQ1.py tools/stage1/RunUQ2.py > "$OUT/PREFLIGHT/PYFLAKES_LOG.txt" 2>&1
+            python -m pyflakes tools/stage1/RunUQ0.py tools/stage1/RunUQ0CFG.py tools/stage1/RunUQ1.py tools/stage1/RunUQ1Cancel.py tools/stage1/RunUQ2.py > "$OUT/PREFLIGHT/PYFLAKES_LOG.txt" 2>&1
             pyflakes_rc=$?
             python - <<'PY'
           from pathlib import Path
@@ -87,10 +88,12 @@ jobs:
           uq0cfg_rc=$?
           python tools/stage1/RunUQ1.py --self-test > "$OUT/PREFLIGHT/UQ1_SELF_TEST.txt" 2>&1
           uq1_rc=$?
+          python tools/stage1/RunUQ1Cancel.py --self-test > "$OUT/PREFLIGHT/UQ1CANCEL_SELF_TEST.txt" 2>&1
+          uq1cancel_rc=$?
           python tools/stage1/RunUQ2.py --self-test > "$OUT/PREFLIGHT/UQ2_SELF_TEST.txt" 2>&1
           uq2_rc=$?
           rc=0
-          for code in "$compile_rc" "$pip_rc" "$pyflakes_rc" "$yaml_rc" "$uq0_rc" "$uq0cfg_rc" "$uq1_rc" "$uq2_rc"; do
+          for code in "$compile_rc" "$pip_rc" "$pyflakes_rc" "$yaml_rc" "$uq0_rc" "$uq0cfg_rc" "$uq1_rc" "$uq1cancel_rc" "$uq2_rc"; do
             [ "$code" -eq 0 ] || rc=1
           done
           if [ "$rc" -eq 0 ]; then status=TUNTAS; else status=BELUM; fi
@@ -105,6 +108,7 @@ jobs:
             echo "UQ0_SELF_TEST_EXIT_CODE=$uq0_rc"
             echo "UQ0CFG_SELF_TEST_EXIT_CODE=$uq0cfg_rc"
             echo "UQ1_SELF_TEST_EXIT_CODE=$uq1_rc"
+            echo "UQ1CANCEL_SELF_TEST_EXIT_CODE=$uq1cancel_rc"
             echo "UQ2_SELF_TEST_EXIT_CODE=$uq2_rc"
             echo "EXIT_CODE=$rc"
           } > "$report"
@@ -347,6 +351,38 @@ jobs:
           echo "UQ1_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
           exit 0
 
+      - name: UQ1CANCEL — two safe CROSS/back input replays with selector write watchpoints
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          SOURCE="$WORK/checkpoint/adaptive-cycle-02-f180.sstate"
+          prerequisites=0
+          grep -q '^STATUS=TUNTAS$' "$OUT/PREFLIGHT/UQ_PREFLIGHT_RESULT.txt" 2>/dev/null || prerequisites=1
+          grep -q '^STATUS=TUNTAS$' "$OUT/UQ0/UQ0_SUMMARY.txt" 2>/dev/null || prerequisites=1
+          grep -q '^STATUS=TUNTAS$' "$OUT/UQ1/UQ1_SUMMARY.txt" 2>/dev/null || prerequisites=1
+          [ "$(cat "$OUT/CHECKPOINT_VERIFY_EXIT_CODE.txt" 2>/dev/null)" = "0" ] || prerequisites=1
+          [ "$(cat "$OUT/EMULATOR_SETUP_EXIT_CODE.txt" 2>/dev/null)" = "0" ] || prerequisites=1
+          [ -x "$PCSX_BIN" ] && [ -s "$WORK/input/scph7502.bin" ] && [ -s "$WORK/source/game-run.cue" ] || prerequisites=1
+          [ -s "$SOURCE" ] && [ -s "$OUT/UQ0/UQ0_V0_CONSUMERS.tsv" ] || prerequisites=1
+          rc=2
+          if [ "$prerequisites" -eq 0 ]; then
+            python tools/stage1/RunUQ1Cancel.py --work "$WORK/emulator/cross-cancel" --out "$OUT/UQ1CANCEL" \
+              --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/input/scph7502.bin" \
+              --cue "$WORK/source/game-run.cue" --source "$SOURCE" \
+              --checkpoint-sha256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35 \
+              --checkpoint-bytes 21162799 --static-consumers "$OUT/UQ0/UQ0_V0_CONSUMERS.tsv" \
+              --timeout-seconds 900 > "$OUT/UQ1CANCEL_EXECUTION_LOG.txt" 2>&1
+            rc=$?
+          else
+            mkdir -p "$OUT/UQ1CANCEL"
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=UQ1/preflight/checkpoint/emulator prerequisites failed\nEXIT_CODE=2\n' > "$OUT/UQ1CANCEL/UQ1CANCEL_SUMMARY.txt"
+            printf 'UQ1CANCEL_PRE_LAUNCH_PREREQUISITE_FAILED\n' > "$OUT/UQ1CANCEL_EXECUTION_LOG.txt"
+          fi
+          echo "$rc" > "$OUT/UQ1CANCEL_EXIT_CODE.txt"
+          echo "UQ1CANCEL_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
       - name: UQ2 — inclusive Git commit and Actions run/job ledger
         if: always()
         shell: bash
@@ -380,12 +416,13 @@ jobs:
           set +e
           rc0="$(cat "$OUT/UQ0_EXIT_CODE.txt" 2>/dev/null || echo 2)"
           rc1="$(cat "$OUT/UQ1_EXIT_CODE.txt" 2>/dev/null || echo 2)"
+          rc1c="$(cat "$OUT/UQ1CANCEL_EXIT_CODE.txt" 2>/dev/null || echo 2)"
           rc2="$(cat "$OUT/UQ2_EXIT_CODE.txt" 2>/dev/null || echo 2)"
           rccfg="$(cat "$OUT/UQ0_CFG_EXIT_CODE.txt" 2>/dev/null || echo 2)"
           preflight_rc=2
           grep -q '^STATUS=TUNTAS$' "$OUT/PREFLIGHT/UQ_PREFLIGHT_RESULT.txt" 2>/dev/null && preflight_rc=0
           status=SEBAGIAN
-          if [ "$rc0" -eq 0 ] && [ "$rccfg" -eq 0 ] && [ "$rc1" -eq 0 ] && [ "$rc2" -eq 0 ] && [ "$preflight_rc" -eq 0 ]; then status=TUNTAS; fi
+          if [ "$rc0" -eq 0 ] && [ "$rccfg" -eq 0 ] && [ "$rc1" -eq 0 ] && [ "$rc1c" -eq 0 ] && [ "$rc2" -eq 0 ] && [ "$preflight_rc" -eq 0 ]; then status=TUNTAS; fi
           final_rc=0
           if [ "$status" != "TUNTAS" ]; then final_rc=2; fi
           {
@@ -396,6 +433,7 @@ jobs:
             echo "UQ0_EXIT_CODE=$rc0"
             echo "UQ0_CFG_EXIT_CODE=$rccfg"
             echo "UQ1_EXIT_CODE=$rc1"
+            echo "UQ1CANCEL_EXIT_CODE=$rc1c"
             echo "UQ2_EXIT_CODE=$rc2"
             echo "PREFLIGHT_EXIT_CODE=$preflight_rc"
             echo "EXIT_CODE=$final_rc"
@@ -412,11 +450,16 @@ jobs:
           UQ0_EXIT_CODE=$rc0
           UQ0_CFG_EXIT_CODE=$rccfg
           UQ1_EXIT_CODE=$rc1
+          UQ1CANCEL_EXIT_CODE=$rc1c
           UQ2_EXIT_CODE=$rc2
           PREFLIGHT_EXIT_CODE=$preflight_rc
           CHECKPOINT_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
           UQ1_LAUNCHES=2
           UQ1_INPUT=NONE
+          UQ1CANCEL_LAUNCHES=2
+          UQ1CANCEL_ACTION=CROSS
+          UQ1CANCEL_INPUT_SCHEDULE=FRAME_30_PRESS_FRAME_39_RELEASE
+          UQ1CANCEL_GAME_SIDE_MENU_TRANSITION=TIDAK TAHU; no screenshot state classifier
           UQ1_STAGE_WINDOWS=88,300,600
           UQ1_RAM_WRITE_INJECTION=NONE
           CLOSEOUT_COMMIT_INCLUDED_IN_UQ2_LEDGER=NO (ledger captured at workflow source SHA before this text-only result commit)
@@ -425,18 +468,15 @@ jobs:
           ROM_EXE_DATA_BIN_BIOS_CHECKPOINT_CARD_RAM_DUMP_COMMITTED=NO
           CODE_FILES_CHANGED_BY_CODE_COMMIT:
           .github/workflows/uq0-uq2-audit.yml
-          tools/stage1/RunUQ0.py
-          tools/stage1/RunUQ0CFG.py
-          tools/stage1/RunUQ1.py
-          tools/stage1/RunUQ2.py
+          tools/stage1/RunUQ1Cancel.py
           EOF
           git fetch origin main
           git switch -C uq-report-publish origin/main
           dest="reports/ui-audit-2026-11-13/uq/run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          cp -R "$OUT/UQ0" "$OUT/UQ1" "$OUT/UQ2" "$OUT/PREFLIGHT" "$OUT/ACTIONS" "$dest/"
-          cp "$OUT/UQ0_EXECUTION_LOG.txt" "$OUT/UQ0_CFG_EXECUTION_LOG.txt" "$OUT/UQ1_EXECUTION_LOG.txt" "$OUT/UQ2_EXECUTION_LOG.txt" "$dest/" 2>/dev/null || true
-          cp "$OUT/UQ0_EXIT_CODE.txt" "$OUT/UQ0_CFG_EXIT_CODE.txt" "$OUT/UQ1_EXIT_CODE.txt" "$OUT/UQ2_EXIT_CODE.txt" "$dest/" 2>/dev/null || true
+          cp -R "$OUT/UQ0" "$OUT/UQ1" "$OUT/UQ1CANCEL" "$OUT/UQ2" "$OUT/PREFLIGHT" "$OUT/ACTIONS" "$dest/"
+          cp "$OUT/UQ0_EXECUTION_LOG.txt" "$OUT/UQ0_CFG_EXECUTION_LOG.txt" "$OUT/UQ1_EXECUTION_LOG.txt" "$OUT/UQ1CANCEL_EXECUTION_LOG.txt" "$OUT/UQ2_EXECUTION_LOG.txt" "$dest/" 2>/dev/null || true
+          cp "$OUT/UQ0_EXIT_CODE.txt" "$OUT/UQ0_CFG_EXIT_CODE.txt" "$OUT/UQ1_EXIT_CODE.txt" "$OUT/UQ1CANCEL_EXIT_CODE.txt" "$OUT/UQ2_EXIT_CODE.txt" "$dest/" 2>/dev/null || true
           cp "$OUT/CHECKPOINT_VERIFY.txt" "$OUT/EMULATOR_SETUP_EXIT_CODE.txt" "$dest/" 2>/dev/null || true
           cp "$OUT/UQ_FINAL_CLOSEOUT.txt" "$dest/UQ_FINAL_CLOSEOUT.txt"
           {
