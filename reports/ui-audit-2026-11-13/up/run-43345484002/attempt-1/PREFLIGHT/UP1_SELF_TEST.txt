@@ -1,0 +1,1 @@
+UP1_SELF_TEST=PASS staged frames, selector/snapshot parsers, checkpoint hash and pad input parser
