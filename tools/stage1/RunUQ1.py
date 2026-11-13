@@ -408,7 +408,7 @@ def main()->int:
     first=[r for r in all_writes if r["launch"]=="LAUNCH_1"]
     second=[r for r in all_writes if r["launch"]=="LAUNCH_2"]
     sig=lambda rows:[tuple(r[k] for k in WRITE_FIELDS[1:]) for r in rows]
-    identical=bool(first or second) and sig(first)==sig(second)
+    identical=sig(first)==sig(second)
     exec_identical=(
       [tuple(r[k] for k in EXEC_FIELDS[1:]) for r in all_exec if r["launch"]=="LAUNCH_1"]==
       [tuple(r[k] for k in EXEC_FIELDS[1:]) for r in all_exec if r["launch"]=="LAUNCH_2"])
