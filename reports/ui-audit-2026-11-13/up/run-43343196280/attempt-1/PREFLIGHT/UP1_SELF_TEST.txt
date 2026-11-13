@@ -1,0 +1,1 @@
+UP1_SELF_TEST=PASS staged frames, selector trace, 64-record snapshot parser and checkpoint hash

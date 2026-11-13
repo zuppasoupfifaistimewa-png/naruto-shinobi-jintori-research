@@ -1,0 +1,10 @@
+run_id	name	path	event	status	conclusion	head_sha	created_at	source_sha_match	preflight_marker_status	workflow_class
+43332124239	UP0-UP2 — static reader audit, checkpoint breakpoint probe and ledger	.github/workflows/up0-up2-audit.yml	push	completed	failure	aa43988ade04709066911c78e7c033f945d87d27	2026-11-12T23:49:57Z	NO	PASS	UP_CODE_RUN
+43332378877	UP0-UP2 — static reader audit, checkpoint breakpoint probe and ledger	.github/workflows/up0-up2-audit.yml	push	completed	success	906a031fb8f987f7ab0a77a10b9758d39d561e48	2026-11-12T23:51:49Z	NO	PASS	UP_CODE_RUN
+43337552397	Naruto Story Mode adaptive player monitor	.github/workflows/naruto-storymode-adaptive-monitor.yml	schedule	completed	success	873d864bfa8d0d0a2eb7307ab2dc7a12d2bcc8d5	2026-11-13T00:30:06Z	NO	NOT_APPLICABLE_MONITOR	STORYMODE_MONITOR_ONLY
+43339749335	UP0-UP2 — static reader audit, checkpoint breakpoint probe and ledger	.github/workflows/up0-up2-audit.yml	push	completed	failure	b0720026b02a0a6e3fd87d60ddc830fd3c8e09a7	2026-11-13T00:46:37Z	NO	PASS	UP_CODE_RUN
+43340171953	UP0-UP2 — static reader audit, checkpoint breakpoint probe and ledger	.github/workflows/up0-up2-audit.yml	push	completed	success	4a08370c3a2b194eb587169360ced2e347ef5f1f	2026-11-13T00:49:52Z	NO	PASS	UP_CODE_RUN
+43341398050	UP0-UP2 — static reader audit, checkpoint breakpoint probe and ledger	.github/workflows/up0-up2-audit.yml	push	completed	failure	733cdefa76385921254ea485b2bba774f28a3a2c	2026-11-13T00:59:22Z	NO	PASS	UP_CODE_RUN
+43341608710	UP0-UP2 — static reader audit, checkpoint breakpoint probe and ledger	.github/workflows/up0-up2-audit.yml	push	completed	failure	f91ffe9e846ddab01c6d8860525ba3919cb37b30	2026-11-13T01:00:55Z	NO	PASS	UP_CODE_RUN
+43342527855	UP0-UP2 — static reader audit, checkpoint breakpoint probe and ledger	.github/workflows/up0-up2-audit.yml	push	completed	failure	f0458d069d89630d727544f55511185e6c1b6605	2026-11-13T01:07:53Z	NO	PASS	UP_CODE_RUN
+43343196280	UP0-UP2 — static reader audit, checkpoint breakpoint probe and ledger	.github/workflows/up0-up2-audit.yml	push	in_progress		d04f708285465ab58b719c4beca74ecf518ebfa1	2026-11-13T01:12:59Z	YES	PASS	UP_CODE_RUN
