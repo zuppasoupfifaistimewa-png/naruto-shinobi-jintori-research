@@ -23,12 +23,12 @@ REG_EVENT_FIELDS=["launch","frame","role","pc","a0","a1","a2","a3","ra","v0","v1
  "record_index","record_address","record_selector","rec_20","selected_offset","selected_value",
  "rec_10","rec_12","rec_14","rec_16","rec_18","rec_1A","rec_1C","rec_1E"]
 LAUNCH_FIELDS=["launch","status","exit_code","frames_requested","frames_observed","event_hits",
- "breakpoints_expected","breakpoints_registered","entry_breakpoints","case_entry_breakpoints","return_instruction_breakpoints",
+ "breakpoints_expected","breakpoints_registered","entry_breakpoints","case_entry_breakpoints","case_input_breakpoints","return_instruction_breakpoints",
  "return_address_breakpoints","shared_77E8_breakpoint","checkpoint_before","checkpoint_after",
  "card_before","card_after","card_mode_0444","stages_reached","wall_seconds"]
 COMPARE_FIELDS=["metric","launch_1","launch_2","same","interpretation"]
 SELECTOR_FIELDS=["launch","frame","selector_value","table_target_pc","case_entry_pc","return_pc",
- "record_index","record_selector","rec_20","selected_offset","lv_selected","input_register",
+ "record_index","record_selector","rec_20","selected_offset","lv_selected","case_input_pc","input_register",
  "case_input_value","expression_candidate","predicted_v0","v0_at_return",
  "input_matches_selected","comparison_status","evidence_limit"]
 
@@ -97,13 +97,15 @@ end)
 print("UP1_CARD_WARMUP_READY=YES")
 '''.lstrip()
 
-def lua_exec(launch:str,card:Path,entries:list[int],case_targets:list[int],returns:list[int],return_addrs:list[int])->str:
+def lua_exec(launch:str,card:Path,entries:list[int],case_targets:list[int],case_inputs:list[int],returns:list[int],return_addrs:list[int])->str:
     card_s=str(card).replace("\\","\\\\").replace('"','\\"')
     roles={}
     for address in entries:
         roles.setdefault(address,[]).append("ENTRY")
     for address in case_targets:
         roles.setdefault(address,[]).append("CASE_ENTRY")
+    for address in case_inputs:
+        roles.setdefault(address,[]).append("CASE_INPUT")
     for address in returns:
         roles.setdefault(address,[]).append("RETURN_INSTRUCTION")
     for address in return_addrs:
@@ -306,6 +308,14 @@ def read_case_targets(selector_table:Path)->list[int]:
                 targets.append(int(row["jump_target_pc"],16))
     return sorted(set(targets))
 
+def read_case_inputs(selector_table:Path)->list[int]:
+    values=[]
+    with selector_table.open(encoding="utf-8",newline="") as stream:
+        for row in csv.DictReader(stream,delimiter="\t"):
+            if row.get("reader_site_pc","").startswith("0x"):
+                values.append(int(row["reader_site_pc"],16))
+    return sorted(set(values))
+
 def read_selector_map(selector_table:Path)->dict[int,dict]:
     mapping={}
     with selector_table.open(encoding="utf-8",newline="") as stream:
@@ -327,7 +337,7 @@ def parse_hits(text:str)->list[dict]:
     return events
 
 def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
-                appdir:Path,bios:Path,cue:Path,entries:list[int],case_targets:list[int],returns:list[int],
+                appdir:Path,bios:Path,cue:Path,entries:list[int],case_targets:list[int],case_inputs:list[int],returns:list[int],
                 return_addresses:list[int],timeout_s:int):
     folder=work/name.lower()
     folder.mkdir(parents=True,exist_ok=True)
@@ -338,7 +348,7 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
     shutil.copyfile(template,card)
     card.chmod(0o444)
     lua=folder/"up1-exec-breakpoints.lua"
-    lua.write_text(lua_exec(name,card,entries,case_targets,returns,return_addresses),encoding="utf-8")
+    lua.write_text(lua_exec(name,card,entries,case_targets,case_inputs,returns,return_addresses),encoding="utf-8")
     stdout=folder/"emulator.stdout.txt"
     stage_start=f"STAGE_START\t{name}\tframes=88,300,600\tcheckpoint={CHECKPOINT_SHA}\n"
     with (out/"UP1_STAGE_MARKERS.txt").open("a",encoding="utf-8") as stream:
@@ -391,7 +401,7 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
                 breakpoint_count=int(line.split("=")[1].split()[0])
             except (IndexError,ValueError):
                 breakpoint_count=0
-    expected=len(set(entries+case_targets+returns+return_addresses+[SHARED_SITE]))
+    expected=len(set(entries+case_targets+case_inputs+returns+return_addresses+[SHARED_SITE]))
     full=any(line.startswith(f"UP1_FRAME_LIMIT\t{name}\t600\t") for line in lines)
     passed=(exit_code==0 and full and breakpoint_count==expected and
             checkpoint_before==checkpoint_after==source_before==source_after==CHECKPOINT_SHA and
@@ -399,7 +409,7 @@ def launch_once(name:str,source:Path,template:Path,work:Path,out:Path,pcsx:Path,
     row={"launch":name,"status":"PASS" if passed else "FAIL","exit_code":exit_code,
       "frames_requested":600,"frames_observed":600 if full else max(reached,default=0),
       "event_hits":len(events),"breakpoints_expected":expected,"breakpoints_registered":breakpoint_count,
-      "entry_breakpoints":len(entries),"case_entry_breakpoints":len(case_targets),"return_instruction_breakpoints":len(returns),
+      "entry_breakpoints":len(entries),"case_entry_breakpoints":len(case_targets),"case_input_breakpoints":len(case_inputs),"return_instruction_breakpoints":len(returns),
       "return_address_breakpoints":len(return_addresses),"shared_77E8_breakpoint":"YES",
       "checkpoint_before":checkpoint_before,"checkpoint_after":checkpoint_after,
       "card_before":card_before,"card_after":card_after,
@@ -449,6 +459,7 @@ def main()->int:
     source_before=sha(source)
     entries=read_entries(args.static_readers)
     case_targets=read_case_targets(args.static_selector_table)
+    case_inputs=read_case_inputs(args.static_selector_table)
     selector_map=read_selector_map(args.static_selector_table)
     if not case_targets or len(selector_map)!=5:
         raise SystemExit("UP1_SELECTOR_TABLE_MUST_HAVE_FIVE_BYTE_MAPPED_CASES")
@@ -503,7 +514,7 @@ def main()->int:
     events=[]
     for name in ("LAUNCH_1","LAUNCH_2"):
         row,hit_rows=launch_once(name,source,template,work,out,args.pcsx_bin,args.appdir,
-          args.bios,args.cue,entries,case_targets,returns,return_addresses,args.timeout_seconds)
+          args.bios,args.cue,entries,case_targets,case_inputs,returns,return_addresses,args.timeout_seconds)
         launches.append(row)
         events.extend(hit_rows)
     write_tsv(out/"UP1_EXEC_HITS.tsv",REG_EVENT_FIELDS,events)
@@ -549,13 +560,22 @@ def main()->int:
                 same_record=[row for row in case_candidates if row["record_index"]==entry["record_index"]]
                 if same_record:case_candidates=same_record
             case=case_candidates[-1] if case_candidates else None
+            input_candidates=[row for row in launch_events
+              if row["role"]=="CASE_INPUT" and row["ra"]==ret["pc"] and
+              int(row["frame"])<=int(ret["frame"])]
+            pairing_record=(entry or case)
+            if pairing_record:
+                same_record=[row for row in input_candidates if row["record_index"]==pairing_record["record_index"]]
+                if same_record:input_candidates=same_record
+            case_input=input_candidates[-1] if input_candidates else None
             source_row=entry or case
             sel=u32(source_row["record_selector"]) if source_row else None
             selmap=selector_map.get(sel,{})
             target=selmap.get("jump_target_pc","TIDAK TAHU")
             input_reg=selmap.get("input_register","TIDAK TAHU")
-            input_raw=(case.get("v1") if case and input_reg=="$v1" else
-                       case.get("v0") if case and input_reg=="$v0" else None)
+            input_event=case_input or case
+            input_raw=(input_event.get("v1") if input_event and input_reg=="$v1" else
+                       input_event.get("v0") if input_event and input_reg=="$v0" else None)
             input_value=u32(input_raw)
             selected=u32(entry["selected_value"]) if entry else None
             pred=None
@@ -582,6 +602,7 @@ def main()->int:
               "rec_20":entry["rec_20"] if entry else "TIDAK TAHU",
               "selected_offset":entry["selected_offset"] if entry else "TIDAK TAHU",
               "lv_selected":entry["selected_value"] if entry else "TIDAK TAHU",
+              "case_input_pc":case_input["pc"] if case_input else "TIDAK TAHU",
               "input_register":input_reg,"case_input_value":input_raw or "TIDAK TAHU",
               "expression_candidate":formula,"predicted_v0":hex32(pred),
               "v0_at_return":ret["v0"],"input_matches_selected":match_input,
@@ -609,6 +630,7 @@ def main()->int:
       f"STATUS={status}",f"EVIDENCE={evidence}",f"MAXIMUM_STAGE_REACHED={max_stage}",
       "ENTRY_BREAKPOINT_PCS="+",".join(f"0x{value:08X}" for value in entries),
       f"CASE_ENTRY_BREAKPOINTS={len(case_targets)}",
+      f"CASE_INPUT_BREAKPOINTS={len(case_inputs)}",
       f"RETURN_INSTRUCTION_BREAKPOINTS={len(returns)}",
       f"CALL_RETURN_BREAKPOINTS={len(return_addresses)}","SHARED_77E8_BREAKPOINT=0x800B77E8",
       f"CHECKPOINT_SHA256={source_before}",f"MEMORY_CARD_SHA256={card_hash}",
